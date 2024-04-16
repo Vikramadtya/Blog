@@ -1,0 +1,38 @@
+import Chart from "../../../public/icons/chart.svg";
+import NextJS from "../../../public/icons/nextjs.svg";
+import TailwindCSS from "../../../public/icons/tailwind.svg";
+import Umami from "../../../public/icons/umami.svg";
+import Location from "../../../public/icons/location.svg";
+import Home from "../../../public/icons/home.svg";
+import Me from "../../../public/icons/me.svg";
+import WrenchAndHammer from "../../../public/icons/wrench-and-hammer.svg";
+import Search from "../../../public/icons/search.svg";
+import Tag from "../../../public/icons/tag.svg";
+import { classNameResolver } from "@/utils/classNameResolver";
+
+const components = {
+  chart: Chart,
+  nextJS: NextJS,
+  tailwindCSS: TailwindCSS,
+  umami: Umami,
+  location: Location,
+  home: Home,
+  me: Me,
+  wrenchAndHammer: WrenchAndHammer,
+  search: Search,
+  tag: Tag,
+};
+
+const Icon = ({ kind, className }) => {
+  console.log(kind);
+  const IconSvg = components[kind];
+  return (
+    <>
+      <i className={`inline-block`}>
+        <IconSvg className={classNameResolver(className)} />
+      </i>
+    </>
+  );
+};
+
+export default Icon;

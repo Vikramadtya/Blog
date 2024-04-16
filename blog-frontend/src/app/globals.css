@@ -1,0 +1,279 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.wavy {
+  animation-name: wave-animation; /* Refers to the name of your @keyframes element below */
+  animation-duration: 2.5s; /* Change to speed up or slow down */
+  animation-iteration-count: infinite; /* Never stop waving :) */
+  transform-origin: 70% 70%; /* Pivot around the bottom-left palm */
+  display: inline-block;
+  color: greenyellow;
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(14deg);
+  } /* The following five values can be played with to make the waving more or less extreme */
+  20% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  } /* Reset for the last half to pause */
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.navbar-logo {
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.2);
+}
+
+.underlined-header-link {
+  position: relative;
+}
+.underlined-header-link:after {
+  background: none repeat scroll 0 0 transparent;
+  bottom: 0;
+  content: "";
+  display: block;
+  height: 2px;
+  left: 50%;
+  position: absolute;
+  background: #000000;
+  transition:
+    width 0.3s ease 0s,
+    left 0.3s ease 0s;
+  width: 0;
+}
+.underlined-header-link:hover:after {
+  width: 100%;
+  left: 0;
+}
+@media screen and (max-height: 300px) {
+  ul {
+    margin-top: 40px;
+  }
+}
+
+[data-theme] {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-rehype-pretty-code-figure] [data-line-numbers] > [data-line]::before {
+  @apply text-xs text-black dark:text-white/70;
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1rem;
+  margin-right: 1rem;
+  text-align: right;
+}
+
+span[data-rehype-pretty-code-figure] {
+  @apply inline-flex w-fit;
+}
+
+span[data-rehype-pretty-code-figure] code[data-theme="github-light"] {
+  @apply rounded-md bg-slate-100 px-2 text-base dark:hidden;
+}
+
+/*span[data-rehype-pretty-code-figure] code[data-theme='github-light'] {*/
+/*	@apply hidden dark:block bg-zinc-800 rounded-md px-2 text-base;*/
+/*}*/
+
+/*
+p > code {
+	@apply bg-slate-200 dark:bg-zinc-700/70 px-1 rounded-md mx-1 border border-primary font-mono tracking-wide text-base;
+} */
+
+code:not(pre code) {
+  @apply mx-1 rounded-md border border-primary bg-slate-200 px-1 font-mono text-base tracking-wide dark:bg-zinc-700/70;
+}
+
+[data-metadata] [data-code-copy] {
+  @apply top-16 !important;
+}
+
+[data-rehype-pretty-code-figure] {
+  @apply relative;
+
+  & pre {
+    @apply grid min-w-full overflow-x-auto break-words rounded-none border-0 bg-transparent p-0 py-2 text-base font-medium;
+    display: flex;
+    flex-direction: column;
+    counter-reset: line;
+    box-decoration-break: clone;
+  }
+
+  & [data-highlighted-line] {
+    @apply border-l-orange-500 bg-orange-500/[0.1] dark:border-l-orange-800;
+  }
+
+  & [data-chars-id] {
+    @apply pb-0.5 shadow-none;
+  }
+}
+
+.code-add {
+  @apply bg-green-600/40;
+}
+
+.code-delete {
+  @apply bg-red-400/30;
+}
+
+span.code-add::before {
+  content: "+";
+  margin-left: -10px;
+  @apply text-green-700 dark:text-[#2ecc71];
+}
+
+span.code-delete::before {
+  content: "-";
+  color: #e74c3c;
+  margin-left: -10px;
+}
+
+[data-comp-preview] [data-rehype-pretty-code-figure] {
+  & pre {
+    @apply mt-0 rounded-b-lg rounded-t-none;
+  }
+}
+
+[data-chars-id="ul"] {
+  @apply border-b border-b-green-500 font-bold !important;
+}
+
+[data-chars-id="hi"] {
+  @apply rounded bg-teal-700/60 p-1 font-bold !important;
+}
+
+[data-chars-id="rb"] {
+  @apply rounded border border-red-600 p-[2px] font-bold !important;
+}
+
+[data-chars-id="yb"] {
+  @apply rounded border border-yellow-600 p-[2px] font-bold !important;
+}
+
+/* [data-rehype-pretty-code-title] {
+	@apply mt-2 px-4 pt-6 text-sm font-medium;
+} */
+
+[data-rehype-pretty-code-title] {
+  @apply hidden;
+}
+
+[data-rehype-pretty-code-title] + pre {
+  @apply mt-2;
+}
+
+/* [data-callout] > p:last-child {
+	@apply mb-0 !important;
+}
+
+[data-comp-preview] + p {
+	@apply mt-6;
+}
+
+[data-metadata]:not(:has(pre)) {
+	display: none;
+} */
+
+pre > code > span[data-line] {
+  @apply inline-block w-full basis-4 border-l-[3px] border-l-transparent py-0.5 pl-2 pr-5;
+}
+
+/* Remote */
