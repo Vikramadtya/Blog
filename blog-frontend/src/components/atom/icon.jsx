@@ -24,7 +24,6 @@ const components = {
 };
 
 const Icon = ({ kind, className }) => {
-  console.log(kind);
   const IconSvg = components[kind];
   return (
     <>
