@@ -4,12 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
+import { useTheme } from "next-themes";
 
 import CustomLink from "../atom/customLink";
 import Icon from "../atom/icon";
 
 const InDevelopment = () => {
   const [init, setInit] = useState(false);
+  const { theme } = useTheme();
 
   // this should be run only once per application lifetime
   useEffect(() => {
@@ -24,7 +26,7 @@ const InDevelopment = () => {
     }).then(() => {
       setInit(true);
     });
-  }, []);
+  }, [theme]);
 
   const particlesLoaded = (container) => {
     console.log(container);
@@ -34,7 +36,7 @@ const InDevelopment = () => {
     () => ({
       background: {
         color: {
-          value: "#ffffff",
+          value: theme === "light" ? "#ffffff" : "#000000",
         },
       },
       fpsLimit: 120,
@@ -61,10 +63,10 @@ const InDevelopment = () => {
       },
       particles: {
         color: {
-          value: "#000000",
+          value: theme === "light" ? "#000000" : "#ffffff",
         },
         links: {
-          color: "#000000",
+          color: theme === "light" ? "#000000" : "#ffffff",
           distance: 150,
           enable: true,
           opacity: 0.5,
@@ -116,7 +118,7 @@ const InDevelopment = () => {
             id="tsparticles"
             particlesLoaded={particlesLoaded}
             options={options}
-          ></Particles>
+          />
         ) : (
           <></>
         )}
