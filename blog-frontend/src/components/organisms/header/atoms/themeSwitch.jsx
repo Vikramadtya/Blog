@@ -11,17 +11,14 @@ import SunIcon from "../../../../../public/icons/owl.svg";
 import MoonIcon from "../../../../../public/icons/sun.svg";
 
 const ThemeToggle = () => {
-  const [enabled, setEnabled] = useState(false);
-
   const { theme, setTheme } = useTheme();
 
   const [ThemeSound] = useSound("/sounds/switch-on.mp3");
 
   return (
     <Switch
-      checked={enabled}
+      checked={theme === "dark"}
       onChange={() => {
-        setEnabled(!enabled);
         ThemeSound();
         setTheme(theme === "light" ? "dark" : "light");
       }}
