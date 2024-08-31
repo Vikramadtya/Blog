@@ -4,10 +4,9 @@ import Tag from "../atom/tag";
 import Icon from "../atom/icon";
 
 const BlogHero = ({ title, tags }) => {
-  const tagsComponent = [];
-  for (let i = 0; i < tags.length; ++i) {
-    tagsComponent.push(<Tag key={i} text={tags[i]} id={i % 9} />);
-  }
+  const tagsComponent = tags.map((tag) => (
+    <Tag key={tag.id} text={tag.name} id={tag.color} />
+  ));
 
   return (
     <>

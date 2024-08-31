@@ -11,7 +11,7 @@ import Footer from "@/components/organisms/footer/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
+export let metadata: Metadata = {
   title: "Neural cook",
   description: "A blog by vikramaditya singh",
 };

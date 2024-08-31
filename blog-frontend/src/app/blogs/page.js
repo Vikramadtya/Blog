@@ -5,30 +5,10 @@ import path from "path";
 import matter from "gray-matter";
 
 import MarkDownContentList from "../../components/molecules/markDownContentList";
+import { getBlogsMetaData } from "../../services/blogService";
 
 export default function Blog() {
-  const projects = path.join(
-    __dirname,
-    "..",
-    "..",
-    "..",
-    "..",
-    "..",
-    "_markdown_content",
-    "blogs",
-  );
-  console.log(projects);
-  const files = fs.readdirSync(projects);
-
-  let blogs = files.map((fileName) => {
-    const fileContent = fs.readFileSync(path.join(projects, fileName), "utf-8");
-    const { data: frontMatter } = matter(fileContent);
-    return {
-      ...frontMatter,
-      slug: fileName.replace(".mdx", ""),
-    };
-  });
-
+  const blogs = getBlogsMetaData();
   return (
     <main className="flex flex-col items-center justify-between px-12 md:px-24 lg:px-32 xl:px-48">
       <div className="w-full space-y-2 pb-8 pt-6 md:space-y-5 ">

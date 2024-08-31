@@ -9,110 +9,48 @@ import rehypeSlug from "rehype-slug";
 
 import { Separator } from "../../../components/atom/separator";
 import BlogHero from "../../../components/molecules/blogHero";
+import { prettyCodeOptions } from "../../../utils/markdownConstants";
+import {
+  getBlogContent,
+  getBlogMetaDataFromSlug,
+  getBlogsMetaData,
+} from "../../../services/blogService";
 
-const prettyCodeOptions = {
-  // theme: 'github-dark',
-  theme: "catppuccin-latte",
-  keepBackground: true, // to use our own background color
-  defaultLang: {
-    block: "plaintext",
-    inline: "plaintext",
-  },
-  onVisitLine(node) {
-    if (node.children.length === 0) {
-      node.children = { type: "text", value: " " };
-    }
-  },
-  getHighlighter: (options) => {
-    return getHighlighter({
-      ...options,
-      langs: [
-        "svelte",
-        "typescript",
-        "html",
-        "css",
-        "javascript",
-        "bash",
-        "shell",
-        "python",
-        "java",
-        "md",
-        "go",
-        "rust",
-        "c",
-        "cpp",
-        "csharp",
-        "php",
-        "json",
-        "yaml",
-        "swift",
-      ],
-    });
-  },
-};
-
-const projects = path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "_markdown_content",
-  "blogs",
-);
 export async function generateStaticParams() {
-  const files = fs.readdirSync(projects);
+  const blogs = getBlogsMetaData();
 
-  const paths = files.map((fileName) => ({
-    slug: fileName.replace(".mdx", ""),
+  return blogs.map((blog) => ({
+    slug: blog.slug,
+    id: blog.id,
+    title: blog.title,
+    description: blog.description,
   }));
-
-  return paths;
 }
-
-function getPost({ slug }) {
-  const markdownFile = fs.readFileSync(
-    path.join(projects, slug + ".mdx"),
-    "utf-8",
-  );
-
-  const { data: frontMatter, content } = matter(markdownFile);
-
-  const contentMetadata = {
-    frontMatter: frontMatter,
-  };
-
-  return {
-    contentMetadata,
-    slug,
-    content,
-  };
-}
-
 export async function generateMetadata({ params }) {
-  const props = getPost(params);
+  const { slug } = params;
+
+  const metadata = getBlogMetaDataFromSlug(slug);
 
   return {
-    title: props.contentMetadata.frontMatter.title,
-    description: props.contentMetadata.frontMatter.description,
+    title: metadata.title,
+    description: metadata.description,
   };
 }
 
 export default function Post({ params }) {
-  const props = getPost(params);
+  const { slug } = params;
+
+  const metadata = getBlogMetaDataFromSlug(slug);
+
+  const content = getBlogContent(metadata.id);
 
   return (
     <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
-      <BlogHero
-        title={props.contentMetadata.frontMatter.title}
-        tags={props.contentMetadata.frontMatter.tags}
-      />
+      <BlogHero title={metadata.title} tags={metadata.tags} />
       <Separator className="mb-20 mt-20" />
 
       <MDXRemote
-        source={props.content}
+        source={content}
         options={{
           mdxOptions: {
             remarkPlugins: [],
