@@ -27,6 +27,7 @@ export function getBlogsMetaData() {
       data.preview = metadata.demo.preview;
       data.source = metadata.demo.source;
       data.slug = metadata.slug;
+      data.createdAt = metadata.createdAt;
       return data;
     });
 }

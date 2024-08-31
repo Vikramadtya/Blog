@@ -15,6 +15,9 @@ import {
   getBlogMetaDataFromSlug,
   getBlogsMetaData,
 } from "../../../services/blogService";
+import Comments from "../../../components/atom/comment";
+import Doodle from "../../../components/atom/doodle";
+import StickyBar from "../../../components/atom/stickyBar";
 
 export async function generateStaticParams() {
   const blogs = getBlogsMetaData();
@@ -46,7 +49,11 @@ export default function Post({ params }) {
 
   return (
     <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
-      <BlogHero title={metadata.title} tags={metadata.tags} />
+      <BlogHero
+        title={metadata.title}
+        tags={metadata.tags}
+        date={metadata.createdAt}
+      />
       <Separator className="mb-20 mt-20" />
 
       <MDXRemote
@@ -58,6 +65,16 @@ export default function Post({ params }) {
           },
         }}
       />
+      <StickyBar />
+
+      <Separator className="mb-20 mt-20" />
+
+      <div className="flex items-center justify-center">
+        <Doodle classData={"h-20 w-20"} />
+      </div>
+      <div className="flex items-center justify-center">
+        <Comments />
+      </div>
     </article>
   );
 }

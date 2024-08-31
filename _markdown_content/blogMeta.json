@@ -2,7 +2,7 @@
   {
     "id" : "2cf9ba34-2dce-4e4e-b8d8-f1373bd6eeea",
     "version" : 1,
-    "name": "Intro to technical writing",
+    "name": "Sort Visualizer",
     "summary": "A short introduction to technical writing",
     "createdAt": "2024-08-31T14:30:00.000Z",
     "updatedAt": "2024-08-31T14:30:00.000Z",
@@ -15,21 +15,21 @@
     "tags": [
       {
         "id" : "2cf9ba34-2dce-4e4e-b8d8-f1373bd6eeea",
-        "name" : "test",
+        "name" : "sort algorithms",
         "color" : 1
       },
       {
         "id" : "2cf9ba34-2dce-4e4e-b8d8-f1373bd6eeeb",
-        "name" : "first-blog",
+        "name" : "javascript",
         "color" : 2
       },
       {
         "id" : "2cf9ba34-2dce-4e4e-b8d8-f1373bd6eeec",
-        "name" : "tags-test",
+        "name" : "deployed",
         "color" : 3
       }
     ],
     "author": "vsingh",
-    "slug": "intro-to-technical-writing"
+    "slug": "sort-visualizer"
   }
 ]
