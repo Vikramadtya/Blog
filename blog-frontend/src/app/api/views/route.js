@@ -1,6 +1,7 @@
-import { notifySlack } from "../../../services/notificationServices";
-import { addLike, getLikes } from "../../../services/likesServices";
-import { addView, getViews } from "../../../services/viewsServices";
+import {
+  addViewToRemote,
+  getViewsFromRemote,
+} from "../../../services/viewsServices";
 
 export const dynamic = "force-dynamic"; // static by default, unless reading the request
 
@@ -10,7 +11,7 @@ export async function POST(request) {
   const body = await request.json();
 
   // increase view count of the blog
-  const currentViews = addView(body.id);
+  const currentViews = addViewToRemote(body.id);
 
   // send response back
   return new Response(
@@ -26,7 +27,7 @@ export async function GET(request) {
   const searchParams = request.nextUrl.searchParams;
 
   // get view count of the blog
-  const currentViews = getViews(searchParams.id);
+  const currentViews = getViewsFromRemote(searchParams.id);
 
   // send response back
   return new Response(

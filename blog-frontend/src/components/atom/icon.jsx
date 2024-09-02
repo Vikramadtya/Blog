@@ -8,8 +8,8 @@ import Me from "../../../public/icons/me.svg";
 import WrenchAndHammer from "../../../public/icons/wrench-and-hammer.svg";
 import Search from "../../../public/icons/search.svg";
 import Tag from "../../../public/icons/tag.svg";
-import Avatar from "../../../public/icons/tag.svg";
-import Calendar from "../../../public/icons/tag.svg";
+import Eye from "../../../public/icons/eye.svg";
+import Calendar from "../../../public/icons/calendar.svg";
 import Heart from "../../../public/icons/heart.svg";
 import Share from "../../../public/icons/share.svg";
 import TableOfContent from "../../../public/icons/toc.svg";
@@ -35,6 +35,7 @@ const components = {
   comment: Comment,
   tableOfContent: TableOfContent,
   share: Share,
+  eye: Eye,
 };
 
 const Icon = ({ kind, className }) => {

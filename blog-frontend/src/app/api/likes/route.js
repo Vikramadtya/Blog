@@ -1,5 +1,7 @@
-import { notifySlack } from "../../../services/notificationServices";
-import { addLike, getLikes } from "../../../services/likesServices";
+import {
+  addLikeToRemote,
+  getLikesFromRemote,
+} from "../../../services/likesServices";
 
 export const dynamic = "force-dynamic"; // static by default, unless reading the request
 
@@ -9,7 +11,7 @@ export async function POST(request) {
   const body = await request.json();
 
   // increase like count of the blog
-  const currentLike = addLike(body.id);
+  const currentLike = addLikeToRemote(body.id);
 
   // send response back
   return new Response(
@@ -25,7 +27,7 @@ export async function GET(request) {
   const searchParams = request.nextUrl.searchParams;
 
   // get like count of the blog
-  const currentLike = getLikes(searchParams.id);
+  const currentLike = getLikesFromRemote(searchParams.id);
 
   // send response back
   return new Response(
