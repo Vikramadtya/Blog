@@ -3,12 +3,26 @@ import fs from "fs";
 import { metadata } from "../app/layout";
 
 const Blog_Markdown_Content_Path = path.join(
-  process.env.BLOG_DATA_PATH,
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "..",
+  "..",
+  "..",
+  "_markdown_content",
   "blogs",
 );
 
 const Blog_MetaData_Path = path.join(
-  process.env.BLOG_DATA_PATH,
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "..",
+  "..",
+  "..",
+  "_markdown_content",
   "blogMeta.json",
 );
 
