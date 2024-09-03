@@ -1,7 +1,4 @@
-import {
-  addLikeToRemote,
-  getLikesFromRemote,
-} from "../../../services/likesServices";
+import { addLikeToRemote, getLikesFromRemote } from "./routeService";
 
 export const dynamic = "force-dynamic"; // static by default, unless reading the request
 

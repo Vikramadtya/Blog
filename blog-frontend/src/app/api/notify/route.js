@@ -1,4 +1,4 @@
-import { notifySlack } from "../../../services/notificationServices";
+import { notifySlack } from "./routeService";
 
 export const dynamic = "force-dynamic"; // static by default, unless reading the request
 

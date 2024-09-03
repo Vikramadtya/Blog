@@ -5,6 +5,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
+import { addLike } from "../../services/likesServices";
+import ClickableStickyBarElement from "./clickableStickyBarElement";
 
 const StickyBar = () => {
   return (
@@ -15,7 +17,11 @@ const StickyBar = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Icon kind="heart" className={"h-6 w-6"} />
+                  <ClickableStickyBarElement
+                    kind="heart"
+                    className={"h-6 w-6"}
+                    handler={addLike}
+                  />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Like</p>

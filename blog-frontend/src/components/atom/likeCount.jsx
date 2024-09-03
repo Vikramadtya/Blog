@@ -1,7 +1,6 @@
 "use client";
 import Icon from "./icon";
 import React, { useState } from "react";
-import { getView } from "../../services/viewsServices";
 import { getLikes } from "../../services/likesServices";
 
 const LikeCount = ({ id }) => {
