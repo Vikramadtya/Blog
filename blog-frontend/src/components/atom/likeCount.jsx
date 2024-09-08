@@ -1,12 +1,18 @@
 "use client";
 import Icon from "./icon";
 import React, { useState } from "react";
-import { getLikes } from "../../services/likesServices";
+import { getLikes } from "../../services/apiServices";
 
 const LikeCount = ({ id }) => {
   const [likes, setLikes] = useState("fetching latest view count");
 
-  // getLikes(id).then((likes) => setLikes(likes));
+  getLikes(id)
+    .then((res) => res.json())
+    .then((likes) => setLikes(likes))
+    .catch((err) => {
+      console.log(err);
+      setLikes("failed to fetch like count");
+    });
 
   return (
     <>
