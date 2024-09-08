@@ -15,14 +15,14 @@ export const dropDownMenuNavLinks = [
   { key: 1, href: "/", title: "Home", icon: "home", shortcut: "⌘+H" },
   {
     key: 2,
-    href: siteMetadata.blogLink,
+    href: "/blogs",
     title: "All Posts",
     icon: "home",
     shortcut: "⌘+B",
   },
   {
     key: 3,
-    href: siteMetadata.blogLink,
+    href: "/tags",
     title: "Tags",
     icon: "home",
     shortcut: "⌘+B",
@@ -30,7 +30,7 @@ export const dropDownMenuNavLinks = [
   { key: 4, href: "", title: "", icon: "", shortcut: "" },
   {
     key: 5,
-    href: siteMetadata.blogLink,
+    href: siteMetadata.portfolioLink,
     title: "Author",
     icon: "home",
     shortcut: "⌘+B",

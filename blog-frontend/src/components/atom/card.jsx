@@ -3,10 +3,9 @@ import Tag from "./tag";
 import Link from "next/link";
 
 const Card = ({ title, description, tags, slug }) => {
-  const tagsComponent = [];
-  for (let i = 0; i < tags.length; ++i) {
-    tagsComponent.push(<Tag key={i} text={tags[i]} id={i % 9} />);
-  }
+  const tagsComponent = tags.map((tag) => (
+    <Tag key={tag.id} text={tag.name} id={tag.color} />
+  ));
   return (
     <>
       <div className="relative flex max-w-[24rem] flex-col overflow-hidden rounded-xl border-2 bg-white bg-clip-border text-gray-700 shadow-md hover:border-solid hover:border-gray-700 dark:bg-black dark:hover:border-white">

@@ -1,13 +1,15 @@
+import dayjs from "dayjs";
 import React from "react";
 
 import Tag from "../atom/tag";
 import Icon from "../atom/icon";
+import ViewCount from "../atom/viewCount";
+import LikeCount from "../atom/likeCount";
 
-const BlogHero = ({ title, tags }) => {
-  const tagsComponent = [];
-  for (let i = 0; i < tags.length; ++i) {
-    tagsComponent.push(<Tag key={i} text={tags[i]} id={i % 9} />);
-  }
+const BlogHero = ({ title, tags, date }) => {
+  const tagsComponent = tags.map((tag) => (
+    <Tag key={tag.id} text={tag.name} id={tag.color} />
+  ));
 
   return (
     <>
@@ -21,6 +23,18 @@ const BlogHero = ({ title, tags }) => {
             <Icon kind="tag" className={"h-6 w-6"} />
             {...tagsComponent}
           </div>
+        </div>
+
+        <div className="flex items-center space-x-2 text-muted-foreground">
+          <Icon kind="calendar" className={"h-6 w-6"} />
+          <p className="text-xs font-semibold md:text-sm">
+            {dayjs(date).format("MMMM D, YYYY")}
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2 space-y-0.5 text-muted-foreground">
+          <ViewCount id={0} />
+          <LikeCount id={0} />
         </div>
       </div>
     </>
