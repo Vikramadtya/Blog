@@ -8,7 +8,7 @@ const LikeCount = ({ id }) => {
 
   getLikes(id)
     .then((res) => res.json())
-    .then((likes) => setLikes(likes))
+    .then((res) => setLikes(res.likes))
     .catch((err) => {
       console.log(err);
       setLikes("failed to fetch like count");
