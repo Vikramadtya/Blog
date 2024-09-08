@@ -6,7 +6,7 @@ import { getLikes } from "../../services/likesServices";
 const LikeCount = ({ id }) => {
   const [likes, setLikes] = useState("fetching latest view count");
 
-  getLikes(id).then((likes) => setLikes(likes));
+  // getLikes(id).then((likes) => setLikes(likes));
 
   return (
     <>
