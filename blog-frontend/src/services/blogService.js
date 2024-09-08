@@ -1,36 +1,16 @@
-import path from "path";
-import fs from "fs";
-import { metadata } from "../app/layout";
-
-const Blog_Markdown_Content_Path = path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "_markdown_content",
-  "blogs",
-);
-
-const Blog_MetaData_Path = path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "..",
-  "_markdown_content",
-  "blogMeta.json",
-);
-
-export function getBlogsMetaData() {
-  const blogsMetaData = JSON.parse(
-    fs.readFileSync(Blog_MetaData_Path, "utf-8"),
+export async function getBlogsMetaDataFromRemote() {
+  const response = await fetch(
+    `https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/_markdown_content/blogMeta.json`,
+    {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    },
   );
-  return blogsMetaData
+  const data = await response.json();
+
+  return data
     .filter((metadata) => metadata.publish === true)
     .map((metadata) => {
       let data = {};
@@ -46,21 +26,20 @@ export function getBlogsMetaData() {
     });
 }
 
-export function getBlogMetaDataFromSlug(slug) {
-  const blogsMetaData = getBlogsMetaData();
+export async function getBlogMetaDataFromSlug(slug) {
+  const blogsMetaData = await getBlogsMetaDataFromRemote();
   return blogsMetaData.find((metadata) => metadata.slug === slug);
 }
 
-export function getBlogMetaData(id) {
-  const blogsMetaData = getBlogsMetaData();
-  return blogsMetaData.find((metadata) => metadata.id === id);
-}
-
-export function getBlogContent(id) {
-  const markdownFile = fs.readFileSync(
-    path.join(Blog_Markdown_Content_Path, id + ".mdx"),
-    "utf-8",
+export async function getBlogContent(id) {
+  const response = await fetch(
+    `https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/_markdown_content/blogs/${id}.mdx`,
+    {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    },
   );
-
-  return markdownFile;
+  return await response.text();
 }

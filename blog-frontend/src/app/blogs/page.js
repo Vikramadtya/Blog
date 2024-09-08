@@ -5,10 +5,11 @@ import path from "path";
 import matter from "gray-matter";
 
 import MarkDownContentList from "../../components/molecules/markDownContentList";
-import { getBlogsMetaData } from "../../services/blogService";
+import { getBlogsMetaDataFromRemote } from "../../services/blogService";
 
-export default function Blog() {
-  const blogs = getBlogsMetaData();
+export default async function Blog() {
+  const blogs = await getBlogsMetaDataFromRemote();
+
   return (
     <main className="flex flex-col items-center justify-between px-12 md:px-24 lg:px-32 xl:px-48">
       <div className="w-full space-y-2 pb-8 pt-6 md:space-y-5 ">

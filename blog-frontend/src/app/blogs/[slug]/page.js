@@ -13,14 +13,14 @@ import { prettyCodeOptions } from "../../../utils/markdownConstants";
 import {
   getBlogContent,
   getBlogMetaDataFromSlug,
-  getBlogsMetaData,
+  getBlogsMetaDataFromRemote,
 } from "../../../services/blogService";
 import Comments from "../../../components/atom/comment";
 import Doodle from "../../../components/atom/doodle";
 import StickyBar from "../../../components/atom/stickyBar";
 
 export async function generateStaticParams() {
-  const blogs = getBlogsMetaData();
+  const blogs = await getBlogsMetaDataFromRemote();
 
   return blogs.map((blog) => ({
     slug: blog.slug,
@@ -32,7 +32,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = params;
 
-  const metadata = getBlogMetaDataFromSlug(slug);
+  const metadata = await getBlogMetaDataFromSlug(slug);
 
   return {
     title: metadata.title,
@@ -40,12 +40,12 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function Post({ params }) {
+export default async function Post({ params }) {
   const { slug } = params;
 
-  const metadata = getBlogMetaDataFromSlug(slug);
+  const metadata = await getBlogMetaDataFromSlug(slug);
 
-  const content = getBlogContent(metadata.id);
+  const content = await getBlogContent(metadata.id);
 
   return (
     <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
