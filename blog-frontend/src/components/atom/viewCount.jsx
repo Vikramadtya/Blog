@@ -8,7 +8,7 @@ const ViewCount = ({ id }) => {
 
   getView(id)
     .then((res) => res.json())
-    .then((view) => setViews(view))
+    .then((res) => setViews(res.views))
     .catch((err) => {
       console.log(err);
       setViews("failed to fetch view count");

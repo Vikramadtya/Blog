@@ -1,11 +1,11 @@
 export async function getView(id) {
-  return fetch(`https://www.neuralcook.com/api/view`, {
+  return fetch(`/api/views`, {
     method: "GET",
   });
 }
 
 export async function getLikes(id) {
-  return fetch(`https://www.neuralcook.com/api/like`, {
+  return fetch(`/api/likes`, {
     method: "GET",
   });
 }
