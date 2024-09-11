@@ -21,9 +21,10 @@ export async function POST(request) {
 }
 
 export async function GET(request) {
-
   // get like count of the blog
-  const currentLike = await getLikesFromRemote(request.nextUrl.searchParams.get("id"));
+  const currentLike = await getLikesFromRemote(
+    request.nextUrl.searchParams.get("id"),
+  );
 
   // send response back
   return new Response(

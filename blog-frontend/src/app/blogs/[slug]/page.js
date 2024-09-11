@@ -66,7 +66,7 @@ export default async function Post({ params }) {
           },
         }}
       />
-      <StickyBar />
+      <StickyBar blogId={metadata.id} />
 
       <Separator className="mb-20 mt-20" />
 
