@@ -4,11 +4,11 @@ export const dynamic = "force-dynamic"; // static by default, unless reading the
 
 export const runtime = "nodejs";
 
-export function POST(request) {
-  const body = request.json();
+export async function POST(request) {
+  const body = await request.json();
 
   // increase like count of the blog
-  const currentLike = addLikeToRemote(body.id);
+  const currentLike = await addLikeToRemote(body.id);
 
   // send response back
   return new Response(
@@ -20,16 +20,15 @@ export function POST(request) {
   );
 }
 
-export function GET(request) {
-  const searchParams = request.nextUrl.searchParams;
+export async function GET(request) {
 
   // get like count of the blog
-  const currentLike = getLikesFromRemote(searchParams.id);
+  const currentLike = await getLikesFromRemote(request.nextUrl.searchParams.get("id"));
 
   // send response back
   return new Response(
     JSON.stringify({
-      ...searchParams,
+      id: request.nextUrl.searchParams.get("id"),
       likes: currentLike,
       timestamp: Date.now(),
     }),

@@ -4,11 +4,11 @@ export const dynamic = "force-dynamic"; // static by default, unless reading the
 
 export const runtime = "nodejs";
 
-export function POST(request) {
+export async function POST(request) {
   const body = request.json();
 
   // increase view count of the blog
-  const currentViews = addViewToRemote(body.id);
+  const currentViews = await addViewToRemote(body.id);
 
   // send response back
   return new Response(
@@ -20,16 +20,14 @@ export function POST(request) {
   );
 }
 
-export function GET(request) {
-  const searchParams = request.nextUrl.searchParams;
-
+export async function GET(request) {
   // get view count of the blog
-  const currentViews = getViewsFromRemote(searchParams.id);
+  const currentViews = await getViewsFromRemote(request.nextUrl.searchParams.get("id"));
 
   // send response back
   return new Response(
     JSON.stringify({
-      ...searchParams,
+      id:request.nextUrl.searchParams.get("id"),
       views: currentViews,
       timestamp: Date.now(),
     }),

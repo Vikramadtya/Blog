@@ -50,6 +50,7 @@ export default async function Post({ params }) {
   return (
     <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
       <BlogHero
+        blogId={metadata.id}
         title={metadata.title}
         tags={metadata.tags}
         date={metadata.createdAt}
