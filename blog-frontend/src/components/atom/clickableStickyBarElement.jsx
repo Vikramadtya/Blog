@@ -1,12 +1,15 @@
 "use client";
 
 import Icon from "./icon";
+import { addLike } from "../../services/apiServices";
 
-const ClickableStickyBarElement = ({ kind, className, handler }) => {
+const ClickableStickyBarElement = ({ blogId, kind, className, handler }) => {
   return (
     <div
       onClick={() => {
-        handler();
+        addLike(blogId)
+          .then((res) => res.json())
+          .then((res) => console.log(res));
       }}
     >
       <Icon kind={kind} className={className} />

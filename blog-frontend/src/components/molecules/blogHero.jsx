@@ -6,7 +6,7 @@ import Icon from "../atom/icon";
 import ViewCount from "../atom/viewCount";
 import LikeCount from "../atom/likeCount";
 
-const BlogHero = ({ title, tags, date }) => {
+const BlogHero = ({ blogId, title, tags, date }) => {
   const tagsComponent = tags.map((tag) => (
     <Tag key={tag.id} text={tag.name} id={tag.color} />
   ));
@@ -33,8 +33,8 @@ const BlogHero = ({ title, tags, date }) => {
         </div>
 
         <div className="flex items-center space-x-2 space-y-0.5 text-muted-foreground">
-          <ViewCount id={0} />
-          <LikeCount id={0} />
+          <ViewCount id={blogId} />
+          <LikeCount id={blogId} />
         </div>
       </div>
     </>
