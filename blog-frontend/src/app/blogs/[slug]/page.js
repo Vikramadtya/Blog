@@ -18,6 +18,7 @@ import {
 import Comments from "../../../components/atom/comment";
 import Doodle from "../../../components/atom/doodle";
 import StickyBar from "../../../components/atom/stickyBar";
+import ScrollProgressBar from "../../../components/atom/scrollPercentageBar";
 
 export async function generateStaticParams() {
   const blogs = await getBlogsMetaDataFromRemote();
@@ -48,34 +49,40 @@ export default async function Post({ params }) {
   const content = await getBlogContent(metadata.id);
 
   return (
-    <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
-      <BlogHero
-        blogId={metadata.id}
-        title={metadata.title}
-        tags={metadata.tags}
-        date={metadata.createdAt}
-      />
-      <Separator className="mb-20 mt-20" />
+    <>
+      <ScrollProgressBar />
+      <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
+        <BlogHero
+          blogId={metadata.id}
+          title={metadata.title}
+          tags={metadata.tags}
+          date={metadata.createdAt}
+        />
+        <Separator className="mb-20 mt-20" />
 
-      <MDXRemote
-        source={content}
-        options={{
-          mdxOptions: {
-            remarkPlugins: [],
-            rehypePlugins: [rehypeSlug, [rehypePrettyCode, prettyCodeOptions]],
-          },
-        }}
-      />
-      <StickyBar blogId={metadata.id} />
+        <MDXRemote
+          source={content}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [],
+              rehypePlugins: [
+                rehypeSlug,
+                [rehypePrettyCode, prettyCodeOptions],
+              ],
+            },
+          }}
+        />
+        <StickyBar blogId={metadata.id} />
 
-      <Separator className="mb-20 mt-20" />
+        <Separator className="mb-20 mt-20" />
 
-      <div className="flex items-center justify-center">
-        <Doodle classData={"h-20 w-20"} />
-      </div>
-      <div className="flex items-center justify-center">
-        <Comments />
-      </div>
-    </article>
+        <div className="flex items-center justify-center">
+          <Doodle classData={"h-20 w-20"} />
+        </div>
+        <div className="flex items-center justify-center">
+          <Comments />
+        </div>
+      </article>
+    </>
   );
 }
