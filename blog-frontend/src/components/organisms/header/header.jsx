@@ -16,7 +16,7 @@ const Header = () => {
       <div className="flex items-center justify-between md:gap-10">
         <Link href="/" aria-label={siteMetadata.headerTitle}>
           <div className="flex items-center justify-between gap-3 pl-4">
-            <Logo size={110} />
+            <Logo size={70} />
           </div>
         </Link>
         <CurrentPath />
