@@ -20,7 +20,7 @@ const ViewCount = ({ id }) => {
     addView(id)
       .then((res) => res.json())
       .then((res) => console.log(res));
-  }, []);
+  }, [id]);
 
   return (
     <>
