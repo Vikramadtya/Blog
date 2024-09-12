@@ -20,7 +20,7 @@ const ThemeToggle = () => {
       checked={theme === "dark"}
       onChange={() => {
         ThemeSound();
-        setTheme(theme === "light" ? "dark" : "light");
+        setTheme(theme === "dark" ? "light" : "dark");
       }}
       as={Fragment}
     >

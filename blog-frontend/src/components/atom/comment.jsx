@@ -20,9 +20,9 @@ const Comments = () => {
         emitMetadata={siteMetadata.giscus.emitMetadata}
         inputPosition={siteMetadata.giscus.inputPosition}
         theme={
-          theme === "light"
-            ? siteMetadata.giscus.lightTheme
-            : siteMetadata.giscus.darkTheme
+          theme === "dark"
+            ? siteMetadata.giscus.darkTheme
+            : siteMetadata.giscus.lightTheme
         }
         lang={siteMetadata.giscus.lang}
         loading={siteMetadata.giscus.loading}
