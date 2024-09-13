@@ -12,5 +12,5 @@ export async function addViewToRemote(id) {
 export async function getViewsFromRemote(id) {
   const blogMetaDataRef = await doc(db, "blogMetaData", id);
   const data = await getDoc(blogMetaDataRef);
-  return data.get("view");
+  return data.get("views");
 }

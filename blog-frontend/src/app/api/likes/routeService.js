@@ -12,5 +12,5 @@ export async function addLikeToRemote(id) {
 export async function getLikesFromRemote(id) {
   const blogMetaDataRef = await doc(db, "blogMetaData", id);
   const data = await getDoc(blogMetaDataRef);
-  return data.get("like");
+  return data.get("likes");
 }
