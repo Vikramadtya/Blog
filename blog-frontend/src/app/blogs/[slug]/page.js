@@ -1,10 +1,5 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypePrettyCode from "rehype-pretty-code";
-import { getHighlighter } from "shiki";
 import rehypeSlug from "rehype-slug";
 
 import { Separator } from "../../../components/atom/separator";

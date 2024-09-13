@@ -27,3 +27,9 @@ export async function addLike(id) {
     }),
   });
 }
+
+export async function getMetaData(id) {
+  return fetch(`/api/blog/metadata?id=${id}`, {
+    method: "GET",
+  });
+}
