@@ -41,3 +41,16 @@ export async function getBlogMetaDataBySlug(slug) {
     method: "GET",
   });
 }
+
+export async function getBlogContent(id) {
+  const response = await fetch(
+    `https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/_markdown_content/blogs/${id}.mdx`,
+    {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    },
+  );
+  return await response.text();
+}
