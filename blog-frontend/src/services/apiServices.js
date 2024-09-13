@@ -29,7 +29,7 @@ export async function addLike(id) {
 }
 
 export async function getAllBlogsMetaData() {
-  const res = await fetch(`/api/blog/metadata`, {
+  const res = await fetch(`https://www.neuralcook.com/api/blog/metadata/`, {
     method: "GET",
   });
   const data = await res.json();
@@ -40,4 +40,17 @@ export async function getBlogMetaDataBySlug(slug) {
   return fetch(`https://www.neuralcook.com/api/blog/metadata?slug=${slug}`, {
     method: "GET",
   });
+}
+
+export async function getBlogContent(id) {
+  const response = await fetch(
+    `https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/_markdown_content/blogs/${id}.mdx`,
+    {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    },
+  );
+  return await response.text();
 }
