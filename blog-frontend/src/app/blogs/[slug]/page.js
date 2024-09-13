@@ -47,6 +47,8 @@ export default async function Post({ params }) {
           title={metadata[0].title}
           tags={metadata[0].tags}
           date={metadata[0].createdAt}
+          views={metadata[0].views}
+          likes={metadata[0].likes}
         />
         <Separator className="mb-20 mt-20" />
 
