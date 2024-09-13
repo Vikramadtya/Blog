@@ -28,7 +28,7 @@ export async function addLike(id) {
   });
 }
 
-export async function getMetaData(id) {
+export async function getBlogMetaData(id) {
   return fetch(`/api/blog/metadata?id=${id}`, {
     method: "GET",
   });

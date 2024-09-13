@@ -1,6 +1,7 @@
 import {
   addLikeToRemote,
   addViewToRemote,
+  getAllBlogMetadataFromRemote,
   getBlogMetadataFromRemote,
   getLikesFromRemote,
 } from "./routeService";
@@ -30,16 +31,21 @@ export async function POST(request) {
 }
 
 export async function GET(request) {
-  // get like count of the blog
-  const blogMetaData = await getBlogMetadataFromRemote(
-    request.nextUrl.searchParams.get("id"),
-  );
+  if (request.nextUrl.searchParams.get("id") !== null) {
+    const blogMetaData = await getBlogMetadataFromRemote(
+      request.nextUrl.searchParams.get("id"),
+    );
 
-  // send response back
-  return new Response(
-    JSON.stringify({
-      ...blogMetaData,
-      timestamp: Date.now(),
-    }),
-  );
+    // send response back
+    return new Response(
+      JSON.stringify([
+        {
+          ...blogMetaData,
+        },
+      ]),
+    );
+  }
+
+  const blogMetas = await getAllBlogMetadataFromRemote();
+  return new Response(JSON.stringify(blogMetas));
 }
