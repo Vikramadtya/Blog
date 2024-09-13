@@ -3,17 +3,7 @@ import Icon from "./icon";
 import React, { useState } from "react";
 import { getLikes } from "../../services/apiServices";
 
-const LikeCount = ({ id }) => {
-  const [likes, setLikes] = useState("fetching latest view count");
-
-  getLikes(id)
-    .then((res) => res.json())
-    .then((res) => setLikes(res.likes))
-    .catch((err) => {
-      console.log(err);
-      setLikes("failed to fetch like count");
-    });
-
+const LikeCount = ({ likes }) => {
   return (
     <>
       <Icon kind="heart" className={"h-6 w-6"} />
