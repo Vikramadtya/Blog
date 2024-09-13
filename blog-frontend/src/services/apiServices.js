@@ -37,7 +37,7 @@ export async function getAllBlogsMetaData() {
 }
 
 export async function getBlogMetaDataBySlug(slug) {
-  return fetch(`/api/blog/metadata?slug=${slug}`, {
+  return fetch(`https://www.neuralcook.com/api/blog/metadata?slug=${slug}`, {
     method: "GET",
   });
 }
