@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { addView, getView } from "../../services/apiServices";
 
 const ViewCount = ({ id, views }) => {
-  const [views, setViews] = useState("fetching latest view count");
 
   useEffect(() => {
     addView(id)
