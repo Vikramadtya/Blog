@@ -3,14 +3,14 @@ import { db } from "../../../utils/firebaseConfig";
 
 export async function addLikeToRemote(id) {
   console.log("increased likes for blog " + id);
-  const likeRef = await doc(db, "likes", id);
-  const update = await updateDoc(likeRef, "like", increment(1));
-  const data = await getDoc(likeRef);
+  const blogMetaDataRef = await doc(db, "blogMetaData", id);
+  const update = await updateDoc(blogMetaDataRef, "likes", increment(1));
+  const data = await getDoc(blogMetaDataRef);
   return data.get("like");
 }
 
 export async function getLikesFromRemote(id) {
-  const likeRef = await doc(db, "likes", id);
-  const data = await getDoc(likeRef);
-  return data.get("like");
+  const blogMetaDataRef = await doc(db, "blogMetaData", id);
+  const data = await getDoc(blogMetaDataRef);
+  return data.get("likes");
 }
