@@ -29,7 +29,7 @@ export async function addLike(id) {
 }
 
 export async function getAllBlogsMetaData() {
-  const res = await fetch(`http://localhost:3000//api/blog/metadata`, {
+  const res = await fetch(`/api/blog/metadata`, {
     method: "GET",
   });
   const data = await res.json();
