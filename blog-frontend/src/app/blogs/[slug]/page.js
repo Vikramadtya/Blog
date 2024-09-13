@@ -5,16 +5,12 @@ import rehypeSlug from "rehype-slug";
 import { Separator } from "../../../components/atom/separator";
 import BlogHero from "../../../components/molecules/blogHero";
 import { prettyCodeOptions } from "../../../utils/markdownConstants";
-import {
-  getBlogContent,
-  getBlogMetaDataFromSlug,
-  getBlogsMetaDataFromRemote,
-} from "../../../services/blogService";
 import Comments from "../../../components/atom/comment";
 import Doodle from "../../../components/atom/doodle";
 import StickyBar from "../../../components/atom/stickyBar";
 import ScrollProgressBar from "../../../components/atom/scrollPercentageBar";
 import {
+  getBlogContent,
   getAllBlogsMetaData,
   getBlogMetaDataBySlug,
 } from "../../../services/apiServices";

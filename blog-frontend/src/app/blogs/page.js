@@ -5,7 +5,6 @@ import path from "path";
 import matter from "gray-matter";
 
 import MarkDownContentList from "../../components/molecules/markDownContentList";
-import { getBlogsMetaDataFromRemote } from "../../services/blogService";
 import { getAllBlogsMetaData, getLikes } from "../../services/apiServices";
 
 export default async function Blog() {
