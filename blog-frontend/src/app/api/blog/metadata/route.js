@@ -3,8 +3,9 @@ import {
   addViewToRemote,
   getAllBlogMetadataFromRemote,
   getBlogMetadataFromRemote,
-  getLikesFromRemote,
+  getBlogMetadataFromRemoteBySlug,
 } from "./routeService";
+import { getBlogMetaDataBySlug } from "../../../../services/apiServices";
 
 export const dynamic = "force-dynamic"; // static by default, unless reading the request
 
@@ -44,6 +45,13 @@ export async function GET(request) {
         },
       ]),
     );
+  } else if (request.nextUrl.searchParams.get("slug") !== null) {
+    const blogMetaData = await getBlogMetadataFromRemoteBySlug(
+      request.nextUrl.searchParams.get("slug"),
+    );
+
+    // send response back
+    return new Response(JSON.stringify(blogMetaData));
   }
 
   const blogMetas = await getAllBlogMetadataFromRemote();

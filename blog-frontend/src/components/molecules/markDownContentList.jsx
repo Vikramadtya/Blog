@@ -13,6 +13,8 @@ const MarkDownContentList = ({ blogs }) => {
             slug={blog.slug}
             key={blog.id}
             date={blog.createdAt}
+            likes={blog.likes}
+            views={blog.views}
           />
         ))}
       </div>

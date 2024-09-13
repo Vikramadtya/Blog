@@ -5,6 +5,8 @@ import {
   updateDoc,
   increment,
   collection,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../../../utils/firebaseConfig";
 
@@ -28,6 +30,20 @@ export async function getBlogMetadataFromRemote(id) {
   const blogMetaDataRef = await doc(db, "blogMetaData", id);
   const data = await getDoc(blogMetaDataRef);
   return await parseBlogMetaData(data);
+}
+
+export async function getBlogMetadataFromRemoteBySlug(slug) {
+  const blogMetaDataCollectionRef = await collection(db, "blogMetaData");
+  const q = query(blogMetaDataCollectionRef, where("slug", "==", slug));
+  const queryResults = await getDocs(q);
+
+  const blogs = [];
+
+  for (const queryResult of queryResults.docs) {
+    const blogData = await parseBlogMetaData(queryResult);
+    blogs.push(blogData);
+  }
+  return blogs;
 }
 
 export async function getAllBlogMetadataFromRemote() {
@@ -58,9 +74,10 @@ async function parseBlogMetaData(data) {
 
   return {
     id: data.get("id"),
+    uuid: data.get("uuid"),
     likes: data.get("likes"),
     views: data.get("views"),
-    title: data.get("title"),
+    title: data.get("name"),
     description: data.get("summary"),
     preview: data.get("demo.preview"),
     source: data.get("demo.source"),

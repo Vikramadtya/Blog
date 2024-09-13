@@ -4,7 +4,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import Icon from "@/components/atom/icon";
 
-const Card = ({ title, description, tags, slug, date }) => {
+const Card = ({ title, description, tags, slug, date, likes, views }) => {
   const tagsComponent = tags.map((tag) => (
     <Tag key={tag.id} text={tag.name} id={tag.color} />
   ));
@@ -24,7 +24,7 @@ const Card = ({ title, description, tags, slug, date }) => {
             <h1 className="italic text-muted-foreground"># 1</h1>
             <div className="flex items-center gap-1 text-xs">
               <Icon kind="heart" className={"h-4 w-4"} />
-              <h1>5</h1>
+              <h1>{likes}</h1>
             </div>
           </div>
           <div className="relative m-0 overflow-hidden rounded-none bg-transparent bg-clip-border text-gray-700 shadow-none"></div>

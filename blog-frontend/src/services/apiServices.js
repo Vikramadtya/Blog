@@ -28,8 +28,16 @@ export async function addLike(id) {
   });
 }
 
-export async function getBlogMetaData(id) {
-  return fetch(`/api/blog/metadata?id=${id}`, {
+export async function getAllBlogsMetaData() {
+  const res = await fetch(`/api/blog/metadata`, {
+    method: "GET",
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function getBlogMetaDataBySlug(slug) {
+  return fetch(`/api/blog/metadata?slug=${slug}`, {
     method: "GET",
   });
 }

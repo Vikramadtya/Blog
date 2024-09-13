@@ -14,21 +14,21 @@ import Comments from "../../../components/atom/comment";
 import Doodle from "../../../components/atom/doodle";
 import StickyBar from "../../../components/atom/stickyBar";
 import ScrollProgressBar from "../../../components/atom/scrollPercentageBar";
+import {
+  getAllBlogsMetaData,
+  getBlogMetaDataBySlug,
+} from "../../../services/apiServices";
 
 export async function generateStaticParams() {
-  const blogs = await getBlogsMetaDataFromRemote();
+  const blogs = await getAllBlogsMetaData();
 
-  return blogs.map((blog) => ({
-    slug: blog.slug,
-    id: blog.id,
-    title: blog.title,
-    description: blog.description,
-  }));
+  return blogs.map((blog) => blog.slug);
 }
+
 export async function generateMetadata({ params }) {
   const { slug } = params;
 
-  const metadata = await getBlogMetaDataFromSlug(slug);
+  const metadata = await getBlogMetaDataBySlug(slug);
 
   return {
     title: metadata.title,
@@ -39,19 +39,18 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const { slug } = params;
 
-  const metadata = await getBlogMetaDataFromSlug(slug);
-
-  const content = await getBlogContent(metadata.id);
-
+  const res = await getBlogMetaDataBySlug(slug);
+  const metadata = await res.json();
+  const content = await getBlogContent(metadata[0].id);
   return (
     <>
       <ScrollProgressBar />
       <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
         <BlogHero
-          blogId={metadata.id}
-          title={metadata.title}
-          tags={metadata.tags}
-          date={metadata.createdAt}
+          blogId={metadata[0].id}
+          title={metadata[0].title}
+          tags={metadata[0].tags}
+          date={metadata[0].createdAt}
         />
         <Separator className="mb-20 mt-20" />
 
@@ -67,7 +66,7 @@ export default async function Post({ params }) {
             },
           }}
         />
-        <StickyBar blogId={metadata.id} />
+        <StickyBar blogId={metadata[0].id} />
 
         <Separator className="mb-20 mt-20" />
 
