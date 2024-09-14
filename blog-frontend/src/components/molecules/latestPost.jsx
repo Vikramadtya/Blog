@@ -1,7 +1,7 @@
 import React from "react";
 import Tag from "@/components/atom/tag";
 
-const LatestPost = ({ title, description, tags, slug }) => {
+const LatestPost = ({ title, description, tags, slug, previewImageSrc }) => {
   const tagsComponent = tags.map((tag) => (
     <Tag key={tag.id} text={tag.name} color={tag.color} />
   ));
@@ -30,7 +30,7 @@ const LatestPost = ({ title, description, tags, slug }) => {
         <div className="flex hidden justify-center md:block">
           <div className="p-2 pt-5">
             <img
-              src="https://pagedone.io/asset/uploads/1696244579.png"
+              src={previewImageSrc}
               alt="John image"
               className="w-fit rounded-md"
             />

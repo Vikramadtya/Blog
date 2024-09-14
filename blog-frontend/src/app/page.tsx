@@ -20,6 +20,7 @@ export default async function Home() {
           description={latestBlog[0].description}
           tags={latestBlog[0].tags}
           slug={latestBlog[0].slug}
+          previewImageSrc={latestBlog[0].previewImageSrc}
         />
         <div className="mt-5 md:pb-5 md:pt-10">
           <h1 className="text-4xl font-bold tracking-widest">Featured Blogs</h1>
