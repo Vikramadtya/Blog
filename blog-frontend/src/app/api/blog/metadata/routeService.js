@@ -74,5 +74,6 @@ async function parseBlogMetaData(data) {
       name: userData.get("name"),
       user: userData.get("user"),
     },
+    previewImageSrc: data.get("previewImageSrc"),
   };
 }

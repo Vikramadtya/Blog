@@ -8,7 +8,7 @@ import LikeCount from "../atom/likeCount";
 
 const BlogHero = ({ blogId, title, tags, date, views, likes }) => {
   const tagsComponent = tags.map((tag) => (
-    <Tag key={tag.id} text={tag.name} id={tag.color} />
+    <Tag key={tag.id} text={tag.name} color={tag.color} />
   ));
 
   return (
@@ -34,7 +34,7 @@ const BlogHero = ({ blogId, title, tags, date, views, likes }) => {
 
         <div className="flex items-center space-x-2 space-y-0.5 text-muted-foreground">
           <ViewCount id={blogId} views={views} />
-          <LikeCount likes={likes} />
+          <LikeCount id={blogId} likes={likes} />
         </div>
       </div>
     </>
