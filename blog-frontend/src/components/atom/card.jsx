@@ -4,16 +4,26 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import Icon from "@/components/atom/icon";
 
-const Card = ({ title, description, tags, slug, date, likes, views }) => {
+const Card = ({
+  title,
+  description,
+  tags,
+  slug,
+  date,
+  likes,
+  views,
+  id,
+  previewImageSrc,
+}) => {
   const tagsComponent = tags.map((tag) => (
-    <Tag key={tag.id} text={tag.name} id={tag.color} />
+    <Tag key={tag.id} text={tag.name} color={tag.color} />
   ));
   return (
     <>
-      <div className="relative flex max-w-[24rem] flex-col overflow-hidden rounded-xl border-2 bg-white bg-clip-border text-gray-700 shadow-md hover:border-solid hover:border-gray-700 dark:bg-black dark:hover:border-white">
+      <div className="relative mb-10 flex max-w-[24rem] flex-col overflow-hidden rounded-xl border-2 bg-white bg-clip-border text-gray-700 shadow-md hover:border-solid hover:border-gray-700 dark:bg-black dark:hover:border-white">
         <div className="mb-3 flex items-center p-3 ">
           <img
-            src="https://pagedone.io/asset/uploads/1696244579.png"
+            src={previewImageSrc}
             alt="John image"
             className="w-full rounded-lg object-cover"
           />
@@ -38,7 +48,10 @@ const Card = ({ title, description, tags, slug, date, likes, views }) => {
           </div>
         </Link>
         <div className="mt-1 flex flex-wrap gap-1 p-6">{...tagsComponent}</div>
-        <Link href={"/blog/" + slug} passHref>
+        <Link
+          href={`https://github.com/Vikramadtya/Blog-Scratch/blob/main/_markdown_content/blogs/${id}.mdx`}
+          passHref
+        >
           <div className="flex items-center justify-between p-6">
             <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased dark:text-white">
               view source

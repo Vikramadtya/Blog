@@ -15,6 +15,8 @@ const MarkDownContentList = ({ blogs }) => {
             date={blog.createdAt}
             likes={blog.likes}
             views={blog.views}
+            id={blog.id}
+            previewImageSrc={blog.previewImageSrc}
           />
         ))}
       </div>
