@@ -6,12 +6,12 @@
 export function useMDXComponents(components) {
   return {
     h1: ({ children }) => (
-      <h1 className="mt-12 scroll-m-20 pb-10  pt-20  text-4xl font-bold tracking-tight first:mt-0 md:text-6xl lg:text-8xl">
+      <h1 className="mt-12 scroll-m-20 pb-10  pt-20  text-4xl font-bold tracking-tight first:mt-0 dark:text-gray-50 md:text-6xl lg:text-8xl">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="mt-12 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0">
+      <h2 className="mt-12 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0 dark:text-gray-50">
         {children}
       </h2>
     ),

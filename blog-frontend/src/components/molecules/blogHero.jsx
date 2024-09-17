@@ -14,7 +14,7 @@ const BlogHero = ({ blogId, title, tags, date, views, likes }) => {
   return (
     <>
       <div className="flex flex-col items-center justify-center space-y-4">
-        <h1 className="px-4 text-center text-2xl font-bold md:text-4xl">
+        <h1 className="px-4 text-center text-2xl font-bold dark:text-gray-50 md:text-4xl">
           {title}
         </h1>
 

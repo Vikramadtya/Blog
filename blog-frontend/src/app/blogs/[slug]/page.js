@@ -14,6 +14,7 @@ import {
   getAllBlogsMetaData,
   getBlogMetaDataBySlug,
 } from "../../../services/apiServices";
+import { useMDXComponents } from "../../../mdx-components";
 
 export async function generateStaticParams() {
   const blogs = await getAllBlogsMetaData();
@@ -51,19 +52,23 @@ export default async function Post({ params }) {
           likes={metadata[0].likes}
         />
         <Separator className="mb-20 mt-20" />
+        <div className="dark:text-gray-50">
+          <MDXRemote
+            source={content}
+            options={{
+              mdxOptions: {
+                remarkPlugins: [],
+                rehypePlugins: [
+                  rehypeSlug,
+                  [rehypePrettyCode, prettyCodeOptions],
+                ],
+              },
+            }}
+            components={useMDXComponents()}
+            co
+          />
+        </div>
 
-        <MDXRemote
-          source={content}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [],
-              rehypePlugins: [
-                rehypeSlug,
-                [rehypePrettyCode, prettyCodeOptions],
-              ],
-            },
-          }}
-        />
         <StickyBar blogId={metadata[0].id} />
 
         <Separator className="mb-20 mt-20" />
