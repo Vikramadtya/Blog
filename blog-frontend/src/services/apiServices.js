@@ -52,6 +52,22 @@ export async function getFeaturedBlogsMetaData() {
   return data;
 }
 
+export async function getAllTags() {
+  const res = await fetch(`https://www.neuralcook.com/api/blog/tags`, {
+    method: "GET",
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function getTagsToBlogBlogMetaData() {
+  const res = await fetch(`https://www.neuralcook.com/api/blog/tags/metadata`, {
+    method: "GET",
+  });
+  const data = await res.json();
+  return data;
+}
+
 export async function getBlogMetaDataBySlug(slug) {
   return fetch(`https://www.neuralcook.com/api/blog/metadata?slug=${slug}`, {
     method: "GET",

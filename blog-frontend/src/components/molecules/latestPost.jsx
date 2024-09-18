@@ -26,6 +26,27 @@ const LatestPost = ({ title, description, tags, slug, previewImageSrc }) => {
             <div className="flex flex-wrap gap-2"></div>
           </div>
           <div className="flex flex-wrap gap-1">{...tagsComponent}</div>
+          <a
+            href={`/blogs/${slug}`}
+            className="mb-2 me-2 mt-2 inline-flex w-40 items-center rounded-lg bg-gray-800 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+          >
+            Read the blog
+            <svg
+              className="ms-2 h-3 w-3 rtl:rotate-180"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
         </div>
         <div className="flex hidden justify-center md:block">
           <div className="p-2 pt-5">
