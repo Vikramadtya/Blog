@@ -11,9 +11,9 @@ import Link from "next/link";
 import TagBasedList from "../../components/molecules/tagBasedList";
 
 export default async function Blog() {
-  const tags = [];
-  const tagToMetadataBlog = {};
-  const allBlogs = [];
+  const tags = await getAllTags();
+  const tagToMetadataBlog = await getTagsToBlogBlogMetaData();
+  const allBlogs = await getAllBlogsMetaData();
 
   return (
     <main className="flex flex-col items-center justify-between px-12 md:px-24 lg:px-32 xl:px-48">
