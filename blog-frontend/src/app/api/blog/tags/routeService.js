@@ -20,6 +20,7 @@ export async function getAllTagsFromRemote() {
       id: tagData.get("id"),
       name: tagData.get("name"),
       color: tagData.get("color"),
+      count: tagData.get("blogs").length,
     });
   }
 
