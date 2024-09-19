@@ -1,31 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import Tag from "../atom/tag";
-import { black } from "next/dist/lib/picocolors";
 
 const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
   const [blogs, setBlogs] = useState(allBlogs);
   const [activeButton, setActiveButton] = useState(0);
 
-  const tagsComponent = [
-    <button
-      key={0}
-      type="button"
-      className={`mb-2 me-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium hover:bg-blue-800  dark:bg-blue-600 dark:hover:bg-blue-700 ${activeButton === 0 ? "text-black outline-none ring-4 ring-blue-500 dark:ring-blue-800" : "text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"}`}
-      onClick={() => {
-        setBlogs(allBlogs);
-        setActiveButton(0);
-      }}
-      style={{
-        backgroundColor: `${activeButton === 0 ? "#ecf0f1" : "#f1c40f"}`,
-      }}
-    >
-      <span>all</span>
-    </button>,
-  ];
+  const tagsComponent = [];
   tagsComponent.push(
     ...tags.map((tag) => (
       <button
@@ -40,7 +23,7 @@ const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
           backgroundColor: `${activeButton === tag.id ? "#ecf0f1" : tag.color}`,
         }}
       >
-        <span>{tag.name.split(" ").join("-")}</span>
+        <span>{tag.name.split(" ").join("-") + " | " + tag.count}</span>
       </button>
     )),
   );

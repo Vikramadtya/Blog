@@ -31,15 +31,15 @@ export async function getTagToMetadataMap() {
   const blogMetaDataCollectionRef = await collection(db, "blogMetaData");
   const blogMetaDatas = await getDocs(blogMetaDataCollectionRef);
 
-  const tagToMetadataBlog = {};
+  const tagToMetadataBlog = { "00000000-0000-0000-0000-000000000000": [] };
   for (const blogMetaData of blogMetaDatas.docs) {
-    await parseBlogMetaData(blogMetaData, tagToMetadataBlog);
+    await parseBlogMetaDataAndPutIntoMap(blogMetaData, tagToMetadataBlog);
   }
 
   return tagToMetadataBlog;
 }
 
-async function parseBlogMetaData(data, tagToMetadataBlog) {
+async function parseBlogMetaDataAndPutIntoMap(data, tagToMetadataBlog) {
   const tags = [];
   for (const tagRef of data.get("tags")) {
     const tagData = await getDoc(tagRef);
@@ -79,4 +79,6 @@ async function parseBlogMetaData(data, tagToMetadataBlog) {
     }
     tagToMetadataBlog[tag.id].push(metadata);
   });
+
+  tagToMetadataBlog["00000000-0000-0000-0000-000000000000"].push(metadata);
 }
