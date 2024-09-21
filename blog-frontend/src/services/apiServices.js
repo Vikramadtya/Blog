@@ -5,7 +5,7 @@ export async function getMetadata(id) {
 }
 
 export async function addView(id) {
-  return fetch(`/api/metadata`, {
+  return fetch(`/api/blog/metadata`, {
     method: "POST",
     body: JSON.stringify({
       id: id,
@@ -15,7 +15,7 @@ export async function addView(id) {
 }
 
 export async function addLike(id) {
-  return fetch(`/api/metadata`, {
+  return fetch(`/api/blog/metadata`, {
     method: "POST",
     body: JSON.stringify({
       id: id,
