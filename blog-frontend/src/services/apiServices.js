@@ -70,15 +70,14 @@ export async function getIdToMetadata() {
 }
 
 export async function getMetadataDuringBuild(id) {
-  // const res = await fetch(
-  //   `https://www.neuralcook.com/api/blog/metadata?id=${id}`,
-  //   {
-  //     method: "GET",
-  //   },
-  // );
-  // const data = await res.json();
-  // return data;
-  return {};
+  const res = await fetch(
+    `https://www.neuralcook.com/api/blog/metadata?id=${id}`,
+    {
+      method: "GET",
+    },
+  );
+  const data = await res.json();
+  return data;
 }
 
 export async function getTagsToBlogs() {
