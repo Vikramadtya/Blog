@@ -39,7 +39,7 @@ export async function getLatestBlogs() {
   // });
   // const data = await res.json();
   // return data;
-  return [];
+  return [{ tags: [] }];
 }
 
 export async function getFeaturedBlogs() {
