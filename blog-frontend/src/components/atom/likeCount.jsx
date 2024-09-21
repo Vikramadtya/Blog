@@ -1,15 +1,15 @@
 "use client";
 import Icon from "./icon";
 import React, { useEffect, useState } from "react";
-import { getLikes } from "../../services/apiServices";
+import { getMetadata } from "../../services/apiServices";
 
 const LikeCount = ({ id, likes }) => {
   const [currentLikes, setCurrentLikes] = useState(likes);
 
   useEffect(() => {
-    getLikes(id)
+    getMetadata(id)
       .then((res) => res.json())
-      .then((res) => setCurrentLikes(res.likes));
+      .then((res) => setCurrentLikes(res[0].likes));
   }, []);
 
   return (

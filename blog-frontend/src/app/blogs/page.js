@@ -1,14 +1,11 @@
 import React from "react";
 
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-
 import MarkDownContentList from "../../components/molecules/markDownContentList";
-import { getAllBlogsMetaData, getLikes } from "../../services/apiServices";
+import { getAllBlogs, getIdToMetadata } from "../../services/apiServices";
 
 export default async function Blog() {
-  const blogs = await getAllBlogsMetaData();
+  const blogs = await getAllBlogs();
+  const blogIdToMetadata = await getIdToMetadata();
 
   return (
     <main className="flex flex-col items-center justify-between px-12 md:px-24 lg:px-32 xl:px-48">
@@ -24,7 +21,7 @@ export default async function Blog() {
           explore my work!
         </p>
       </div>
-      <MarkDownContentList blogs={blogs} />
+      <MarkDownContentList blogs={blogs} blogIdToMetadata={blogIdToMetadata} />
     </main>
   );
 }

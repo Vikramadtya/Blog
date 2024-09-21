@@ -5,7 +5,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
-import { addLike } from "../../services/clientServices";
 import ClickableStickyBarElement from "./clickableStickyBarElement";
 
 const StickyBar = ({ blogId }) => {

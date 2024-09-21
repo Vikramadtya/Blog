@@ -31,10 +31,10 @@ export const siteMetadata = {
   giscus: {
     label: "comments",
     commentsRepo: "Vikramadtya/Blog-Scratch",
-    commentsRepoId: "R_kgDOLhesvg",
+    commentsRepoId: "R_kgDOM061bQ",
     commentsMapping: "pathname",
     gitHubDiscussionCategory: "Announcements",
-    gitHubDiscussionCategoryId: "DIC_kwDOLhesvs4CeB2W",
+    gitHubDiscussionCategoryId: "DIC_kwDOM061bc4Ciqd1",
     emitMetadata: "0",
     strict: "0",
     lightTheme: "noborder_light",

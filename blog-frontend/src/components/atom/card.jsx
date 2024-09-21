@@ -12,6 +12,7 @@ const Card = ({
   date,
   likes,
   views,
+  blogNumber,
   id,
   previewImageSrc,
 }) => {
@@ -31,7 +32,7 @@ const Card = ({
 
         <Link href={"/blogs/" + slug} passHref>
           <div className="-mb-2 flex items-center gap-4 pl-6 text-xs">
-            <h1 className="italic text-muted-foreground"># 1</h1>
+            <h1 className="italic text-muted-foreground"># {blogNumber}</h1>
             <div className="flex items-center gap-1 text-xs">
               <Icon kind="heart" className={"h-4 w-4"} />
               <h1>{likes}</h1>
@@ -49,7 +50,7 @@ const Card = ({
         </Link>
         <div className="mt-1 flex flex-wrap gap-1 p-6">{...tagsComponent}</div>
         <Link
-          href={`https://github.com/Vikramadtya/Blog-Scratch/blob/main/_markdown_content/blogs/${id}.mdx`}
+          href={`https://github.com/Vikramadtya/Blog-Scratch/blob/main/blogs/${id}/blog.mdx`}
           passHref
         >
           <div className="flex items-center justify-between p-6">

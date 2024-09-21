@@ -7,7 +7,7 @@ import Tag from "../atom/tag";
 const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
   const [blogs, setBlogs] = useState(allBlogs);
   const [activeButton, setActiveButton] = useState(0);
-
+  console.log(tags);
   const tagsComponent = [];
   tagsComponent.push(
     ...tags.map((tag) => (

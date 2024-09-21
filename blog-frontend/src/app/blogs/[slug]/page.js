@@ -11,13 +11,15 @@ import StickyBar from "../../../components/atom/stickyBar";
 import ScrollProgressBar from "../../../components/atom/scrollPercentageBar";
 import {
   getBlogContent,
-  getAllBlogsMetaData,
-  getBlogMetaDataBySlug,
+  getAllBlogs,
+  getBlogBySlug,
+  getMetadata,
+  getMetadataDuringBuild,
 } from "../../../services/apiServices";
 import { useMDXComponents } from "../../../mdx-components";
 
 export async function generateStaticParams() {
-  const blogs = await getAllBlogsMetaData();
+  const blogs = await getAllBlogs();
 
   return blogs.map((blog) => blog.slug);
 }
@@ -25,7 +27,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = params;
 
-  const metadata = await getBlogMetaDataBySlug(slug);
+  const metadata = await getBlogBySlug(slug);
 
   return {
     title: metadata.title,
@@ -36,20 +38,21 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const { slug } = params;
 
-  const res = await getBlogMetaDataBySlug(slug);
-  const metadata = await res.json();
-  const content = await getBlogContent(metadata[0].id);
+  const blogData = await getBlogBySlug(slug);
+  const metaData = await getMetadataDuringBuild(blogData[0].id);
+  const content = await getBlogContent(blogData[0].id);
+
   return (
     <>
       <ScrollProgressBar />
       <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
         <BlogHero
-          blogId={metadata[0].id}
-          title={metadata[0].title}
-          tags={metadata[0].tags}
-          date={metadata[0].createdAt}
-          views={metadata[0].views}
-          likes={metadata[0].likes}
+          blogId={blogData[0].id}
+          title={blogData[0].title}
+          tags={blogData[0].tags}
+          date={blogData[0].createdAt}
+          views={metaData[0].views}
+          likes={metaData[0].likes}
         />
         <Separator className="mb-20 mt-20" />
         <div className="dark:text-gray-50">
@@ -69,7 +72,7 @@ export default async function Post({ params }) {
           />
         </div>
 
-        <StickyBar blogId={metadata[0].id} />
+        <StickyBar blogId={blogData[0].id} />
 
         <Separator className="mb-20 mt-20" />
 

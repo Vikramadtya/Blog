@@ -1,20 +1,20 @@
 "use client";
 import Icon from "./icon";
 import React, { useEffect, useState } from "react";
-import { addView, getView } from "../../services/apiServices";
+import { addView, getMetadata } from "../../services/apiServices";
 
 const ViewCount = ({ id, views }) => {
   const [currentViews, setCurrentViews] = useState(views);
 
   useEffect(() => {
-    getView(id)
+    addView(id).then((res) => res.json());
+
+    getMetadata(id)
       .then((res) => res.json())
       .then((res) => {
-        setCurrentViews(res.views);
+        setCurrentViews(res[0].views);
       });
-
-    addView(id).then((res) => res.json());
-  }, []);
+  }, [id]);
 
   return (
     <>

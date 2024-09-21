@@ -1,16 +1,19 @@
-import LatestPost from "@/components/molecules/latestPost";
-import BackGroundParticle from "@/components/atom/backGroundParticle";
+import LatestPost from "../components/molecules/latestPost";
+import BackGroundParticle from "../components/atom/backGroundParticle";
 import React from "react";
-import MarkDownContentList from "@/components/molecules/markDownContentList";
+import MarkDownContentList from "../components/molecules/markDownContentList";
 import {
-  getFeaturedBlogsMetaData,
-  getLatestBlogsMetaData,
-} from "@/services/apiServices";
-import Subscribe from "@/components/atom/subscribe";
+  getIdToMetadata,
+  getFeaturedBlogs,
+  getLatestBlogs,
+} from "../services/apiServices";
+import Subscribe from "../components/atom/subscribe";
 
 export default async function Home() {
-  const latestBlog = await getLatestBlogsMetaData();
-  const blogs = await getFeaturedBlogsMetaData();
+  const latestBlog = await getLatestBlogs();
+  const blogs = await getFeaturedBlogs();
+
+  const blogIdToMetadata = await getIdToMetadata();
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -25,7 +28,10 @@ export default async function Home() {
         <div className="mt-5 md:pb-5 md:pt-10">
           <h1 className="text-4xl font-bold tracking-widest">Featured Blogs</h1>
         </div>
-        <MarkDownContentList blogs={blogs} />
+        <MarkDownContentList
+          blogs={blogs}
+          blogIdToMetadata={blogIdToMetadata}
+        />
         <Subscribe />
       </main>
       <BackGroundParticle />
