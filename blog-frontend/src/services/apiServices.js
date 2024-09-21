@@ -25,73 +25,87 @@ export async function addLike(id) {
 }
 
 export async function getAllBlogs() {
-  const res = await fetch(`http://localhost:3000/api/blog/data`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  return data;
+  // const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
+  //   method: "GET",
+  // });
+  // const data = await res.json();
+  // return data;
+  return [];
 }
 
 export async function getLatestBlogs() {
-  const res = await fetch(`http://localhost:3000/api/blog/data`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  return data;
+  // const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
+  //   method: "GET",
+  // });
+  // const data = await res.json();
+  // return data;
+  return [];
 }
 
 export async function getFeaturedBlogs() {
-  const res = await fetch(`http://localhost:3000/api/blog/data`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  return data;
+  // const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
+  //   method: "GET",
+  // });
+  // const data = await res.json();
+  // return data;
+  return [];
 }
 
 export async function getAllTags() {
-  const res = await fetch(`http://localhost:3000/api/blog/tags`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  return data;
+  // const res = await fetch(`https://www.neuralcook.com/api/blog/tags`, {
+  //   method: "GET",
+  // });
+  // const data = await res.json();
+  // return data;
+  return [];
 }
 
 export async function getIdToMetadata() {
-  const res = await fetch(`http://localhost:3000/api/blog/metadata`, {
-    method: "GET",
-  });
-  const metadata = await res.json();
-  const blogIdToMetadata = {};
-  metadata.forEach((data) => {
-    blogIdToMetadata[data.id] = data;
-  });
-
-  return blogIdToMetadata;
+  // const res = await fetch(`https://www.neuralcook.com/api/blog/metadata`, {
+  //   method: "GET",
+  // });
+  // const metadata = await res.json();
+  // const blogIdToMetadata = {};
+  // metadata.forEach((data) => {
+  //   blogIdToMetadata[data.id] = data;
+  // });
+  //
+  // return blogIdToMetadata;
+  return {};
 }
 
 export async function getMetadataDuringBuild(id) {
-  const res = await fetch(`http://localhost:3000/api/blog/metadata?id=${id}`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  return data;
+  // const res = await fetch(
+  //   `https://www.neuralcook.com/api/blog/metadata?id=${id}`,
+  //   {
+  //     method: "GET",
+  //   },
+  // );
+  // const data = await res.json();
+  // return data;
+  return {};
 }
 
 export async function getTagsToBlogs() {
-  const res = await fetch(`http://localhost:3000/api/blog/data/tags`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  return data;
+  // const res = await fetch(`https://www.neuralcook.com/api/blog/data/tags`, {
+  //   method: "GET",
+  // });
+  // const data = await res.json();
+  // return data;
+  return [];
 }
 
 export async function getBlogBySlug(slug) {
-  const res = await fetch(`http://localhost:3000/api/blog/data?slug=${slug}`, {
-    method: "GET",
-  });
-
-  const data = await res.json();
-  return data;
+  // const res = await fetch(
+  //   `https://www.neuralcook.com/api/blog/data?slug=${slug}`,
+  //   {
+  //     method: "GET",
+  //   },
+  // );
+  //
+  // const data = await res.json();
+  // return data;
+  return {};
 }
 
 export async function getBlogContent(id) {
