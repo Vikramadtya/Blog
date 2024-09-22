@@ -9,6 +9,7 @@ import LikeButton from "./likeButton";
 import Link from "next/link";
 import ShareButton from "./shareButton";
 import ShareBar from "./shareBar";
+import ScrollToComment from "./scrollToComment";
 
 const StickyBar = ({ blogId, blogSlug }) => {
   return (
@@ -33,10 +34,7 @@ const StickyBar = ({ blogId, blogSlug }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Link href="#comments">
-                    {" "}
-                    <Icon kind="comment" className={"h-6 w-6"} />
-                  </Link>
+                  <ScrollToComment />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Comments</p>
