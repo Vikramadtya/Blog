@@ -8,7 +8,7 @@ const Comments = () => {
   const { theme } = useTheme();
 
   return (
-    <div id="comments">
+    <div id="comments" className="w-full">
       <Giscus
         id={siteMetadata.giscus.label}
         repo={siteMetadata.giscus.commentsRepo}
