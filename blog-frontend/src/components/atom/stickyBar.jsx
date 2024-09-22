@@ -5,8 +5,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
-import ClickableStickyBarElement from "./clickableStickyBarElement";
+import LikeButton from "./likeButton";
 import Link from "next/link";
+import ShareButton from "./shareButton";
 
 const StickyBar = ({ blogId }) => {
   return (
@@ -17,7 +18,7 @@ const StickyBar = ({ blogId }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <ClickableStickyBarElement
+                  <LikeButton
                     blogId={blogId}
                     kind="heart"
                     className={"h-6 w-6"}
@@ -54,7 +55,7 @@ const StickyBar = ({ blogId }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Icon kind="share" className={"h-6 w-6"} />
+                  <ShareButton />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Share</p>

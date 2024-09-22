@@ -21,15 +21,12 @@ export async function GET(request) {
 export async function POST(request) {
   const body = await request.json();
 
-  if (body.likes === true) {
-    await incrementKey(body.id, "likes");
-  } else if (body.views === true) {
-    await incrementKey(body.id, "views");
-  }
-
   // get updated data
-  const response = [await getMetaDataForId(getParam(request, "id"))];
+  const response = await incrementKey(
+    body.id,
+    body.likes === true ? "likes" : "views",
+  );
 
   // send response back
-  return new Response(JSON.stringify(response));
+  return new Response(JSON.stringify([response]));
 }
