@@ -25,5 +25,5 @@ export async function incrementKey(id, key) {
   const blogMetaDataRef = await doc(db, "metadata", id);
   const update = await updateDoc(blogMetaDataRef, "key", increment(1));
   const data = await getDoc(blogMetaDataRef);
-  return data;
+  return convertMetaData(data);
 }
