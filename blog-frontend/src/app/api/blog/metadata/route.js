@@ -28,7 +28,7 @@ export async function POST(request) {
   }
 
   // get updated data
-  const response = await getMetaDataForId(getParam(request, "id"));
+  const response = [await getMetaDataForId(getParam(request, "id"))];
 
   // send response back
   return new Response(JSON.stringify(response));

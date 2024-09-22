@@ -31,7 +31,10 @@ const StickyBar = ({ blogId }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Link href="#comments"> <Icon kind="comment" className={"h-6 w-6"} /></Link>
+                  <Link href="#comments">
+                    {" "}
+                    <Icon kind="comment" className={"h-6 w-6"} />
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Comments</p>
