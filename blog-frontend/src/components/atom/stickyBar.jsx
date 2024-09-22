@@ -9,7 +9,7 @@ import LikeButton from "./likeButton";
 import Link from "next/link";
 import ShareButton from "./shareButton";
 
-const StickyBar = ({ blogId }) => {
+const StickyBar = ({ blogId, blogSlug }) => {
   return (
     <>
       <div className="sticky bottom-10 z-20 hidden w-full pb-20 pt-20 md:block">
@@ -55,7 +55,7 @@ const StickyBar = ({ blogId }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <ShareButton />
+                  <ShareButton blogSlug={blogSlug} />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Share</p>

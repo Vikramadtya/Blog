@@ -72,7 +72,7 @@ export default async function Post({ params }) {
           />
         </div>
 
-        <StickyBar blogId={blogData[0].id} />
+        <StickyBar blogId={blogData[0].id} blogSlug={blogData[0].slug} />
 
         <Separator className="mb-20 mt-20" />
 
