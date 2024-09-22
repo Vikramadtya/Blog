@@ -17,6 +17,7 @@ import {
   getMetadataDuringBuild,
 } from "../../../services/apiServices";
 import { useMDXComponents } from "../../../mdx-components";
+import ShareBar from "../../../components/atom/shareBar";
 
 export async function generateStaticParams() {
   const blogs = await getAllBlogs();
@@ -74,7 +75,13 @@ export default async function Post({ params }) {
 
         <StickyBar blogId={blogData[0].id} blogSlug={blogData[0].slug} />
 
-        <Separator className="mb-20 mt-20" />
+        <Separator className="mb-10 mt-20" />
+
+        <ShareBar
+          className="mb-10"
+          shareUrl={`https://www.neuralcook.com/blogs/${blogData[0].slug}`}
+          title={blogData[0].title}
+        />
 
         <div className="flex items-center justify-center">
           <Doodle classData={"h-20 w-20"} />

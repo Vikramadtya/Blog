@@ -9,7 +9,7 @@ const ShareButton = ({ blogSlug }) => {
         try {
           navigator.clipboard
             .writeText(`https://www.neuralcook.com/blogs/${blogSlug}`)
-            .then((r) => console.log("copied to clipboard", r));
+            .then(() => {});
         } catch (e) {
           alert(
             `Could not copy to clipboard URL : https://www.neuralcook.com/blogs/${blogSlug}`,

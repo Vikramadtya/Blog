@@ -8,6 +8,7 @@ import {
 import LikeButton from "./likeButton";
 import Link from "next/link";
 import ShareButton from "./shareButton";
+import ShareBar from "./shareBar";
 
 const StickyBar = ({ blogId, blogSlug }) => {
   return (
@@ -58,7 +59,12 @@ const StickyBar = ({ blogId, blogSlug }) => {
                   <ShareButton blogSlug={blogSlug} />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Share</p>
+                  <div className="flex flex-col items-center">
+                    <ShareBar className="mt-5" />
+                    <p className="text-sm text-black">
+                      or simply click to copy url
+                    </p>
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
