@@ -8,7 +8,7 @@ const Comments = () => {
   const { theme } = useTheme();
 
   return (
-    <>
+    <div id="comments">
       <Giscus
         id={siteMetadata.giscus.label}
         repo={siteMetadata.giscus.commentsRepo}
@@ -27,7 +27,7 @@ const Comments = () => {
         lang={siteMetadata.giscus.lang}
         loading={siteMetadata.giscus.loading}
       />
-    </>
+    </div>
   );
 };
 

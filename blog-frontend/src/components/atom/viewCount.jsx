@@ -7,7 +7,7 @@ const ViewCount = ({ id, views }) => {
   const [currentViews, setCurrentViews] = useState(views);
 
   useEffect(() => {
-    addView(id).then((res) => res.json());
+    addView(id);
 
     getMetadata(id)
       .then((res) => res.json())
