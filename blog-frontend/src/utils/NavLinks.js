@@ -5,8 +5,8 @@ export const navLinks = [
   { key: 2, href: "/tags", title: "Tags", shortcut: "⌘+T" },
   {
     key: 3,
-    href: "/books",
-    title: "Books",
+    href: "/notes",
+    title: "Notes",
     shortcut: "⌘+K",
   },
   {
@@ -35,8 +35,8 @@ export const dropDownMenuNavLinks = [
   },
   {
     key: 4,
-    href: "/books",
-    title: "Books",
+    href: "/notes",
+    title: "Notes",
     icon: "book",
     shortcut: "⌘+K",
   },
