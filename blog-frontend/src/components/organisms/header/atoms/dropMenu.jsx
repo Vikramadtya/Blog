@@ -52,7 +52,7 @@ const DropMenu = () => {
                 <DropdownMenuItem key={menuItem.key}>
                   <Link href={menuItem.href}>
                     <div className="flex w-56 items-center justify-between">
-                      <div>
+                      <div className="flex items-center justify-between">
                         <Icon kind={menuItem.icon} className="h-4 w-4" />
                         <span className="pl-2 pr-2 ">{menuItem.title}</span>
                       </div>

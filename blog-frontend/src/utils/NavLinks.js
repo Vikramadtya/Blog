@@ -33,9 +33,16 @@ export const dropDownMenuNavLinks = [
     icon: "tag",
     shortcut: "⌘+T",
   },
-  { key: 4, href: "", title: "", icon: "", shortcut: "" },
   {
-    key: 5,
+    key: 4,
+    href: "/books",
+    title: "Books",
+    icon: "book",
+    shortcut: "⌘+K",
+  },
+  { key: 5, href: "", title: "", icon: "", shortcut: "" },
+  {
+    key: 6,
     href: siteMetadata.portfolioLink,
     title: "Author",
     icon: "me",

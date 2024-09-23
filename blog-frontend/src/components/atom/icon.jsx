@@ -16,6 +16,7 @@ import TableOfContent from "../../../public/icons/toc.svg";
 import Up from "../../../public/icons/up.svg";
 import Comment from "../../../public/icons/comment.svg";
 import All from "../../../public/icons/all.svg";
+import Book from "../../../public/icons/book.svg";
 
 import { classNameResolver } from "@/utils/classNameResolver";
 
@@ -38,6 +39,7 @@ const components = {
   share: Share,
   eye: Eye,
   all: All,
+  book: Book,
 };
 
 const Icon = ({ kind, className }) => {
