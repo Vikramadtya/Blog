@@ -5,6 +5,12 @@ export const navLinks = [
   { key: 2, href: "/tags", title: "Tags", shortcut: "⌘+T" },
   {
     key: 3,
+    href: "/books",
+    title: "Books",
+    shortcut: "⌘+K",
+  },
+  {
+    key: 4,
     href: siteMetadata.portfolioLink,
     title: "Author",
     shortcut: "⌘+A",
