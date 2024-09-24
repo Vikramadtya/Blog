@@ -7,14 +7,14 @@ const items = [
     title: "Algorithmic Pattern",
     description:
       "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
-    link: "https://private-26.gitbook.io/algorithmic-pattern/",
+    link: "https://private-26.gitbook.io/notes/v/algorithmic-pattern",
   },
   {
     category: "BOOK",
     title: "Design Pattern",
     description:
       "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
-    link: "https://private-26.gitbook.io/design-pattern/",
+    link: "https://private-26.gitbook.io/notes/v/design-patterns/",
   },
 ];
 
