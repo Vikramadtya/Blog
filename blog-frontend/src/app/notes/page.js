@@ -16,6 +16,20 @@ const items = [
       "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
     link: "https://private-26.gitbook.io/notes/v/design-patterns/",
   },
+  {
+    category: "BOOK",
+    title: "System Design",
+    description:
+      "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
+    link: "https://private-26.gitbook.io/notes/v/system-design",
+  },
+  {
+    category: "BOOK",
+    title: "All",
+    description:
+      "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
+    link: "https://private-26.gitbook.io/notes",
+  },
 ];
 
 export default async function Notes() {
