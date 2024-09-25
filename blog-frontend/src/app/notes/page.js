@@ -25,6 +25,13 @@ const items = [
   },
   {
     category: "BOOK",
+    title: "Coding Problems",
+    description:
+      "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
+    link: "https://private-26.gitbook.io/notes/v/coding",
+  },
+  {
+    category: "BOOK",
     title: "All",
     description:
       "An easy guide on Algorithms and Data Structures, this book will walk you through the basics in a simple, friendly way.",
