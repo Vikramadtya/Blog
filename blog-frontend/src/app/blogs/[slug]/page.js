@@ -18,6 +18,7 @@ import {
 } from "../../../services/apiServices";
 import { useMDXComponents } from "../../../mdx-components";
 import ShareBar from "../../../components/atom/shareBar";
+import { getBlogToc } from "../../../services/blogServices";
 
 export async function generateStaticParams() {
   const blogs = await getAllBlogs();
@@ -42,6 +43,7 @@ export default async function Post({ params }) {
   const blogData = await getBlogBySlug(slug);
   const metaData = await getMetadataDuringBuild(blogData[0].id);
   const content = await getBlogContent(blogData[0].id);
+  const tableOfContent = getBlogToc(content);
 
   return (
     <>
@@ -73,7 +75,11 @@ export default async function Post({ params }) {
           />
         </div>
 
-        <StickyBar blogId={blogData[0].id} blogSlug={blogData[0].slug} />
+        <StickyBar
+          blogId={blogData[0].id}
+          blogSlug={blogData[0].slug}
+          tableOfContent={tableOfContent}
+        />
 
         <Separator className="mb-10 mt-20" />
 
