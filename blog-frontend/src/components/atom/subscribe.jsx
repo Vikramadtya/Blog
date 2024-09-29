@@ -1,4 +1,6 @@
+"use client";
 import React from "react";
+import { notify } from "../../services/apiServices";
 
 const Subscribe = () => {
   return (
@@ -13,7 +15,15 @@ const Subscribe = () => {
             Keep pace with my latest posts.
           </p>
 
-          <form className="mx-auto mt-10 flex max-w-md gap-x-4">
+          <form
+            className="mx-auto mt-10 flex max-w-md gap-x-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              notify(new FormData(event.currentTarget)).then((r) => {
+                console.log("notified of subscription");
+              });
+            }}
+          >
             <label htmlFor="email-address" className="sr-only">
               Email address
             </label>

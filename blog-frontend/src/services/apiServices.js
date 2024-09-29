@@ -24,6 +24,15 @@ export async function addLike(id) {
   });
 }
 
+export async function notify(formData) {
+  return fetch(`/api/notify`, {
+    method: "POST",
+    body: JSON.stringify({
+      email: formData.get("email"),
+    }),
+  });
+}
+
 export async function getAllBlogs() {
   const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
     method: "GET",
