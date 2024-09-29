@@ -1,4 +1,3 @@
-import Icon from "./icon";
 import {
   Tooltip,
   TooltipContent,
@@ -6,12 +5,12 @@ import {
   TooltipTrigger,
 } from "./tooltip";
 import LikeButton from "./likeButton";
-import Link from "next/link";
 import ShareButton from "./shareButton";
 import ShareBar from "./shareBar";
 import ScrollToComment from "./scrollToComment";
+import TableOfContent from "./tableOfContent";
 
-const StickyBar = ({ blogId, blogSlug }) => {
+const StickyBar = ({ blogId, blogSlug, tableOfContent }) => {
   return (
     <>
       <div className="sticky bottom-10 z-20 hidden w-full pb-20 pt-20 md:block">
@@ -43,12 +42,7 @@ const StickyBar = ({ blogId, blogSlug }) => {
             </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
-                  <Icon kind="tableOfContent" className={"h-6 w-6"} />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Table of content</p>
-                </TooltipContent>
+                <TableOfContent tableOfContent={tableOfContent} />
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
