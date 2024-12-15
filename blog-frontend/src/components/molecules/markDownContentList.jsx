@@ -4,7 +4,7 @@ import React from "react";
 const MarkDownContentList = ({ blogs, blogIdToMetadata }) => {
   return (
     <>
-      <div className="w-full columns-1 pb-32 pt-32 md:columns-2  xl:columns-3">
+      <div className="grid w-full grid-cols-1 gap-3 pb-32 pt-32 md:grid-cols-2  xl:grid-cols-3">
         {blogs.map((blog) => (
           <Card
             title={blog.title}
