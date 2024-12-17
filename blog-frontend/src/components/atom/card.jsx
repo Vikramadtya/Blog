@@ -43,7 +43,7 @@ const Card = ({
             <h4 className="text-blue-gray-900 hover:underline-offset-3 block font-sans text-2xl font-semibold leading-snug tracking-normal antialiased hover:underline dark:text-white">
               {title}
             </h4>
-            <p className="mt-3 block font-sans text-xl font-normal leading-relaxed text-gray-700 antialiased dark:text-white">
+            <p className="mt-3 block h-auto font-sans text-base font-normal leading-relaxed text-gray-700 antialiased dark:text-white ">
               {description}
             </p>
           </div>

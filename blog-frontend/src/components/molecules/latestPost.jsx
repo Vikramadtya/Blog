@@ -50,7 +50,11 @@ const LatestPost = ({ title, description, tags, slug, previewImageSrc }) => {
         </div>
         <div className="flex hidden justify-center md:block">
           <div className="p-2 pt-5">
-            <img src={previewImageSrc} alt="" className="w-fit rounded-md" />
+            <img
+              src={previewImageSrc}
+              alt=""
+              className="h-96 w-96 w-fit rounded-md"
+            />
           </div>
         </div>
       </div>
