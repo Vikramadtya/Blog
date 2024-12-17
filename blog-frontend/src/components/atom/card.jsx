@@ -21,7 +21,7 @@ const Card = ({
   ));
   return (
     <>
-      <div className="relative mb-10 flex max-w-[24rem] flex-col overflow-hidden rounded-xl border-2 bg-white bg-clip-border text-gray-700 shadow-md hover:border-solid hover:border-gray-700 dark:bg-black dark:hover:border-white">
+      <div className="relative mb-10 flex max-h-fit max-w-[24rem] flex-col overflow-hidden rounded-xl border-2 bg-white bg-clip-border text-gray-700 shadow-md hover:border-solid hover:border-gray-700 dark:bg-black dark:hover:border-white">
         <div className="mb-3 flex items-center p-3 ">
           <img
             src={previewImageSrc}
