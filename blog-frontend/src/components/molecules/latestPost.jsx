@@ -53,7 +53,7 @@ const LatestPost = ({ title, description, tags, slug, previewImageSrc }) => {
             <img
               src={previewImageSrc}
               alt=""
-              className="h-96 w-96 rounded-md"
+              className="h-96 max-w-fit rounded-md"
             />
           </div>
         </div>
