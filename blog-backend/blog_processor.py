@@ -5,6 +5,26 @@ import os
 import uuid
 import logging
 
+from html.parser import HTMLParser
+
+
+class MyHTMLParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.messages = []
+
+    def handle_starttag(self, tag, attrs):
+        html_form = ""
+        for attr in attrs:
+            value = attr[1]
+            if attr[0] == 'src':
+                value = "https://github.com/Vikramadtya/Blog-Datastore/blob/main/blogs/{}/" + attr[1][1:len(attr[1])]
+            html_form += ' {}="{}"'.format(attr[0], value)
+        self.messages.append("<img" + html_form + " >")
+
+
+parser = MyHTMLParser()
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -12,7 +32,7 @@ PATH_TO_BLOGS = "/Users/vicky/Repository/Blog-Scratch/blogs"
 
 METADATA_FILE_NAME = "metadata.json"
 
-BLOG_FILE_NAME = "blog.mdx"
+BLOG_FILE_NAME = "blog.md"
 
 # read the blog and update metadata
 
@@ -82,10 +102,9 @@ def main():
             with (open(blog_metadata_path) as metadata_json_file):
                 metadata = json.load(metadata_json_file)
 
-
                 # ensure the metadata structure
                 if ("publish" not in metadata) or ("blogNumber" not in metadata) or ("id" not in metadata) or (
-                        "previewImageSrc" not in metadata) or (
+                        "previewImageSrc" not in metadata) or ("type" not in metadata) or (
                         "author" not in metadata) or ("tags" not in metadata) or ("title" not in metadata) or (
                         "summary" not in metadata) or ("slug" not in metadata) or ("demo" not in metadata):
                     logging.warning('missing mandatory data in blog {} so not processing'.format(blog_dir_name))
@@ -99,6 +118,7 @@ def main():
                 blog_name = metadata["title"]
 
                 blog_content_path = os.path.join(PATH_TO_BLOGS, blog_dir_name, BLOG_FILE_NAME)
+                process_blog(blog_dir_name, blog_content_path)
                 blog_content_file_hash = hashfile(blog_content_path)
 
                 if "hash" in metadata:
@@ -128,6 +148,23 @@ def main():
                     json.dump(metadata, open(blog_metadata_path, "w"), ensure_ascii=False, indent=4, sort_keys=True)
         else:
             logging.info('Blog directory name {} does not have the correct format so skipping'.format(blog_dir_name))
+
+
+def process_blog(blog_dir_name, blog_content_path):
+    processed_blog = []
+    with open(blog_content_path, "r") as file:
+        for line in file:
+            if line.startswith('<img src=".'):
+                parser.feed(line)
+                line = parser.messages[0].format(blog_dir_name)
+            processed_blog.append(line)
+
+    with open(blog_content_path, "w") as file:
+        file.write("")
+
+    with open(blog_content_path, "a") as file:
+        for line in processed_blog:
+            file.write(line)
 
 
 main()

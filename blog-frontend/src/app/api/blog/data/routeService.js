@@ -23,6 +23,14 @@ export async function getBlogDataForSlug(slug) {
   return queryResults.docs.map((queryResult) => convertBlogData(queryResult));
 }
 
+export async function getAllBlogForType(type) {
+  const blogDataCollectionRef = await collection(db, "blogs");
+  const queryResults = await getDocs(
+    query(blogDataCollectionRef, where("type", "==", type)),
+  );
+  return queryResults.docs.map((queryResult) => convertBlogData(queryResult));
+}
+
 export async function getAllBlogData() {
   const blogDataCollectionRef = await collection(db, "blogs");
   const blogData = await getDocs(blogDataCollectionRef);

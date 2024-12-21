@@ -1,5 +1,6 @@
 import {
   getAllBlogData,
+  getAllBlogForType,
   getBlogDataForId,
   getBlogDataForSlug,
 } from "./routeService";
@@ -17,6 +18,8 @@ export async function GET(request) {
     response = [metadata];
   } else if (isFilteringOn(request, "slug")) {
     response = await getBlogDataForSlug(getParam(request, "slug"));
+  } else if (isFilteringOn(request, "type")) {
+    response = await getAllBlogForType(getParam(request, "type"));
   } else {
     response = await getAllBlogData();
   }

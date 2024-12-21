@@ -20,6 +20,7 @@ export function convertBlogData(data) {
     author: data.get("author"),
     blogNumber: data.get("blogNumber"),
     previewImageSrc: data.get("previewImageSrc"),
+    type: data.get("type"),
   };
 }
 

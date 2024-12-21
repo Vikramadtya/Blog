@@ -6,14 +6,15 @@ import uuid
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from uuid import UUID
 
-PATH_TO_BLOGS = "/_generated"
+PATH_TO_BLOGS = "/Users/vicky/Repository/Blog-Scratch/blogs"
 
 FIREBASE_AUTH_JSON = {
     "type": "service_account",
     "project_id": os.environ['PROJECT_ID'],
     "private_key_id": os.environ['PRIVATE_KEY_ID'],
-    "private_key": os.environ['PRIVATE_KEY'],
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQ8CNj99F5K/Ac\nzhp/o7elz0WX6fQ9USNBHsCPu6qvrcGu816edfggAZq6xGfXWHJZzyP8fEeP7FYH\nataBbftatEpp4sYvR6fi4owuOQL5ZlSMZFqMWM+Z+XdkcEzeJsvTK5arHon4PTjo\nHdGQoqL2A9bPz9kkTzIZCWwWWUDc0UbpcozQFiZwjYNZMVQS8t9YipnUS1zShDe/\nenzk9yWcHuhXVdFTqaUMDcMeJ657gQOIcetIwpu37e+TZznk71m7ydmP63VON7GV\n5n+7rHYlRzqC97P6cxNxPeuD/KtNtTau/ECvZkGOlJ5vWNy7uv2Qg6tbohvW1iXh\n6NU4lX49AgMBAAECggEAFe+IP6gWcWrIADYxOQJWtw0+SLcywbdBhMY2QEDbKCuN\nYJFDd056WN3iQUZ6gnTSOJSTOiBQIQ+WbpvsXlVOJNU11M0OsosK2LqhLf8lTUrN\niJnGmeJ/FTLIMp7Jqy8WihqS7G892/aNgW0UAePZSQvZIyM2sGWyJEfFdck0Epqj\nX9o0Y8MkNrlqULT/xMOKQ9j1qpyf33u9J4VbB0pHdn6lqKnIhVLHPd2rC+v+GRup\nfOiPzbbAfIIxe6R/pMN8SZvB6CUrsuDjG2zbMdEalWg09RiIUmRhv3BLuHPdaFP5\nZQdZGd3O5aLjYZmNScaHfR9IHuPsOpOp1R4g8esNbwKBgQD8gPq2OqzjHSn/5JRr\nk/YKuHf5CuOxDZP+PSqYMt+IhtpXHkEpqXbFFs3P1TA3WZWGaAONmVN2kWy9+JDB\nFbMaw3/EhiEND/qzHk5iMtTKHo5QsEGJTpgrsDDiUKBgpEN1eirq/Fq6EgAmQuY4\nc8ACn5f8p1tA/oELcb93UHOo6wKBgQDT1LyDOTZKdK8PXcsoKlTEbQ3dd9GUgtr0\nuRRvc8dBrMTeVzhdzkcrKnCjb7KAj4VVoRb1s4GXlpU2E2NJygpLUahwAxJtJw4r\niAWz9FI79ab8HhLtARG5WHYoQkb1eF+NaiTzputHqSlVFpdn8EEHylPLyxn17nSt\nK6WnM7erdwKBgDgptBouSOAnT300aXLYMUTHLSA+tNBf1cgZ8MxznFawsAXqm9HZ\neKpz3QlaQOQ+z8xafFfVf8QCqq5CiGf6HKFaVKPwtY9DO571obej2MKwMzVtTtZs\nndox0V21U0bLopmRt9QWl1OFx3S7Mpvh2xZ6SwMOcnStZySVg2HVijRLAoGALX2Q\nBjYxHIg2V/xydmuwzIYG5jqm/Vekoc1lQBIDBm2N0Zm1dx+nVPPGQLLqCIXJwnvX\nrGgiOmWSIYzEU8JZt5cPrw5Z1KsAdgS+BMlBJ7M3awkiU1dZcQ44QakKCAkTrBDR\nYqnD+R2wzJ8PYLjNnliq6ibxqkjNMasf5epLVT0CgYEAtaRq+g80JMSVH1qH/5dJ\nGD/IRWdmadPIuPpaP8aECjJyhDMMb8egM1ef0LimAgPFeYBouaOfN94/U+DTup2X\nn/b12jAcECVUOkni9lw2uLMBBC6sredAXiQojz8SoX1HsOkcIdpELtagnrTeZ+Vt\nMTpScOdnzKr++LuXS8BkQ28=\n-----END PRIVATE KEY-----\n",
     "client_email": os.environ['CLIENT_EMAIL'],
     "client_id": os.environ['CLIENT_ID'],
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -48,13 +49,14 @@ user_name_to_object_map = get_data_for_collection("users", "username")
 
 def create_new_tag(tag):
     data = {"id": str(uuid.uuid4()), "name": tag, "color": get_random_color(), "blogs": set()}
-    tag_name_to_object_map[tag] = data
+    tag_name_to_object_map[tag] = add_new_tag(data)
+    print("created tag {}".format(tag))
     return data
 
 
 def update_exiting_tag(tag, blog_id):
     data = tag_name_to_object_map[tag]
-    data["blogs"].add(blog_id)
+    data["blogs"].append(blog_id)
     tag_name_to_object_map["all"]["blogs"].append(blog_id)
     return data
 
@@ -98,11 +100,23 @@ def add_new_tag(tag):
     return tag
 
 
+
+def is_valid_uuid(uuid_to_test, version=4):
+    try:
+        uuid_obj = UUID(uuid_to_test, version=version)
+    except ValueError:
+        return False
+    return str(uuid_obj) == uuid_to_test
+
+
+
 def main():
     for directory in os.listdir(directoryWithBlogs):
         blog_dir_name = os.fsdecode(directory)
 
-        with (open(os.path.join(PATH_TO_BLOGS, blog_dir_name, blog_dir_name + ".json")) as metadataJsonFile):
+        if not is_valid_uuid(blog_dir_name): continue
+
+        with (open(os.path.join(PATH_TO_BLOGS, blog_dir_name,  "metadata.json")) as metadataJsonFile):
             metadata = json.load(metadataJsonFile)
 
             if blog_dir_name in blog_id_to_metadata_map:
@@ -118,12 +132,12 @@ def main():
                 print("blog {} ({}) is created".format(metadata['title'], blog_dir_name))
                 add_new_metadata(convert_metadata(metadata))
 
-    for tagName in tag_name_to_object_map:
-        tag = tag_name_to_object_map[tagName]
-        tag["blogs"] = set(tag["blogs"])
-        add_new_tag(tag)
-
-        print("created tag {}".format(tagName))
+    # for tagName in tag_name_to_object_map:
+    #     tag = tag_name_to_object_map[tagName]
+    #     tag["blogs"] = set(tag["blogs"])
+    #     add_new_tag(tag)
+    #
+    #     print("created tag {}".format(tagName))
 
 
 main()
