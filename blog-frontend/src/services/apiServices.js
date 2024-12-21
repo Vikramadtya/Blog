@@ -1,3 +1,5 @@
+const API_ENDPOINT = "https://www.neuralcook.com";
+
 export async function getMetadata(id) {
   return fetch(`/api/blog/metadata?id=${id}`, {
     method: "GET",
@@ -34,7 +36,7 @@ export async function notify(formData) {
 }
 
 export async function getAllBlogs() {
-  const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/data?type=blog`, {
     method: "GET",
   });
   const data = await res.json();
@@ -42,7 +44,7 @@ export async function getAllBlogs() {
 }
 
 export async function getLatestBlogs() {
-  const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/data`, {
     method: "GET",
   });
   const data = await res.json();
@@ -50,7 +52,7 @@ export async function getLatestBlogs() {
 }
 
 export async function getFeaturedBlogs() {
-  const res = await fetch(`https://www.neuralcook.com/api/blog/data`, {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/data`, {
     method: "GET",
   });
   const data = await res.json();
@@ -58,7 +60,7 @@ export async function getFeaturedBlogs() {
 }
 
 export async function getAllTags() {
-  const res = await fetch(`https://www.neuralcook.com/api/blog/tags`, {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/tags`, {
     method: "GET",
   });
   const data = await res.json();
@@ -66,7 +68,7 @@ export async function getAllTags() {
 }
 
 export async function getIdToMetadata() {
-  const res = await fetch(`https://www.neuralcook.com/api/blog/metadata`, {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/metadata`, {
     method: "GET",
   });
   const metadata = await res.json();
@@ -79,18 +81,15 @@ export async function getIdToMetadata() {
 }
 
 export async function getMetadataDuringBuild(id) {
-  const res = await fetch(
-    `https://www.neuralcook.com/api/blog/metadata?id=${id}`,
-    {
-      method: "GET",
-    },
-  );
+  const res = await fetch(`${API_ENDPOINT}/api/blog/metadata?id=${id}`, {
+    method: "GET",
+  });
   const data = await res.json();
   return data;
 }
 
 export async function getTagsToBlogs() {
-  const res = await fetch(`https://www.neuralcook.com/api/blog/data/tags`, {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/data/tags`, {
     method: "GET",
   });
   const data = await res.json();
@@ -98,12 +97,9 @@ export async function getTagsToBlogs() {
 }
 
 export async function getBlogBySlug(slug) {
-  const res = await fetch(
-    `https://www.neuralcook.com/api/blog/data?slug=${slug}`,
-    {
-      method: "GET",
-    },
-  );
+  const res = await fetch(`${API_ENDPOINT}/api/blog/data?slug=${slug}`, {
+    method: "GET",
+  });
 
   const data = await res.json();
   return data;
@@ -111,7 +107,7 @@ export async function getBlogBySlug(slug) {
 
 export async function getBlogContent(id) {
   const response = await fetch(
-    `https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/blogs/${id}/blog.mdx`,
+    `https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/blogs/${id}/blog.md`,
     {
       method: "GET",
       headers: {
