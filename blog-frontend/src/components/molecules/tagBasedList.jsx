@@ -71,13 +71,17 @@ const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
             </a>
           </div>
           <div className="flex hidden justify-center md:block">
-            <div className="p-2 pt-5">
-              <img
-                src={blog.previewImageSrc}
-                alt="John image"
-                className="h-48 w-96 rounded-md object-cover"
-              />
-            </div>
+            {blog.previewImageSrc !== "" ? (
+              <div className="p-2 pt-5">
+                <img
+                  src={blog.previewImageSrc}
+                  alt="John image"
+                  className="h-48 w-96 rounded-md object-cover"
+                />
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </li>

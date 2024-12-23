@@ -80,12 +80,14 @@ const nextConfig = {
   swcMinify: true,
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx", "md", "mdx"],
   images: {
-    remotePatterns: [{
-      protocol: 'https',
-      hostname: 'www.neuralcook.com',
-      port: '',
-      pathname: '/images/**'
-    }]
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.neuralcook.com",
+        port: "",
+        pathname: "/images/**",
+      },
+    ],
   },
 };
 
