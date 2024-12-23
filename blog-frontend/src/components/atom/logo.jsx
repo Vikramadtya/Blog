@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import LogoLight from "../../../public/logo/logo.png";
-import LogoDark from "../../../public/logo/logo-dark.png";
+import LogoLight from "../../../public/logo/logo.webp";
+import LogoDark from "../../../public/logo/logo.webp";
 import { classNameResolver } from "@/utils/classNameResolver";
 
 const Logo = ({ size, className }) => {
