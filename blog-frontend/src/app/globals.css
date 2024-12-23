@@ -146,10 +146,7 @@
   }
 }
 
-[data-theme] {
-  display: flex;
-  flex-direction: column;
-}
+
 
 [data-rehype-pretty-code-figure] [data-line-numbers] > [data-line]::before {
   @apply text-xs text-black dark:text-white/70;
