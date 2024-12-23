@@ -6,12 +6,14 @@ import {
   getIdToMetadata,
   getFeaturedBlogs,
   getLatestBlogs,
+  getFeaturedSnippets,
 } from "../services/apiServices";
 import Subscribe from "../components/atom/subscribe";
 
 export default async function Home() {
   const latestBlog = await getLatestBlogs();
   const blogs = await getFeaturedBlogs();
+  const snippets = await getFeaturedSnippets();
 
   const blogIdToMetadata = await getIdToMetadata();
 
@@ -30,6 +32,15 @@ export default async function Home() {
         </div>
         <MarkDownContentList
           blogs={blogs}
+          blogIdToMetadata={blogIdToMetadata}
+        />
+        <div className="mt-5 md:pb-5 md:pt-10">
+          <h1 className="text-4xl font-bold tracking-widest">
+            Featured Snippets
+          </h1>
+        </div>
+        <MarkDownContentList
+          blogs={snippets}
           blogIdToMetadata={blogIdToMetadata}
         />
         <Subscribe />

@@ -23,11 +23,15 @@ const Card = ({
     <>
       <div className="relative mb-10 flex max-h-fit max-w-[24rem] flex-col overflow-hidden rounded-xl border-2 bg-white bg-clip-border text-gray-700 shadow-md hover:border-solid hover:border-gray-700 dark:bg-black dark:hover:border-white">
         <div className="mb-3 flex items-center p-3 ">
-          <img
-            src={previewImageSrc}
-            alt="John image"
-            className="w-full rounded-lg object-cover"
-          />
+          {previewImageSrc !== "" ? (
+            <img
+              src={previewImageSrc}
+              alt="John image"
+              className="w-full rounded-lg object-cover"
+            />
+          ) : (
+            ""
+          )}
         </div>
 
         <Link href={"/blogs/" + slug} passHref>
@@ -50,7 +54,7 @@ const Card = ({
         </Link>
         <div className="mt-1 flex flex-wrap gap-1 p-6">{...tagsComponent}</div>
         <Link
-          href={`https://github.com/Vikramadtya/Blog-Scratch/blob/main/blogs/${id}/blog.mdx`}
+          href={`https://github.com/Vikramadtya/Blog-Scratch/blob/main/blogs/${id}/blog.md`}
           passHref
         >
           <div className="flex items-center justify-between p-6">

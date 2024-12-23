@@ -48,7 +48,7 @@ user_name_to_object_map = get_data_for_collection("users", "username")
 
 
 def create_new_tag(tag):
-    data = {"id": str(uuid.uuid4()), "name": tag, "color": get_random_color(), "blogs": set()}
+    data = {"id": str(uuid.uuid4()), "name": tag, "color": get_random_color(), "blogs": []}
     tag_name_to_object_map[tag] = add_new_tag(data)
     print("created tag {}".format(tag))
     return data

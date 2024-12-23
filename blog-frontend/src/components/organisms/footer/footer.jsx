@@ -35,7 +35,7 @@ const Footer = () => {
           </a>
           {` `}&{` `}
           <a className={"underline"} href="https://tailwindcss.com">
-            Supabase
+            Firebase
           </a>
         </div>
       </div>

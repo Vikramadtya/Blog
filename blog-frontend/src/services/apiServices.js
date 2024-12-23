@@ -51,6 +51,14 @@ export async function getLatestBlogs() {
   return data;
 }
 
+export async function getFeaturedSnippets() {
+  const res = await fetch(`${API_ENDPOINT}/api/blog/data?type=snippet`, {
+    method: "GET",
+  });
+  const data = await res.json();
+  return data;
+}
+
 export async function getFeaturedBlogs() {
   const res = await fetch(`${API_ENDPOINT}/api/blog/data?type=blog`, {
     method: "GET",
