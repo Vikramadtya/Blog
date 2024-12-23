@@ -79,6 +79,14 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx", "md", "mdx"],
+  images: {
+    remotePatterns: [{
+      protocol: 'https',
+      hostname: 'www.neuralcook.com',
+      port: '',
+      pathname: '/images/**'
+    }]
+  },
 };
 
 const withMDX = createMDX({

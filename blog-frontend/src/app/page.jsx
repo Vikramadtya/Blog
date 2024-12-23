@@ -34,9 +34,9 @@ export default async function Home() {
           blogs={blogs}
           blogIdToMetadata={blogIdToMetadata}
         />
-        <div className="mt-5 md:pb-5 md:pt-10">
+        <div className="md:pb-5">
           <h1 className="text-4xl font-bold tracking-widest">
-            Featured Snippets
+            Featured Code Snippets
           </h1>
         </div>
         <MarkDownContentList
