@@ -2,34 +2,28 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-
 import Typed from "typed.js";
-
 import Icon from "@/components/atom/icon";
 
 const CurrentPath = () => {
   const pathname = usePathname();
-
-  // Create reference to store the DOM element containing the animation
   const el = React.useRef(null);
+
   React.useEffect(() => {
     const typed = new Typed(el.current, {
-      strings: [`${pathname === "/" ? "/home" : pathname}`],
-      typeSpeed: 50,
+      strings: [pathname === "/" ? "/home" : pathname],
+      typeSpeed: 40,
+      backSpeed: 20,
+      showCursor: false,
     });
-
-    return () => {
-      // Destroy Typed instance during cleanup to stop animation
-      typed.destroy();
-    };
+    return () => typed.destroy();
   }, [pathname]);
+
   return (
-    <>
-      <div className="text-primary-color dark:text-primary-color-dark flex items-center justify-between text-xl font-semibold">
-        <Icon kind={"location"} className={"h-5 w-5"} /> <span ref={el} />
-        <span ref={el} />
-      </div>
-    </>
+    <div className="flex items-center gap-2 text-base font-medium text-zinc-700 dark:text-zinc-200">
+      <Icon kind="location" className="h-5 w-5" />
+      <span ref={el} />
+    </div>
   );
 };
 

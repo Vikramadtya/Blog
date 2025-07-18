@@ -1,7 +1,7 @@
 "use client";
 
-import Icon from "./icon";
-import { addLike } from "../../services/apiServices";
+import Icon from "../../../../../components/atom/icon";
+import { addLike } from "../../../../../services/apiServices";
 
 const LikeButton = ({ blogId, kind, className, handler }) => {
   return (

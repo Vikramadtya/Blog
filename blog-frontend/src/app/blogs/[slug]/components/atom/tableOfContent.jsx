@@ -1,6 +1,6 @@
 "use client";
 
-import Icon from "./icon";
+import Icon from "../../../../../components/atom/icon";
 import useSound from "use-sound";
 import { useState } from "react";
 import {
@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../organisms/header/atoms/dropdown-menu";
+} from "../../../../../components/organisms/header/atoms/dropdown-menu";
 import Link from "next/link";
 import * as React from "react";
 import { TooltipContent, TooltipTrigger } from "./tooltip";

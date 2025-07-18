@@ -1,26 +1,20 @@
 import "./globals.css";
 
-import type { Metadata } from "next";
-
 import "animate.css";
 import { Inter } from "next/font/google";
 
-import Header from "@/components/organisms/header/header";
-import ThemeProvider from "@/components/utils/themeProvider";
-import Footer from "@/components/organisms/footer/footer";
+import Header from "../components/organisms/header/header";
+import ThemeProvider from "../components/utils/themeProvider";
+import Footer from "../components/organisms/footer/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export let metadata: Metadata = {
+export let metadata = {
   title: "Neural cook",
   description: "A blog by vikramaditya singh",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -54,7 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <div className="flex h-screen flex-col justify-between">
+        <div className="flex min-h-screen flex-col justify-between">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

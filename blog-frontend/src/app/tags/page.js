@@ -1,14 +1,11 @@
 import React from "react";
 
-import InDevelopment from "../../components/molecules/inDevelopment";
-import Tag from "../../components/atom/tag";
 import {
   getAllBlogs,
   getAllTags,
   getTagsToBlogs,
 } from "../../services/apiServices";
-import Link from "next/link";
-import TagBasedList from "../../components/molecules/tagBasedList";
+import TagBasedList from "./components/molecules/tagBasedList";
 
 export default async function Blog() {
   const tags = await getAllTags();

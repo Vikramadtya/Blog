@@ -1,42 +1,49 @@
 import { getHighlighter } from "shiki";
 
 export const prettyCodeOptions = {
-  // theme: 'github-dark',
+  // Use a light, clean theme inspired by Material Design
   theme: "catppuccin-latte",
-  keepBackground: true, // to use our own background color
+
+  // Let the theme define its own background
+  keepBackground: true,
+
+  // Default language fallback
   defaultLang: {
     block: "plaintext",
     inline: "plaintext",
   },
+
+  // Ensure blank lines render properly
   onVisitLine(node) {
     if (node.children.length === 0) {
-      node.children = { type: "text", value: " " };
+      node.children = [{ type: "text", value: " " }];
     }
   },
-  getHighlighter: (options) => {
-    return getHighlighter({
+
+  // Define syntax highlighting with preferred languages
+  getHighlighter: (options) =>
+    getHighlighter({
       ...options,
       langs: [
-        "svelte",
-        "typescript",
-        "html",
-        "css",
-        "javascript",
         "bash",
-        "shell",
-        "python",
-        "java",
-        "md",
-        "go",
-        "rust",
         "c",
         "cpp",
         "csharp",
-        "php",
+        "css",
+        "go",
+        "html",
+        "java",
+        "javascript",
         "json",
-        "yaml",
+        "md",
+        "php",
+        "python",
+        "rust",
+        "shell",
+        "svelte",
         "swift",
+        "typescript",
+        "yaml",
       ],
-    });
-  },
+    }),
 };

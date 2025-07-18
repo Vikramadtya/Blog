@@ -7,7 +7,7 @@ import { siteMetadata } from "@/MetaData";
 
 const Footer = () => {
   return (
-    <footer>
+    <footer className="z-50">
       <div className="mt-16 flex flex-col items-center">
         <div className="mb-3 flex space-x-4">
           <SocialIcon

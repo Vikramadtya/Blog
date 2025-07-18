@@ -1,5 +1,4 @@
 import React from "react";
-
 import MarkDownContentList from "../../components/molecules/markDownContentList";
 import { getAllBlogs, getIdToMetadata } from "../../services/apiServices";
 
@@ -8,20 +7,25 @@ export default async function Blog() {
   const blogIdToMetadata = await getIdToMetadata();
 
   return (
-    <main className="flex flex-col items-center justify-between px-12 md:px-24 lg:px-32 xl:px-48">
-      <div className="w-full space-y-2 pb-8 pt-6 md:space-y-5 ">
-        <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl sm:leading-10 md:text-6xl md:leading-relaxed">
-          Blogs
+    <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">
+      {/* Header Section */}
+      <section className="mx-auto mb-12 w-full max-w-5xl">
+        <h1 className="text-4xl font-bold tracking-tight text-primary dark:text-white sm:text-5xl md:text-6xl">
+          Blog Posts
         </h1>
-        <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
-          I invite you to click on each project to learn more about its
-          objectives, technologies used, and my role in its development. Feel
-          free to reach out if you have any questions or would like to discuss
-          these projects in more detail. Thank you for taking the time to
-          explore my work!
+        <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+          Dive into my curated collection of blog posts covering tech insights,
+          tutorials, and thoughts. Click on any post to explore its content,
+          learn about the technologies involved, and see how I contributed.
         </p>
-      </div>
-      <MarkDownContentList blogs={blogs} blogIdToMetadata={blogIdToMetadata} />
+        {/* Blog Grid */}
+        <section className="mx-auto w-full max-w-7xl">
+          <MarkDownContentList
+            blogs={blogs}
+            blogIdToMetadata={blogIdToMetadata}
+          />
+        </section>
+      </section>
     </main>
   );
 }

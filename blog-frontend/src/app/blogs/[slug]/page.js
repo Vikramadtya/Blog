@@ -2,63 +2,67 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 
-import { Separator } from "../../../components/atom/separator";
-import BlogHero from "../../../components/molecules/blogHero";
+import { Separator } from "@/components/atom/separator";
+import BlogHero from "./components/molecules/blogHero";
+import Comments from "./components/atom/comment";
+import Doodle from "./components/atom/doodle";
+import StickyBar from "./components/atom/stickyBar";
+import ScrollProgressBar from "./components/atom/scrollPercentageBar";
+import ShareBar from "./components/atom/shareBar";
+
+import { useMDXComponents } from "./components/atom/mdx-components";
 import { prettyCodeOptions } from "../../../utils/markdownConstants";
-import Comments from "../../../components/atom/comment";
-import Doodle from "../../../components/atom/doodle";
-import StickyBar from "../../../components/atom/stickyBar";
-import ScrollProgressBar from "../../../components/atom/scrollPercentageBar";
 import {
   getBlogContent,
   getAllBlogs,
   getBlogBySlug,
   getMetadata,
-  getMetadataDuringBuild,
 } from "../../../services/apiServices";
-import { useMDXComponents } from "../../../mdx-components";
-import ShareBar from "../../../components/atom/shareBar";
 import { getBlogToc } from "../../../services/blogServices";
 
+// Static params for SSG
 export async function generateStaticParams() {
   const blogs = await getAllBlogs();
-
   return blogs.map((blog) => blog.slug);
 }
 
+// SEO metadata generation
 export async function generateMetadata({ params }) {
-  const { slug } = params;
-
-  const metadata = await getBlogBySlug(slug);
-
+  const metadata = await getBlogBySlug(params.slug);
   return {
     title: metadata.title,
     description: metadata.description,
   };
 }
 
+// Main blog post page
 export default async function Post({ params }) {
   const { slug } = params;
 
-  const blogData = await getBlogBySlug(slug);
-  const metaData = await getMetadataDuringBuild(blogData[0].id);
-  const content = await getBlogContent(blogData[0].id);
+  const [blogData] = await getBlogBySlug(slug);
+  const [metaData] = await getMetadata(blogData.id);
+  const content = await getBlogContent(blogData.id);
   const tableOfContent = getBlogToc(content);
 
   return (
     <>
       <ScrollProgressBar />
-      <article className="prose prose-sm mx-auto  pb-20 pt-20 md:prose-base lg:prose-lg ">
+
+      <article className="relative mx-auto max-w-5xl px-6 py-20 md:px-12 lg:px-20">
+        {/* Hero */}
         <BlogHero
-          blogId={blogData[0].id}
-          title={blogData[0].title}
-          tags={blogData[0].tags}
-          date={blogData[0].createdAt}
-          views={metaData[0].views}
-          likes={metaData[0].likes}
+          blogId={blogData.id}
+          title={blogData.title}
+          tags={blogData.tags}
+          date={blogData.createdAt}
+          views={metaData.views}
+          likes={metaData.likes}
         />
-        <Separator className="mb-20 mt-20" />
-        <div className="dark:text-gray-50">
+
+        <Separator className="my-16" />
+
+        {/* Blog Content */}
+        <section className="prose prose-sm prose-neutral dark:prose-invert md:prose-base lg:prose-lg">
           <MDXRemote
             source={content}
             options={{
@@ -71,28 +75,28 @@ export default async function Post({ params }) {
               },
             }}
             components={useMDXComponents()}
-            co
           />
-        </div>
+        </section>
 
+        {/* Sticky TOC / Like-Share bar */}
         <StickyBar
-          blogId={blogData[0].id}
-          blogSlug={blogData[0].slug}
+          blogId={blogData.id}
+          blogSlug={blogData.slug}
           tableOfContent={tableOfContent}
         />
 
-        <Separator className="mb-10 mt-20" />
+        <Separator className="my-16" />
 
+        {/* Share Bar */}
         <ShareBar
           className="mb-10"
-          shareUrl={`https://www.neuralcook.com/blogs/${blogData[0].slug}`}
-          title={blogData[0].title}
+          shareUrl={`https://www.neuralcook.com/blogs/${blogData.slug}`}
+          title={blogData.title}
         />
 
-        <div className="flex items-center justify-center">
-          <Doodle classData={"h-20 w-20"} />
-        </div>
-        <div className="flex items-center justify-center">
+        {/* Fun Footer */}
+        <div className="flex flex-col items-center space-y-6">
+          <Doodle classData="h-20 w-20" />
           <Comments />
         </div>
       </article>

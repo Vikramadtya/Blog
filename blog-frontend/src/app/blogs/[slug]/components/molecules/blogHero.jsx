@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import React from "react";
 
-import Tag from "../atom/tag";
-import Icon from "../atom/icon";
+import Tag from "../../../../tags/components/atoms/tag";
+import Icon from "../../../../../components/atom/icon";
 import ViewCount from "../atom/viewCount";
 import LikeCount from "../atom/likeCount";
 
