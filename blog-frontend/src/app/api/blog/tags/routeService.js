@@ -1,15 +1,13 @@
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../../utils/firebaseConfig";
 import { convertTagData } from "../services";
 
-export async function getTag(id) {
-  const tagRef = await doc(db, "tags", id);
-  const tagData = await getDoc(tagRef);
-  return convertTagData(tagData);
-}
-
+/**
+ * Fetches all tags from the Firestore collection.
+ * @returns {Promise<Array<object>>} - A promise that resolves to an array of all tags.
+ */
 export async function getAllTags() {
-  const tagsRef = await collection(db, "tags");
-  const tagsData = await getDocs(tagsRef);
-  return tagsData.docs.map((tagData) => convertTagData(tagData));
+  const tagsRef = collection(db, "tags");
+  const tagsSnapshot = await getDocs(tagsRef);
+  return tagsSnapshot.docs.map(convertTagData);
 }

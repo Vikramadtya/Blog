@@ -1,32 +1,59 @@
-import { getMetaData, getMetaDataForId, incrementKey } from "./routeService";
-import { getParam, isFilteringOn } from "../services";
+import {
+  getMetaData,
+  getMetaDataById,
+  incrementMetadataField,
+} from "./routeService";
+import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic"; // static by default, unless reading the request
-
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/**
+ * Handles GET requests for blog metadata.
+ * @param {Request} request - The incoming request.
+ * @returns {NextResponse} - The response containing the metadata.
+ */
 export async function GET(request) {
-  let response;
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
-  if (isFilteringOn(request, "id")) {
-    response = [await getMetaDataForId(getParam(request, "id"))];
-  } else {
-    response = await getMetaData(request);
+  try {
+    const data = id ? await getMetaDataById(id) : await getMetaData();
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: "An error occurred while fetching metadata.",
+        error: error.message,
+      },
+      { status: 500 },
+    );
   }
-
-  // send response back
-  return new Response(JSON.stringify(response));
 }
 
+/**
+ * Handles POST requests to increment metadata fields (likes or views).
+ * @param {Request} request - The incoming request.
+ * @returns {NextResponse} - The response containing the updated metadata.
+ */
 export async function POST(request) {
-  const body = await request.json();
-
-  // get updated data
-  const response = await incrementKey(
-    body.id,
-    body.likes === true ? "likes" : "views",
-  );
-
-  // send response back
-  return new Response(JSON.stringify([response]));
+  try {
+    const { id, field } = await request.json(); // Expecting `field` to be "likes" or "views"
+    if (!id || !field || !["likes", "views"].includes(field)) {
+      return NextResponse.json(
+        { message: "Invalid request body." },
+        { status: 400 },
+      );
+    }
+    const updatedData = await incrementMetadataField(id, field);
+    return NextResponse.json(updatedData);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: "An error occurred while updating metadata.",
+        error: error.message,
+      },
+      { status: 500 },
+    );
+  }
 }

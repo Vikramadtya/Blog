@@ -6,13 +6,14 @@ import {
   getIdToMetadata,
   getLatestBlogs,
   getFeaturedSnippets,
+  getAllBlogs,
 } from "../../services/apiServices";
 import LoadingSpinner from "../../components/atom/loadingSpinner";
 import FeaturedSection from "./components/atoms/featuredSection";
 
 export default async function Home() {
   const [latestBlog, snippets, blogIdToMetadata] = await Promise.all([
-    getLatestBlogs(),
+    getAllBlogs(),
     getFeaturedSnippets(),
     getIdToMetadata(),
   ]);

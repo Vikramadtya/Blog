@@ -1,29 +1,45 @@
 import {
-  getAllBlogData,
-  getAllBlogForType,
-  getBlogDataForId,
-  getBlogDataForSlug,
+  getAllBlogs,
+  getBlogById,
+  getBlogBySlug,
+  getBlogsByType,
 } from "./routeService";
-import { getParam, isFilteringOn } from "../services";
+import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic"; // static by default, unless reading the request
-
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/**
+ * Handles GET requests to fetch blog data.
+ * Supports fetching by ID, slug, or type.
+ * @param {Request} request - The incoming request object.
+ * @returns {NextResponse} - The response containing the blog data or an error message.
+ */
 export async function GET(request) {
-  let response;
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  const slug = searchParams.get("slug");
+  const type = searchParams.get("type");
 
-  if (isFilteringOn(request, "id")) {
-    const metadata = await getBlogDataForId(getParam(request, "id"));
-    response = [metadata];
-  } else if (isFilteringOn(request, "slug")) {
-    response = await getBlogDataForSlug(getParam(request, "slug"));
-  } else if (isFilteringOn(request, "type")) {
-    response = await getAllBlogForType(getParam(request, "type"));
-  } else {
-    response = await getAllBlogData();
+  try {
+    let data;
+    if (id) {
+      data = await getBlogById(id);
+    } else if (slug) {
+      data = await getBlogBySlug(slug);
+    } else if (type) {
+      data = await getBlogsByType(type);
+    } else {
+      data = await getAllBlogs();
+    }
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: "An error occurred while fetching blog data.",
+        error: error.message,
+      },
+      { status: 500 },
+    );
   }
-
-  // send response back
-  return new Response(JSON.stringify(response));
 }

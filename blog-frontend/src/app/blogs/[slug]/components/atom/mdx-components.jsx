@@ -27,7 +27,9 @@ export function useMDXComponents(components) {
       </ul>
     ),
     li: ({ children }) => (
-      <li className="mt-4 text-base leading-7 text-gray-700 dark:text-gray-300">{children}</li>
+      <li className="mt-4 text-base leading-7 text-gray-700 dark:text-gray-300">
+        {children}
+      </li>
     ),
     ...components,
   };

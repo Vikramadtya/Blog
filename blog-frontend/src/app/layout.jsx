@@ -51,7 +51,7 @@ export default function RootLayout({ children }) {
         <div className="flex min-h-screen flex-col justify-between">
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
