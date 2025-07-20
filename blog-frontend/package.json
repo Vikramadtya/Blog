@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write .",
-    "prepare": "test -d .git && husky install"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@giscus/react": "^3.0.0",
@@ -51,7 +50,6 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.1",
-    "husky": "^8.0.0",
     "lint-staged": "^15.2.2",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
