@@ -2,14 +2,14 @@ import Image from "next/image";
 
 import LogoLight from "../../../public/logo/logo.webp";
 import LogoDark from "../../../public/logo/logo.webp";
-import { classNameResolver } from "@/utils/classNameResolver";
+import { cn } from "../../utils/cn";
 
 const Logo = ({ size, className }) => {
   return (
     <>
       {" "}
       <Image
-        className={classNameResolver(
+        className={cn(
           "navbar-logo rotate-0 scale-100 rounded-md transition-all dark:-rotate-90 dark:scale-0",
         )}
         src={LogoLight}
@@ -18,7 +18,7 @@ const Logo = ({ size, className }) => {
         height={size}
       />
       <Image
-        className={classNameResolver(
+        className={cn(
           "navbar-logo absolute rotate-90 scale-0 rounded-md transition-all dark:rotate-0 dark:scale-100",
         )}
         src={LogoDark}

@@ -6,7 +6,7 @@ import {
   where,
   query,
 } from "firebase/firestore";
-import { db } from "../../../../utils/firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { convertBlogData } from "../services";
 
 /**

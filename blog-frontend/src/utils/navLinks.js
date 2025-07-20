@@ -1,4 +1,4 @@
-import { siteMetadata } from "@/MetaData";
+import { siteMetadata } from "../../site.config";
 
 export const navLinks = [
   { key: 1, href: "/blogs", title: "All Posts", shortcut: "⌘+B" },

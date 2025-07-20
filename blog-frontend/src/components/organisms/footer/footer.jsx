@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-import SocialIcon from "@/components/atom/social-icon";
+import SocialIcon from "../../../components/atom/social-icon";
 import BuildWith from "./atom/buildWith";
 
-import { siteMetadata } from "@/MetaData";
+import { siteMetadata } from "../../../../site.config";
 
 const Footer = () => {
   return (

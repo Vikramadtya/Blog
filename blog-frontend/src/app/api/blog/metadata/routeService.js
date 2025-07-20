@@ -6,7 +6,7 @@ import {
   increment,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../../utils/firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { convertMetaData } from "../services";
 
 /**

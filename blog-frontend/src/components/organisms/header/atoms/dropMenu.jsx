@@ -13,10 +13,10 @@ import {
   DropdownMenuShortcut,
 } from "./dropdown-menu";
 
-import Icon from "@/components/atom/icon";
+import Icon from "../../../../components/atom/icon";
 import MenuOpen from "../../../../../public/icons/menu-open.svg";
 import MenuClose from "../../../../../public/icons/menu-close.svg";
-import { dropDownMenuNavLinks } from "@/utils/NavLinks";
+import { dropDownMenuNavLinks } from "../../../../utils/navLinks";
 
 const DropMenu = () => {
   const [playSound] = useSound("/sounds/switch-on.mp3");

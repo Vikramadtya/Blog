@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const LatestPost = ({ title, description, tags, slug, previewImageSrc }) => {
   return (
-    <section className="w-full animate-fade-in-up">
+    <section className="animate-fade-in-up w-full">
       <div className="flex flex-col-reverse items-start gap-12 md:flex-row md:items-center">
         {/* Text Column */}
         <div className="flex flex-col gap-6 md:w-1/2">

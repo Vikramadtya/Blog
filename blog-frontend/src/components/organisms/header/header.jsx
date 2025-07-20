@@ -7,8 +7,8 @@ import ThemeToggle from "../../../components/organisms/header/atoms/themeSwitch"
 import DropMenu from "../../../components/organisms/header/atoms/dropMenu";
 import Logo from "../../../components/atom/logo";
 
-import { siteMetadata } from "@/MetaData";
-import { navLinks } from "@/utils/NavLinks";
+import { siteMetadata } from "../../../../site.config";
+import { navLinks } from "../../../utils/navLinks";
 
 const Header = () => {
   return (

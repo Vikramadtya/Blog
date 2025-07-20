@@ -4,7 +4,6 @@ import BackGroundParticle from "./components/atoms/backGroundParticle";
 import Subscribe from "./components/atoms/subscribe";
 import {
   getIdToMetadata,
-  getLatestBlogs,
   getFeaturedSnippets,
   getAllBlogs,
 } from "../../services/apiServices";

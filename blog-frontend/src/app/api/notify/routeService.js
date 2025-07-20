@@ -1,5 +1,5 @@
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "../../../utils/firebaseConfig";
+import { db } from "../firebaseConfig";
 
 const validateEmail = (email) => {
   return String(email)

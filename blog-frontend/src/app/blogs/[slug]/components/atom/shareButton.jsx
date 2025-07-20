@@ -1,19 +1,18 @@
 "use client";
 import Icon from "../../../../../components/atom/icon";
+import { siteMetadata as siteConfig } from "../../../../../../site.config";
 
 const ShareButton = ({ blogSlug }) => {
+  const shareUrl = `${siteConfig.siteUrl}/blogs/${blogSlug}`;
+
   return (
     <div
       id="share-button"
       onClick={() => {
         try {
-          navigator.clipboard
-            .writeText(`https://www.neuralcook.com/blogs/${blogSlug}`)
-            .then(() => {});
+          navigator.clipboard.writeText(shareUrl).then(() => {});
         } catch (e) {
-          alert(
-            `Could not copy to clipboard URL : https://www.neuralcook.com/blogs/${blogSlug}`,
-          );
+          alert(`Could not copy to clipboard URL : ${shareUrl}`);
         }
       }}
     >

@@ -18,7 +18,7 @@ import Comment from "../../../public/icons/comment.svg";
 import All from "../../../public/icons/all.svg";
 import Book from "../../../public/icons/book.svg";
 
-import { classNameResolver } from "@/utils/classNameResolver";
+import { cn } from "../../utils/cn";
 
 const components = {
   chart: Chart,
@@ -47,7 +47,7 @@ const Icon = ({ kind, className }) => {
   return (
     <>
       <i className={`inline-block`}>
-        <IconSvg className={classNameResolver(className)} />
+        <IconSvg className={cn(className)} />
       </i>
     </>
   );

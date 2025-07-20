@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { Dialog, Combobox, Transition } from "@headlessui/react";
 import useSound from "use-sound";
 
-import Icon from "@/components/atom/icon";
+import Icon from "../../../../components/atom/icon";
 import Command from "../../../../../public/icons/command.svg";
 
-import { dropDownMenuNavLinks } from "@/utils/NavLinks";
+import { dropDownMenuNavLinks } from "../../../../utils/navLinks";
 
 export default function CommandPalett() {
   const router = useRouter();

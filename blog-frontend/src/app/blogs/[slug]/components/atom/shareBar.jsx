@@ -22,14 +22,14 @@ import {
   InstapaperIcon,
 } from "react-share";
 
-import { classNameResolver } from "../../../../../utils/classNameResolver";
+import { cn } from "../../../../../utils/cn";
 
 const ICON_SIZE = 36;
 
 const ShareBar = ({ className = "", shareUrl, title }) => {
   return (
     <div
-      className={classNameResolver(
+      className={cn(
         "bg-surface/80 dark:bg-surfaceDark/60 flex flex-wrap items-center justify-center gap-3 rounded-xl px-2 py-4 transition-all",
         className,
       )}

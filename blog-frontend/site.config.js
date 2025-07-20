@@ -1,8 +1,8 @@
 export const siteMetadata = {
   title: "VIKI",
   author: "Vikramaditya Singh",
-  designation: "Software engineer II",
-  company: "Cisco",
+  designation: "Software engineer III",
+  company: "Oracle",
   headerTitle: "NEURAL COOK",
   description: "A posts created with Next.js and Tailwind.css",
   language: "en-us",
@@ -20,12 +20,20 @@ export const siteMetadata = {
   linkedin: "https://www.linkedin.com/in/vikrmadityasngh/",
   instagram: "https://www.instagram.com/blissfullvibes101",
   locale: "en-US",
+  hostname: "www.neuralcook.com",
+  analytics: {
+    umameSrcSrcipt: "https://eu.umami.is/script.js",
+    umamiWebsiteId: "2d0c15ba-afa2-4213-960b-763c2285f1ee",
+  },
   analyticsURL: "https://eu.umami.is/share/kzVVpxmlV8WbabaH/something.com",
   postDateTemplate: {
     year: "numeric",
     month: "long",
     day: "numeric",
   },
+  githubRawEndpoint:
+    "https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/blogs",
+  apiBaseUrl: "https://www.neuralcook.com/api/blog",
   portfolioLink: "https://www.vikramaditya-singh.in",
   openToWork: true,
   giscus: {

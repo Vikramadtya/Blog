@@ -1,6 +1,8 @@
-const API_BASE_URL = "https://www.neuralcook.com/api/blog";
-const GITHUB_RAW_ENDPOINT =
-  "https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/blogs";
+import { siteMetadata as siteConfig } from "../../site.config";
+
+const API_BASE_URL = siteConfig.apiBaseUrl;
+
+const GITHUB_RAW_ENDPOINT = siteConfig.githubRawEndpoint;
 
 /**
  * A robust utility function to handle API requests.
