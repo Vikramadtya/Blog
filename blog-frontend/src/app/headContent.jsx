@@ -28,7 +28,7 @@ export default function HeadContent() {
       <meta name="theme-color" content="#ffffff" />
       <script
         defer
-        src={siteConfig.analytics.umameSrcSrcipt}
+        src={siteConfig.analytics.umamiSrcSrcipt}
         data-website-id={siteConfig.analytics.umamiWebsiteId}
       />
     </>

@@ -22,7 +22,7 @@ export const siteMetadata = {
   locale: "en-US",
   hostname: "www.neuralcook.com",
   analytics: {
-    umameSrcSrcipt: "https://eu.umami.is/script.js",
+    umamiSrcSrcipt: "https://eu.umami.is/script.js",
     umamiWebsiteId: "2d0c15ba-afa2-4213-960b-763c2285f1ee",
   },
   analyticsURL: "https://eu.umami.is/share/kzVVpxmlV8WbabaH/something.com",
