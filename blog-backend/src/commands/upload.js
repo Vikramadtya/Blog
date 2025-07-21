@@ -86,7 +86,7 @@ async function uploadSingleBlog(blogId, options, authorMap, tagMap) {
         .doc(blogId)
         .get();
       if (
-        !options.updateAll &&
+        !options.forceUpdateMetadata &&
         existingBlog.exists &&
         existingBlog.data().updatedAt === metadata.updatedAt
       ) {

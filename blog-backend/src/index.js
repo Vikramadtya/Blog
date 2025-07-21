@@ -101,7 +101,7 @@ program
   .option('--all', 'Upload all blog posts')
   .option('--dry-run', 'Simulate the upload without making changes')
   .option(
-    '--update-all',
+    '--force-update-metadata',
     'Update all blog posts irrespective if modified or not',
   )
   .argument('[string]', 'The ID of the blog post to upload')
