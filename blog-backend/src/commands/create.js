@@ -18,7 +18,6 @@ import {
   getRandomColor,
 } from '../utils/helpers.js';
 
-const AUTHORS_FILE_NAME = 'authors.json';
 const TAGS_FILE_NAME = 'tags.json';
 
 /**
@@ -57,7 +56,6 @@ export async function createBlog() {
 
   try {
     // --- 1. Load All Necessary Local Data ---
-    const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
     const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
     let authors = [];
     let tags = [];

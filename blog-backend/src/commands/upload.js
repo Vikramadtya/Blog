@@ -8,7 +8,6 @@ import ora from 'ora';
 import { migrate } from './migrate.js'; // Import the new migrate function
 
 const TAGS_FILE_NAME = 'tags.json';
-const AUTHORS_FILE_NAME = 'authors.json';
 
 /**
  * Uploads one or all blog posts to Firestore after ensuring data is migrated.
@@ -23,8 +22,6 @@ export async function uploadBlog(blogId, options) {
   spinner.text = 'Running migration check...';
   await migrate(options);
   spinner.succeed('Migration check complete.');
-
-  const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
 
   // --- Fetch authors directly from Firestore ---
   const authorsSnapshot = await db.collection('authors').get();
