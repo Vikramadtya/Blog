@@ -1,123 +1,162 @@
 import fs from 'fs';
 import path from 'path';
 import admin from 'firebase-admin';
-import { PATH_TO_BLOGS, METADATA_FILE_NAME, FIREBASE_AUTH } from '../config.js';
+import { PATH_TO_BLOGS, METADATA_FILE_NAME, db } from '../config.js';
 import logger from '../logger.js';
 import chalk from 'chalk';
 import ora from 'ora';
+import { migrate } from './migrate.js'; // Import the new migrate function
 
-admin.initializeApp({
-  credential: admin.credential.cert(FIREBASE_AUTH),
-});
+const TAGS_FILE_NAME = 'tags.json';
+const AUTHORS_FILE_NAME = 'authors.json';
 
-const db = admin.firestore();
-
+/**
+ * Uploads one or all blog posts to Firestore after ensuring data is migrated.
+ * @param {string} blogId - The ID of the blog to upload, or null for all.
+ * @param {object} options - Command options from Commander.js.
+ */
 export async function uploadBlog(blogId, options) {
-  const spinner = ora('preparing to upload...').start();
+  const spinner = ora('Preparing to upload...').start();
+
+  // 1. Run migrate first. This is the crucial step for data integrity.
+  // It handles its own logging, including for dry runs.
+  spinner.text = 'Running migration check...';
+  await migrate(options);
+  spinner.succeed('Migration check complete.');
+
+  // 2. Load the now-synced local files into memory for efficient lookups.
+  const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
+  const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
+
+  const authors = fs.existsSync(authorsFilePath)
+    ? JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'))
+    : [];
+  const tags = fs.existsSync(tagsFilePath)
+    ? JSON.parse(fs.readFileSync(tagsFilePath, 'utf-8'))
+    : [];
+
+  // Create maps for fast O(1) lookups instead of repeated array searches.
+  const authorMap = new Map(authors.map((author) => [author.id, author]));
+  const tagMap = new Map(tags.map((tag) => [tag.name, tag]));
+
+  if (options.dryRun) {
+    logger.info(chalk.yellow('\n[DRY RUN] Blog Upload Plan:'));
+  }
+
+  // 3. Proceed with the upload logic.
+  spinner.start('Processing blog uploads...');
   if (options.all) {
     const blogs = fs.readdirSync(PATH_TO_BLOGS);
     for (const blog of blogs) {
-      await uploadSingleBlog(blog, options);
+      if (isUuid(blog) && isDirectory(path.join(PATH_TO_BLOGS, blog))) {
+        await uploadSingleBlog(blog, options, authorMap, tagMap);
+      }
     }
   } else if (blogId) {
-    await uploadSingleBlog(blogId, options);
+    await uploadSingleBlog(blogId, options, authorMap, tagMap);
   } else {
     logger.error(chalk.red('Please provide a blog ID or use the --all flag.'));
   }
+  spinner.stopAndPersist({ text: 'Upload process finished', symbol: '✅' });
 }
 
-async function uploadSingleBlog(blogId, options) {
+/**
+ * Handles the logic for uploading a single blog post's metadata.
+ * @param {string} blogId - The ID of the blog to upload.
+ * @param {object} options - Command options.
+ * @param {Map} authorMap - In-memory map of authors.
+ * @param {Map} tagMap - In-memory map of tags.
+ */
+async function uploadSingleBlog(blogId, options, authorMap, tagMap) {
   const blogDir = path.join(PATH_TO_BLOGS, blogId);
-
-  if (!fs.existsSync(blogDir)) {
-    logger.error(chalk.red(`Blog with ID ${blogId} not found.`));
-    return;
-  }
-
-  logger.info(chalk.blue(`Uploading blog: ${blogId}`));
-
   const metadataPath = path.join(blogDir, METADATA_FILE_NAME);
 
+  if (!fs.existsSync(metadataPath)) return;
+
   try {
-    const metadata = JSON.parse(fs.readFileSync(metadataPath));
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
 
-    const existingBlog = await db.collection('blogs').doc(blogId).get();
-
-    if (
-      existingBlog.exists &&
-      existingBlog.data().updatedAt === metadata.updatedAt
-    ) {
-      logger.info(chalk.green(`Blog ${blogId} is already up to date.`));
-      return;
+    // In a live run, check if the blog is already up-to-date.
+    if (!options.dryRun) {
+      const existingBlog = await db
+        .collection('blogs-metadata')
+        .doc(blogId)
+        .get();
+      if (
+        !options.updateAll &&
+        existingBlog.exists &&
+        existingBlog.data().updatedAt === metadata.updatedAt
+      ) {
+        logger.info(chalk.gray(`Skipping unchanged blog: ${metadata.title}`));
+        return;
+      }
     }
 
-    const convertedMetadata = await convertMetadata(metadata);
+    // Convert local references (author ID, tag names) to full objects.
+    const convertedMetadata = convertMetadata(metadata, authorMap, tagMap);
 
     if (options.dryRun) {
-      logger.info(chalk.yellow(`[DRY RUN] Would upload blog ${blogId}.`));
+      logger.info(
+        chalk.yellow(`\n[DRY RUN] Would upload blog "${metadata.title}":`),
+      );
+      console.log(chalk.yellow(JSON.stringify(convertedMetadata, null, 2)));
       return;
     }
 
-    if (existingBlog.exists) {
-      await db
-        .collection('blogs')
-        .doc(blogId)
-        .set(convertedMetadata, { merge: true });
-      logger.info(chalk.green(`Successfully updated blog ${blogId}.`));
-    } else {
-      await db.collection('blogs').doc(blogId).set(convertedMetadata);
-      await db
-        .collection('metadata')
-        .doc(blogId)
-        .set({ id: blogId, likes: 0, views: 0 });
-      logger.info(chalk.green(`Successfully created blog ${blogId}.`));
-    }
+    // Live run: write the final metadata to Firestore.
+    await db
+      .collection('blogs-metadata')
+      .doc(blogId)
+      .set(convertedMetadata, { merge: true });
+    logger.info(chalk.green(`Successfully uploaded blog: ${metadata.title}`));
   } catch (error) {
     logger.error(chalk.red(`Error uploading blog ${blogId}:`), error);
   }
 }
 
-async function convertMetadata(metadata) {
-  const resolvedTags = [];
-  for (const tag of metadata.tags) {
-    const tagDoc = await db.collection('tags').doc(tag).get();
-    if (!tagDoc.exists) {
-      await createNewTag(tag);
-    }
-    resolvedTags.push(await updateExistingTag(tag, metadata.id));
-  }
-  metadata.tags = resolvedTags;
+/**
+ * Converts a blog's metadata by replacing author ID and tag names
+ * with their full objects from the in-memory maps.
+ * @param {object} metadata - The original metadata from a blog's JSON file.
+ * @param {Map} authorMap - Map of all authors.
+ * @param {Map} tagMap - Map of all tags.
+ * @returns {object} The hydrated metadata object ready for Firestore.
+ */
+function convertMetadata(metadata, authorMap, tagMap) {
+  const resolvedTags = metadata.tags
+    .map((tagName) => tagMap.get(tagName))
+    .filter(Boolean); // Filter out any tags that might not be in the map
 
-  // Similarly handle author resolution
-  // const authorDoc = await db.collection('users').doc(metadata.author).get();
-  // if (authorDoc.exists) {
-  //     metadata.author = authorDoc.data();
-  // }
+  // Remove the `blogs` array from each tag object before embedding.
+  const sanitisedTags = resolvedTags.map((tagInfo) => {
+    const { blogs, ...rest } = tagInfo;
+    return rest;
+  });
+
+  metadata.tags = sanitisedTags;
+
+  // Replace author ID with the full author object.
+  if (authorMap.has(metadata.author)) {
+    metadata.author = authorMap.get(metadata.author);
+  }
+
+  // Set default values for stats if they don't exist.
+  if (metadata.views === undefined) metadata.views = 0;
+  if (metadata.likes === undefined) metadata.likes = 0;
 
   return metadata;
 }
 
-async function createNewTag(tag) {
-  const data = {
-    id: tag,
-    name: tag,
-    color: getRandomColor(),
-    blogs: [],
-  };
-  await db.collection('tags').doc(tag).set(data);
-  logger.info(chalk.cyan(`Created new tag: ${tag}`));
+function isDirectory(path) {
+  try {
+    return fs.lstatSync(path).isDirectory();
+  } catch (e) {
+    return false;
+  }
 }
 
-async function updateExistingTag(tag, blogId) {
-  const tagRef = db.collection('tags').doc(tag);
-  await tagRef.update({
-    blogs: admin.firestore.FieldValue.arrayUnion(blogId),
-  });
-  const tagDoc = await tagRef.get();
-  return tagDoc.data();
-}
-
-function getRandomColor() {
-  const colors = ['#27ae60', '#e74c3c', '#3498db'];
-  return colors[Math.floor(Math.random() * colors.length)];
+function isUuid(str) {
+  const uuidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(str);
 }

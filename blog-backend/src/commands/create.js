@@ -2,10 +2,12 @@ import inquirer from 'inquirer';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
+import ora from 'ora';
 import {
   PATH_TO_BLOGS,
   METADATA_FILE_NAME,
   BLOG_FILE_NAME,
+  db, // Import the initialized db instance from the central config
 } from '../config.js';
 import logger from '../logger.js';
 import chalk from 'chalk';
@@ -18,41 +20,77 @@ import {
 
 const AUTHORS_FILE_NAME = 'authors.json';
 const TAGS_FILE_NAME = 'tags.json';
-const NEW_AUTHOR_OPTION = '++ Create New Author ++';
+
+/**
+ * Atomically retrieves and increments the blog counter from Firestore.
+ * This should only be called AFTER all local data has been validated.
+ * @returns {Promise<number>} The next available blog number.
+ */
+async function getNextBlogNumberFromFirestore() {
+  const counterRef = db.collection('counters').doc('blogs');
+  try {
+    const nextBlogNumber = await db.runTransaction(async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+      if (!counterDoc.exists) {
+        transaction.set(counterRef, { nextBlogNumber: 2 });
+        return 1;
+      }
+      const newBlogNumber = counterDoc.data().nextBlogNumber;
+      transaction.update(counterRef, { nextBlogNumber: newBlogNumber + 1 });
+      return newBlogNumber;
+    });
+    return nextBlogNumber;
+  } catch (error) {
+    logger.error(
+      chalk.red('Error retrieving blog number from Firestore:'),
+      error,
+    );
+    throw new Error('Could not assign a blog number from the server.');
+  }
+}
 
 export async function createBlog() {
   logger.info('Creating a new blog post...');
+  const spinner = ora('Fetching latest authors and tags...').start();
+  // Define blogDir in the outer scope to make it accessible in the catch block for cleanup.
+  let blogDir;
 
-  // --- Load Authors and Tags ---
-  const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
-  const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
-  let authors = [];
-  let tags = [];
-
-  if (fs.existsSync(authorsFilePath)) {
-    authors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
-  }
-  if (fs.existsSync(tagsFilePath)) {
-    tags = JSON.parse(fs.readFileSync(tagsFilePath, 'utf-8'));
-  }
-
-  const authorChoices = [
-    ...authors.map((author) => author.name),
-    new inquirer.Separator(),
-    NEW_AUTHOR_OPTION,
-  ];
-  const tagChoices = tags.map((tag) => tag.name);
-  // --- End Loading ---
-
-  let answers;
   try {
-    answers = await inquirer.prompt([
+    // --- 1. Load All Necessary Local Data ---
+    const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
+    const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
+    let authors = [];
+    let tags = [];
+
+    if (fs.existsSync(authorsFilePath)) {
+      authors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
+    } else {
+      spinner.fail(
+        chalk.red(
+          `authors.json not found. Please add an author first using 'blog-cli add-author'.`,
+        ),
+      );
+      return;
+    }
+
+    if (fs.existsSync(tagsFilePath)) {
+      tags = JSON.parse(fs.readFileSync(tagsFilePath, 'utf-8'));
+    }
+    spinner.succeed('Latest authors and tags fetched.');
+
+    // --- 2. Gather All User Input ---
+    const authorChoices = authors.map((author) => ({
+      name: `${author.name} <${author.email}>`,
+      value: author.id,
+    }));
+    const tagChoices = tags.map((tag) => tag.name);
+    const answers = await inquirer.prompt([
       { type: 'input', name: 'title', message: 'Blog Title:' },
       {
         type: 'list',
-        name: 'authorName',
+        name: 'authorId',
         message: 'Author:',
-        choices: authorChoices,
+        choices: authorchoices,
       },
       {
         type: 'checkbox',
@@ -74,151 +112,117 @@ export async function createBlog() {
         choices: ['blog', 'snippet'],
       },
     ]);
-  } catch (error) {
-    logger.error(chalk.red('Failed to get user input via prompt.'), error);
-    return;
-  }
 
-  // --- Handle New Author Creation ---
-  let selectedAuthor;
-  if (answers.authorName === NEW_AUTHOR_OPTION) {
-    const newAuthorAnswers = await inquirer.prompt([
-      { type: 'input', name: 'name', message: "New Author's Name:" },
-      {
-        type: 'input',
-        name: 'email',
-        message: "New Author's Email (optional):",
-      },
-      {
-        type: 'input',
-        name: 'avatar',
-        message: "New Author's Avatar Path (optional):",
-      },
-    ]);
-    selectedAuthor = newAuthorAnswers;
-    authors.push(selectedAuthor);
-    fs.writeFileSync(authorsFilePath, JSON.stringify(authors, null, 4));
-    logger.info(
-      chalk.green(`New author "${selectedAuthor.name}" created and saved.`),
-    );
-  } else {
-    selectedAuthor = authors.find(
-      (author) => author.name === answers.authorName,
-    );
-  }
-  // --- End New Author Creation ---
-
-  // --- Handle New Tag Creation ---
-  const allTags = [...answers.tags];
-  if (answers.newTags) {
-    const newTags = answers.newTags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean);
-    let tagsFileWasUpdated = false;
-    for (const newTag of newTags) {
-      if (!tags.some((t) => t.name === newTag)) {
-        tags.push({ name: newTag, color: getRandomColor() });
-        allTags.push(newTag);
-        tagsFileWasUpdated = true;
-      }
+    // --- 3. Prepare and Validate a DRAFT Metadata Object ---
+    const blogId = uuidv4();
+    const now = new Date().toISOString();
+    const allTags = [...answers.tags];
+    if (answers.newTags) {
+      const newTags = answers.newTags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+      newTags.forEach((t) => allTags.push(t));
     }
-    if (tagsFileWasUpdated) {
-      fs.writeFileSync(tagsFilePath, JSON.stringify(tags, null, 4));
-      logger.info(chalk.green('New tags have been saved to tags.json.'));
+
+    const draftMetadata = {
+      id: blogId,
+      publish: false,
+      blogNumber: 9999, // Use a placeholder for validation before consuming a real number.
+      title: answers.title,
+      tags: allTags,
+      previewImageSrc: '',
+      author: answers.authorId,
+      summary: answers.summary,
+      slug: answers.slug,
+      type: answers.type,
+      demo: { live: false, preview: null, repository: null },
+      readingTime: estimateReadingTime('# Placeholder'),
+      toc: generateToc('# Placeholder'),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const { error } = blogSchema.validate(draftMetadata);
+    if (error) {
+      spinner.fail(chalk.red.bold('Metadata validation failed!'));
+      logger.error(chalk.red(`  Reason: ${error.details[0].message}`));
+      logger.error(chalk.red(`  Field:  ${error.details[0].path.join('.')}`));
+      return; // Stop immediately. No cleanup needed as no files were created.
     }
-  }
-  // --- End New Tag Creation ---
 
-  const blogId = uuidv4();
-  const blogDir = path.join(PATH_TO_BLOGS, blogId);
+    // --- 4. Validation Passed. Proceed with Irreversible Actions. ---
+    spinner.start('Assigning a unique blog number from the server...');
+    const nextBlogNumber = await getNextBlogNumberFromFirestore();
+    spinner.succeed(`Assigned unique blog number: ${nextBlogNumber}`);
 
-  try {
+    draftMetadata.blogNumber = nextBlogNumber; // Update metadata with the real number.
+
+    // --- 5. Write to Filesystem ---
+    blogDir = path.join(PATH_TO_BLOGS, blogId);
     if (!fs.existsSync(blogDir)) {
       fs.mkdirSync(blogDir, { recursive: true });
     }
 
     const blogContent = '# Your Blog Content Here';
     fs.writeFileSync(path.join(blogDir, BLOG_FILE_NAME), blogContent);
-
-    const nextBlogNumber = await getNextBlogNumber(blogId);
-
-    const metadata = {
-      id: blogId,
-      publish: false,
-      blogNumber: nextBlogNumber,
-      title: answers.title,
-      tags: allTags,
-      previewImageSrc: '',
-      author: selectedAuthor,
-      summary: answers.summary,
-      slug: answers.slug,
-      type: answers.type,
-      demo: {
-        live: false,
-        preview: null,
-        repository: null,
-      },
-      readingTime: estimateReadingTime(blogContent),
-      toc: generateToc(blogContent),
-    };
-
-    const { error } = blogSchema.validate(metadata);
-    if (error) {
-      fs.rmSync(blogDir, { recursive: true, force: true });
-      logger.error(chalk.red('Invalid metadata:'), error.details[0].message);
-      return;
-    }
-
-    const metadataFilePath = path.join(blogDir, METADATA_FILE_NAME);
-    fs.writeFileSync(metadataFilePath, JSON.stringify(metadata, null, 4));
-
-    logger.info(
-      chalk.green(`Successfully created blog post with ID: ${blogId}`),
+    fs.writeFileSync(
+      path.join(blogDir, METADATA_FILE_NAME),
+      JSON.stringify(draftMetadata, null, 4),
     );
-    logger.info(
-      chalk.yellow(`Customize your blog post at: ${metadataFilePath}`),
-    );
-  } catch (error) {
-    logger.error(chalk.red('Error creating blog files:'), error);
-    if (fs.existsSync(blogDir)) {
-      fs.rmSync(blogDir, { recursive: true, force: true });
-    }
-  }
-}
 
-async function getNextBlogNumber(newBlogId) {
-  const centralRegistryPath = path.join(PATH_TO_BLOGS, 'registry.json');
-  let registryData;
-
-  const defaultRegistry = {
-    blogs: {},
-    nextBlogNumber: 1,
-  };
-
-  try {
-    if (fs.existsSync(centralRegistryPath)) {
-      const fileContent = fs.readFileSync(centralRegistryPath, 'utf-8');
-      registryData = fileContent ? JSON.parse(fileContent) : defaultRegistry;
-      if (Array.isArray(registryData.blogs)) {
-        registryData.blogs = {};
+    if (answers.newTags) {
+      const newTags = answers.newTags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+      let tagsFileWasUpdated = false;
+      for (const newTag of newTags) {
+        if (!tags.some((t) => t.name === newTag)) {
+          tags.push({
+            id: uuidv4(),
+            name: newTag,
+            color: getRandomColor(),
+            blogs: [blogId],
+            count: 1,
+          });
+          tagsFileWasUpdated = true;
+        }
       }
-    } else {
-      registryData = defaultRegistry;
+      if (tagsFileWasUpdated) {
+        fs.writeFileSync(tagsFilePath, JSON.stringify(tags, null, 4));
+        logger.info(
+          chalk.green(
+            'New tags saved locally. They will be synced on the next migrate/upload.',
+          ),
+        );
+      }
     }
-  } catch (e) {
-    logger.warn(
+
+    logger.info(
+      chalk.green(`\n✅ Successfully created blog post with ID: ${blogId}`),
+    );
+    logger.info(
       chalk.yellow(
-        'Could not read or parse registry.json. Creating a new one.',
+        `   Customize your blog post at: ${path.join(blogDir, METADATA_FILE_NAME)}`,
       ),
     );
-    registryData = defaultRegistry;
+  } catch (error) {
+    spinner.fail('Failed to create blog post.');
+    logger.error(
+      chalk.red('An unexpected error occurred during blog creation:'),
+      error.message,
+    );
+
+    // --- CRITICAL CLEANUP STEP ---
+    // If the process failed after the blog directory was created, this block will execute.
+    if (blogDir && fs.existsSync(blogDir)) {
+      fs.rmSync(blogDir, { recursive: true, force: true });
+      logger.info(
+        chalk.yellow(
+          `Cleaned up partially created blog directory to prevent orphaned files.`,
+        ),
+      );
+    }
   }
-
-  const nextNumber = registryData.nextBlogNumber;
-  registryData.blogs[newBlogId] = nextNumber;
-  registryData.nextBlogNumber += 1;
-
-  fs.writeFileSync(centralRegistryPath, JSON.stringify(registryData, null, 4));
-  return nextNumber;
 }

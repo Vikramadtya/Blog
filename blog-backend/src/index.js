@@ -6,14 +6,15 @@ import chalk from 'chalk';
 import { createBlog } from './commands/create.js';
 import { processBlogs } from './commands/process.js';
 import { uploadBlog } from './commands/upload.js';
-import { previewBlog } from './commands/preview.js';
 import { syncAll } from './commands/sync.js';
 import { listBlogs } from './commands/list.js';
 import { deleteBlog } from './commands/delete.js';
 import { publishBlog } from './commands/publish.js';
 import { showStats } from './commands/stats.js';
 import { migrate } from './commands/migrate.js';
-import { configure } from 'winston';
+import winstonPkg from 'winston';
+import { addAuthor } from './commands/add-author.js';
+const { configure } = winstonPkg;
 
 // --- Display Banner ---
 console.log(
@@ -54,6 +55,12 @@ program
   .action(createBlog);
 
 program
+  .command('add-author')
+  .alias('author')
+  .description('add a new author to the system')
+  .action(addAuthor);
+
+program
   .command('list')
   .alias('ls')
   .description('list all local blog posts')
@@ -90,15 +97,12 @@ program
   .description('upload blog posts to Firestore')
   .option('--all', 'Upload all blog posts')
   .option('--dry-run', 'Simulate the upload without making changes')
+  .option(
+    '--update-all',
+    'Update all blog posts irrespective if modified or not',
+  )
   .argument('[string]', 'The ID of the blog post to upload')
   .action((blogId, options) => uploadBlog(blogId, options));
-
-// --- Utility Commands ---
-program
-  .command('preview')
-  .description('preview a blog post in the browser')
-  .argument('<string>', 'The ID of the blog post to preview')
-  .action(previewBlog);
 
 program
   .command('stats')
@@ -114,7 +118,8 @@ program
 
 program
   .command('migrate')
-  .description('syncs local authors.json and tags.json files to Firestore')
+  .description('Performs a two-way sync of authors and tags with Firestore.')
+  .option('--dry-run', 'Simulate the migration without making changes')
   .action(migrate);
 
 program.parse(process.argv);

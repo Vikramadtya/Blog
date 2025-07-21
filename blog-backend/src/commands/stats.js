@@ -3,11 +3,11 @@ import Table from 'cli-table3';
 import chalk from 'chalk';
 import logger from '../logger.js';
 import ora from 'ora';
+import { db } from '../config.js';
 
 export async function showStats() {
   const spinner = ora('Fetching blog stats from Firestore...').start();
   try {
-    const db = admin.firestore();
     const blogsSnapshot = await db.collection('blogs').get();
     const metadataSnapshot = await db.collection('metadata').get();
 

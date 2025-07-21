@@ -5,14 +5,21 @@ import chalk from 'chalk';
 import { PATH_TO_BLOGS } from '../config.js';
 import logger from '../logger.js';
 
+/**
+ * Deletes a blog post directory from the local filesystem.
+ * This command no longer needs to update a central registry, simplifying its function.
+ * @param {string} blogId The ID of the blog post to delete.
+ */
 export async function deleteBlog(blogId) {
   const blogDir = path.join(PATH_TO_BLOGS, blogId);
 
+  // 1. Verify the blog directory exists.
   if (!fs.existsSync(blogDir)) {
     logger.error(chalk.red(`Error: Blog with ID "${blogId}" not found.`));
     return;
   }
 
+  // 2. Get user confirmation before performing a destructive action.
   const { confirm } = await inquirer.prompt([
     {
       type: 'confirm',
@@ -23,25 +30,11 @@ export async function deleteBlog(blogId) {
   ]);
 
   if (confirm) {
-    // Delete the directory
+    // 3. Delete the entire blog directory.
     fs.rmSync(blogDir, { recursive: true, force: true });
     logger.info(chalk.green(`Deleted blog directory: ${blogDir}`));
-
-    // Update the registry
-    const centralRegistryPath = path.join(PATH_TO_BLOGS, 'registry.json');
-    if (fs.existsSync(centralRegistryPath)) {
-      const registry = JSON.parse(
-        fs.readFileSync(centralRegistryPath, 'utf-8'),
-      );
-      if (registry.blogs[blogId]) {
-        delete registry.blogs[blogId];
-        fs.writeFileSync(
-          centralRegistryPath,
-          JSON.stringify(registry, null, 4),
-        );
-        logger.info(chalk.green(`Removed blog "${blogId}" from the registry.`));
-      }
-    }
+    // Note: The central registry.json is no longer used, so there's no file to update here.
+    // The next run of `migrate` or `upload` will automatically detect the deletion.
   } else {
     logger.info('Delete operation cancelled.');
   }

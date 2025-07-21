@@ -2,6 +2,78 @@
 
 <div align="center">
   <pre>
+      ____  _                ____ _     ___ 
+     | __ )| | ___   __ _   / ___| |   |_ _|
+     |  _ \| |/ _ \ / _` | | |   | |    | | 
+     | |_) | | (_) | (_| | | |___| |___ | | 
+     |____/|_|\___/ \__, |  \____|_____|___|
+                    |___/                   
+    A powerful CLI to manage your blog posts ✍️
+  </pre>
+  <p><strong>A powerful, professional-grade CLI to manage your blog posts ✍️</strong></p>
+</div>
+
+---
+
+## Table of Contents
+
+- [Philosophy & Design Choices](#philosophy--design-choices)
+- [✨ Features](#-features)
+- [📂 Project Structure](#-project-structure)
+- [🚀 Setup and Installation](#-setup-and-installation)
+- [Usage Guide](#usage-guide)
+  - [Core Commands](#core-commands)
+  - [Deployment & Processing](#deployment--processing)
+  - [Utility & Sync Commands](#utility--sync-commands)
+- [☁️ Cloud Integration Workflow](#️-cloud-integration-workflow)
+- [🧑‍💻 Development Guide](#-development-guide)
+- [📝 Schema Reference](#-schema-reference)
+
+---
+
+## Philosophy & Design Choices
+
+This CLI tool was built to bridge the gap between local content creation and a cloud-based backend, providing a robust, repeatable, and scalable workflow for managing a blog. Several key design choices were made to achieve this:
+
+- **Centralized Helper Files**: Instead of relying solely on individual blog metadata, we use central `registry.json`, `authors.json`, and `tags.json` files. This approach:
+  - **Ensures Consistency**: Guarantees that author names and tags are consistent across all blog posts.
+  - **Simplifies Syncing**: Makes it easy to synchronize this helper data with a cloud database (like Firebase) in a single, efficient operation.
+  - **Improves Performance**: Prevents the need to scan every single `metadata.json` file just to get a list of all tags or authors.
+
+- **Two-Way Synchronization**: The `sync` command is designed to be a "source of truth" resolver. It compares the state of your local filesystem with the state of your central JSON files, intelligently adding missing entries and removing stale ones. This makes the CLI resilient to manual changes or accidental deletions.
+
+- **Decoupled Asset Management**: By integrating with Firebase Storage, we decouple the blog's images from the Git repository. This is standard practice for modern web development, as it improves site performance (images are served from a CDN) and keeps the repository lightweight.
+
+- **Extensible Command Structure**: Each piece of functionality is encapsulated in its own file within the `commands` directory. This modular structure makes it straightforward to add new commands or enhance existing ones without affecting other parts of the application.
+
+---
+
+## ✨ Features
+
+- **Interactive Blog Creation**: Quickly scaffold new blog posts with an interactive command-line prompt.
+- **Centralized Author & Tag Management**: Store all authors and tags in central JSON files for consistency and easy syncing.
+- **Automated Content Generation**: Automatically calculates **reading time** and generates a **Table of Contents**.
+- **Robust Schema Validation**: Enforces a consistent metadata structure for all blog posts using **Joi**.
+- **Advanced Processing**: Intelligently updates image paths and tracks file changes using SHA-256 hashes.
+- **Cloud Image Uploads**: Uploads local images to **Firebase Storage** and automatically replaces paths in your markdown.
+- **Live Local Preview**: Preview your markdown files in a browser with a hot-reloading local server.
+- **Professional UX**: Includes a stylish banner, spinners for long tasks, and formatted tables for lists.
+- **Comprehensive Syncing**: A single `sync` command keeps your local registry and tags perfectly aligned with your filesystem.
+- **Full Deployment Workflow**: Dedicated commands to `migrate` helper data and `upload` blog posts to Firebase.
+- **Developer Friendly**: Includes support for code linting with **ESLint** and formatting with **Prettier**.
+- **CI/CD Ready**: Comes with a GitHub Actions workflow for continuous integration.
+
+---
+
+## 📂 Project Structure
+
+```
+Markdown
+
+# Blog CLI Tool
+
+<div align="center">
+  <pre>
    ____  __     __    ___    ____   __      __    ___     ___    ____
   (  _ \(  )   / _\  / __)  (  _ \ /  \    /  \  / __)   / __)  (_  _)
    ) _ < )(__ /    \( (__    )   /(  O )  (  O )( (__   ( (__     )(
@@ -64,7 +136,6 @@ This CLI tool was built to bridge the gap between local content creation and a c
 
 ## 📂 Project Structure
 
-```
 .
 ├── .env
 ├── .eslintrc.cjs
@@ -81,7 +152,6 @@ This CLI tool was built to bridge the gap between local content creation and a c
 │   ├── delete.js
 │   ├── list.js
 │   ├── migrate.js
-│   ├── preview.js
 │   ├── process.js
 │   ├── publish.js
 │   ├── stats.js

@@ -1,76 +1,255 @@
 import fs from 'fs';
 import path from 'path';
-import admin from 'firebase-admin';
 import ora from 'ora';
 import chalk from 'chalk';
-import { PATH_TO_BLOGS } from '../config.js';
+import {
+  PATH_TO_BLOGS,
+  METADATA_FILE_NAME,
+  FIREBASE_AUTH,
+  db,
+} from '../config.js';
 import logger from '../logger.js';
+import { v4 as uuidv4 } from 'uuid';
+import { getRandomColor } from '../utils/helpers.js';
+import { validate as isValidUuid } from 'uuid';
 
 const TAGS_FILE_NAME = 'tags.json';
 const AUTHORS_FILE_NAME = 'authors.json';
 
-async function syncAuthors(db, spinner) {
-  const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
-  if (!fs.existsSync(authorsFilePath)) {
-    spinner.warn(chalk.yellow('authors.json not found. Skipping author sync.'));
-    return 0;
-  }
-
-  const authors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
-  const batch = db.batch();
-
-  authors.forEach((author) => {
-    const authorRef = db.collection('users').doc(author.name);
-    batch.set(authorRef, author, { merge: true });
-  });
-
-  await batch.commit();
-  return authors.length;
-}
-
-async function syncTags(db, spinner) {
-  const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
-  if (!fs.existsSync(tagsFilePath)) {
-    spinner.warn(chalk.yellow('tags.json not found. Skipping tag sync.'));
-    return 0;
-  }
-
-  const tags = JSON.parse(fs.readFileSync(tagsFilePath, 'utf-8'));
-  const batch = db.batch();
-
-  tags.forEach((tag) => {
-    const tagRef = db.collection('tags').doc(tag.name);
-    batch.set(tagRef, { name: tag.name, color: tag.color }, { merge: true });
-  });
-
-  await batch.commit();
-  return tags.length;
-}
-
-export async function migrate() {
-  const spinner = ora('Starting migration to Firestore...').start();
-  const db = admin.firestore();
-
+/**
+ * Performs a two-way sync for authors between Firestore and the local authors.json file.
+ * It fetches remote authors, merges them with new local authors, and updates both targets.
+ * @param {object} options - Command options, including `dryRun`.
+ */
+async function migrateAuthors(options = {}) {
+  const spinner = ora('Syncing authors with Firestore...').start();
   try {
-    spinner.text = 'Syncing authors...';
-    const authorCount = await syncAuthors(db, spinner);
-    if (authorCount > 0) {
-      spinner.succeed(chalk.green(`Synced ${authorCount} authors.`));
+    // 1. Fetch all authors from Firestore to establish a baseline.
+    const authorsSnapshot = await db.collection('authors').get();
+    const remoteAuthors = new Map();
+    authorsSnapshot.forEach((doc) => {
+      const authorData = doc.data();
+      remoteAuthors.set(authorData.id, authorData);
+    });
+
+    // 2. Safely load local authors. If the file is missing or corrupt, treat it as empty.
+    const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
+    let localAuthors = [];
+    if (fs.existsSync(authorsFilePath)) {
+      try {
+        localAuthors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
+      } catch (error) {
+        spinner.warn(
+          chalk.yellow(
+            'Could not parse local authors.json. It may be corrupt. Will rebuild from remote.',
+          ),
+        );
+      }
     }
 
-    spinner.start('Syncing tags...');
-    const tagCount = await syncTags(db, spinner);
-    if (tagCount > 0) {
-      spinner.succeed(chalk.green(`Synced ${tagCount} tags.`));
+    // 3. Merge local authors into the main list, identifying new ones.
+    const finalAuthors = new Map(remoteAuthors);
+    const newAuthorsToCreate = [];
+    localAuthors.forEach((localAuthor) => {
+      if (localAuthor.id && !finalAuthors.has(localAuthor.id)) {
+        finalAuthors.set(localAuthor.id, localAuthor);
+        newAuthorsToCreate.push(localAuthor);
+      }
+    });
+
+    // --- Dry Run Logic ---
+    if (options.dryRun) {
+      spinner.stop();
+      logger.info(chalk.yellow('\n[DRY RUN] Author Synchronization Plan:'));
+      if (newAuthorsToCreate.length > 0) {
+        logger.info(
+          chalk.yellow(
+            '  The following new authors would be created in Firestore:',
+          ),
+        );
+        newAuthorsToCreate.forEach((author) => {
+          logger.info(chalk.cyan(`    - ${author.name} (ID: ${author.id})`));
+        });
+      } else {
+        logger.info(
+          chalk.green(
+            '  No new authors to create. Local authors are in sync with remote.',
+          ),
+        );
+      }
+      logger.info(
+        chalk.yellow(
+          '  The local `authors.json` file would be overwritten with the full, merged list.',
+        ),
+      );
+      return;
     }
 
-    logger.info(
-      chalk.cyan(
-        '\nMigration complete! Your helper data is now in sync with Firestore.',
-      ),
+    // --- Live Execution Logic ---
+    // If new authors were discovered locally, write them to Firestore.
+    if (newAuthorsToCreate.length > 0) {
+      const batch = db.batch();
+      newAuthorsToCreate.forEach((author) => {
+        const authorRef = db.collection('authors').doc(author.id);
+        batch.set(authorRef, author);
+      });
+      await batch.commit();
+    }
+
+    // Always overwrite the local file with the merged, definitive list.
+    fs.writeFileSync(
+      authorsFilePath,
+      JSON.stringify(Array.from(finalAuthors.values()), null, 4),
+    );
+
+    spinner.succeed(
+      chalk.green(`Authors synced. Local authors.json is now up-to-date.`),
     );
   } catch (error) {
-    spinner.fail('Migration failed.');
+    spinner.fail('Failed to sync authors.');
     logger.error(error);
+  }
+}
+
+/**
+ * Performs a two-way sync for tags. It fetches from Firestore, scans local blogs for usage,
+ * creates new tags, and updates counts and associations for existing ones.
+ * @param {object} options - Command options, including `dryRun`.
+ */
+async function migrateTags(options = {}) {
+  const spinner = ora('Syncing tags with Firestore...').start();
+  try {
+    // 1. Fetch remote tags.
+    const tagsSnapshot = await db.collection('tagsInfo').get();
+    const remoteTags = new Map();
+    tagsSnapshot.forEach((doc) => {
+      const tagData = doc.data();
+      remoteTags.set(tagData.name, tagData);
+    });
+
+    // 2. Scan local metadata to find all tags currently in use.
+    const blogDirs = fs
+      .readdirSync(PATH_TO_BLOGS, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory() && isValidUuid(dirent.name))
+      .map((dirent) => dirent.name);
+
+    const localTagUsage = new Map();
+    for (const blogId of blogDirs) {
+      const metadataPath = path.join(PATH_TO_BLOGS, blogId, METADATA_FILE_NAME);
+      if (fs.existsSync(metadataPath)) {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+        if (Array.isArray(metadata.tags)) {
+          metadata.tags.forEach((tagName) => {
+            if (!localTagUsage.has(tagName)) {
+              localTagUsage.set(tagName, []);
+            }
+            localTagUsage.get(tagName).push(blogId);
+          });
+        }
+      }
+    }
+
+    // 3. Merge local usage with remote data.
+    const finalTags = new Map(remoteTags);
+    const tagsToCreate = [];
+    const tagsToUpdate = [];
+
+    for (const [tagName, blogs] of localTagUsage.entries()) {
+      if (finalTags.has(tagName)) {
+        const tag = finalTags.get(tagName);
+        tag.blogs = blogs;
+        tag.count = blogs.length;
+        tagsToUpdate.push(tagName);
+      } else {
+        const newTag = {
+          id: uuidv4(),
+          name: tagName,
+          color: getRandomColor(),
+          blogs,
+          count: blogs.length,
+        };
+        finalTags.set(tagName, newTag);
+        tagsToCreate.push(tagName);
+      }
+    }
+
+    // --- Dry Run Logic ---
+    if (options.dryRun) {
+      spinner.stop();
+      logger.info(chalk.yellow('\n[DRY RUN] Tag Synchronization Plan:'));
+      if (tagsToCreate.length > 0) {
+        logger.info(chalk.yellow('  The following new tags would be created:'));
+        tagsToCreate.forEach((name) =>
+          logger.info(chalk.cyan(`    - ${name}`)),
+        );
+      } else {
+        logger.info(chalk.green('  No new tags to create.'));
+      }
+      if (tagsToUpdate.length > 0) {
+        logger.info(
+          chalk.yellow('  The following existing tags would be updated:'),
+        );
+        tagsToUpdate.forEach((name) =>
+          logger.info(chalk.cyan(`    - ${name}`)),
+        );
+      } else {
+        logger.info(chalk.green('  No existing tags to update.'));
+      }
+      logger.info(
+        chalk.yellow(
+          '  The local `tags.json` file would be overwritten with the full, merged list.',
+        ),
+      );
+      return;
+    }
+
+    // --- Live Execution Logic ---
+    const batch = db.batch();
+    finalTags.forEach((tag) => {
+      const tagRef = db.collection('tagsInfo').doc(tag.id);
+      batch.set(tagRef, tag, { merge: true });
+    });
+    await batch.commit();
+
+    const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
+    fs.writeFileSync(
+      tagsFilePath,
+      JSON.stringify(Array.from(finalTags.values()), null, 4),
+    );
+
+    spinner.succeed(
+      chalk.green(`Tags synced. Local tags.json is now up-to-date.`),
+    );
+  } catch (error) {
+    spinner.fail('Failed to sync tags.');
+    logger.error(error);
+  }
+}
+
+/**
+ * Main function to run the migration process for all helper files.
+ * @param {object} options - Command options passed from Commander.js.
+ */
+export async function migrate(options) {
+  logger.info(chalk.cyan('Starting remote-first migration...'));
+  if (options.dryRun) {
+    logger.info(chalk.yellow.bold('\n--- DRY RUN MODE ---'));
+    logger.info(
+      chalk.yellow(
+        'No changes will be written to local files or the database.',
+      ),
+    );
+  }
+  await migrateAuthors(options);
+  await migrateTags(options);
+
+  if (options.dryRun) {
+    logger.info(chalk.yellow.bold('\n--- END DRY RUN ---'));
+  } else {
+    logger.info(
+      chalk.green(
+        '\nMigration complete! Your local helper files are synced with Firestore.',
+      ),
+    );
   }
 }

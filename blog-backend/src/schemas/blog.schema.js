@@ -7,12 +7,7 @@ export const blogSchema = Joi.object({
   title: Joi.string().required(),
   tags: Joi.array().items(Joi.string()).required(),
   previewImageSrc: Joi.string().allow('').required(),
-  // The author is now validated as an object
-  author: Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().email().allow(''),
-    avatar: Joi.string().allow(''),
-  }).required(),
+  author: Joi.string().required(), // Author is stored as an ID string
   summary: Joi.string().required(),
   slug: Joi.string().required(),
   type: Joi.string().valid('blog', 'snippet').required(),
@@ -28,4 +23,7 @@ export const blogSchema = Joi.object({
       title: Joi.string(),
     }),
   ),
+  // --- FIX: Added missing date fields to the schema ---
+  createdAt: Joi.string().isoDate().required(),
+  updatedAt: Joi.string().isoDate().required(),
 });

@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import logger from './logger.js';
 import chalk from 'chalk';
+import admin from 'firebase-admin';
 
 const PATH_TO_BLOGS = process.env.PATH_TO_BLOGS;
 
@@ -63,3 +64,15 @@ export const FIREBASE_AUTH = {
   client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
   universe_domain: 'googleapis.com',
 };
+
+// --- CENTRALIZED FIREBASE INITIALIZATION ---
+// Initialize the app only if it hasn't been initialized already.
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(FIREBASE_AUTH),
+  });
+  logger.info('Firebase Admin SDK initialized successfully.');
+}
+
+// Export the initialized Firestore instance for use in other commands.
+export const db = admin.firestore();
