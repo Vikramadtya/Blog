@@ -24,19 +24,25 @@ export async function uploadBlog(blogId, options) {
   await migrate(options);
   spinner.succeed('Migration check complete.');
 
-  // 2. Load the now-synced local files into memory for efficient lookups.
   const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
-  const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
 
-  const authors = fs.existsSync(authorsFilePath)
-    ? JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'))
-    : [];
+  // --- Fetch authors directly from Firestore ---
+  const authorsSnapshot = await db.collection('authors').get();
+
+  const authorMap = new Map();
+  authorsSnapshot.forEach((doc) => {
+    const authorData = doc.data();
+    authorMap.set(authorData.id, authorData);
+  });
+  spinner.succeed('Authors fetched.');
+
+  // Load the now-synced local files into memory for efficient lookups.
+  const tagsFilePath = path.join(PATH_TO_BLOGS, TAGS_FILE_NAME);
   const tags = fs.existsSync(tagsFilePath)
     ? JSON.parse(fs.readFileSync(tagsFilePath, 'utf-8'))
     : [];
 
   // Create maps for fast O(1) lookups instead of repeated array searches.
-  const authorMap = new Map(authors.map((author) => [author.id, author]));
   const tagMap = new Map(tags.map((tag) => [tag.name, tag]));
 
   if (options.dryRun) {

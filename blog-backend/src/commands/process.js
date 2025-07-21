@@ -11,17 +11,23 @@ import {
   BLOG_FILE_NAME,
 } from '../config.js';
 import logger from '../logger.js';
+import {
+  generateToc,
+  estimateReadingTime,
+  countWords,
+  extractLinks,
+  extractCodeInfo,
+  extractKeywords,
+  generateExcerpt,
+} from '../utils/helpers.js';
 
 async function uploadImage(blogId, imagePath) {
   const bucket = admin.storage().bucket();
   const destination = `blogs/${blogId}/${path.basename(imagePath)}`;
-
   await bucket.upload(imagePath, {
     destination: destination,
-    public: true, // Make the file publicly accessible
+    public: true,
   });
-
-  // Return the public URL
   return `https://storage.googleapis.com/${bucket.name}/${destination}`;
 }
 
@@ -30,14 +36,12 @@ async function processHtmlContent(html, blogId, options) {
   const document = dom.window.document;
   const images = document.querySelectorAll('img');
   let imageUploads = [];
-
   for (const img of images) {
     const src = img.getAttribute('src');
     if (src && src.startsWith('./')) {
       if (options.uploadImages) {
         const imagePath = path.join(PATH_TO_BLOGS, blogId, src);
         if (fs.existsSync(imagePath)) {
-          // Collect promises for concurrent uploads
           const uploadPromise = uploadImage(blogId, imagePath).then(
             (publicUrl) => {
               img.setAttribute('src', publicUrl);
@@ -46,7 +50,6 @@ async function processHtmlContent(html, blogId, options) {
           imageUploads.push(uploadPromise);
         }
       } else {
-        // The original behavior if not uploading images
         img.setAttribute(
           'src',
           `https://github.com/Vikramadtya/Blog-Datastore/blob/main/blogs/${blogId}/${src.substring(2)}`,
@@ -54,13 +57,11 @@ async function processHtmlContent(html, blogId, options) {
       }
     }
   }
-
-  // Wait for all image uploads to complete
   if (imageUploads.length > 0) {
     await Promise.all(imageUploads);
   }
-
-  return dom.serialize();
+  const imageCount = images.length;
+  return { html: dom.serialize(), imageCount };
 }
 
 export async function processBlogs(blogId, options) {
@@ -82,38 +83,42 @@ export async function processBlogs(blogId, options) {
 async function processSingleBlog(blogId, options) {
   const spinner = ora(`Processing blog: ${blogId}`).start();
   const blogDir = path.join(PATH_TO_BLOGS, blogId);
-
   try {
     const metadataPath = path.join(blogDir, METADATA_FILE_NAME);
     const blogContentPath = path.join(blogDir, BLOG_FILE_NAME);
-
     if (!fs.existsSync(metadataPath)) {
       spinner.warn(`Skipping ${blogId}: metadata.json not found.`);
       return;
     }
-
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
     const blogContent = fs.readFileSync(blogContentPath, 'utf-8');
-
-    // Process HTML, including optional image upload
-    const processedContent = await processHtmlContent(
+    const { html: processedContent, imageCount } = await processHtmlContent(
       blogContent,
       blogId,
       options,
     );
-
     const blogHash = crypto
       .createHash('sha256')
       .update(processedContent)
       .digest('hex');
 
-    if (metadata.hash === blogHash) {
-      spinner.succeed(`No changes detected for blog ${blogId}.`);
+    // --- UPDATE ALL METADATA ---
+    metadata.toc = generateToc(blogContent);
+    metadata.readingTime = estimateReadingTime(blogContent);
+    metadata.wordCount = countWords(blogContent);
+    metadata.imageCount = imageCount;
+    metadata.links = extractLinks(processedContent);
+    metadata.code = extractCodeInfo(blogContent);
+    metadata.excerpt = generateExcerpt(processedContent);
+    metadata.keywords = extractKeywords(processedContent);
+
+    if (!options.forceUpdateMetadata && metadata.hash === blogHash) {
+      fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 4));
+      spinner.succeed(`No content changes for ${blogId}. Metadata updated.`);
     } else {
       metadata.hash = blogHash;
       metadata.version = (metadata.version || 1) + 1;
       metadata.updatedAt = new Date().toISOString();
-
       fs.writeFileSync(blogContentPath, processedContent);
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 4));
       spinner.succeed(

@@ -14,6 +14,8 @@ import { showStats } from './commands/stats.js';
 import { migrate } from './commands/migrate.js';
 import winstonPkg from 'winston';
 import { addAuthor } from './commands/add-author.js';
+import { cleanupAssets } from './commands/cleanup.js';
+import { analyseBlog } from './commands/analyse.js';
 const { configure } = winstonPkg;
 
 // --- Display Banner ---
@@ -87,7 +89,8 @@ program
   .alias('p')
   .description('process blog posts (updates image paths and hashes)')
   .option('--all', 'process all blog posts')
-  .option('--upload-images', 'upload local images to firebase storage') // New option
+  .option('--force-update-metadata', 'update metadata regardless')
+  .option('--upload-images', 'upload local images to firebase storage')
   .argument('[string]', 'The ID of the blog post to process')
   .action((blogId, options) => processBlogs(blogId, options));
 
@@ -121,5 +124,17 @@ program
   .description('Performs a two-way sync of authors and tags with Firestore.')
   .option('--dry-run', 'Simulate the migration without making changes')
   .action(migrate);
+
+program
+  .command('cleanup')
+  .description('Find and remove unused assets from a blog directory')
+  .argument('<string>', 'The ID of the blog to clean up')
+  .action(cleanupAssets);
+
+program
+  .command('analyse')
+  .description('Run content and SEO analysis on a blog post')
+  .argument('<string>', 'The ID of the blog to analyse')
+  .action(analyseBlog);
 
 program.parse(process.argv);

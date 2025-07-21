@@ -23,7 +23,18 @@ export const blogSchema = Joi.object({
       title: Joi.string(),
     }),
   ),
-  // --- FIX: Added missing date fields to the schema ---
+  wordCount: Joi.number(),
+  imageCount: Joi.number(),
+  links: Joi.object({
+    internal: Joi.array().items(Joi.string()),
+    external: Joi.array().items(Joi.string()),
+  }),
+  code: Joi.object({
+    count: Joi.number(),
+    languages: Joi.array().items(Joi.string()),
+  }),
+  excerpt: Joi.string().allow(null),
+  keywords: Joi.array().items(Joi.string()),
   createdAt: Joi.string().isoDate().required(),
   updatedAt: Joi.string().isoDate().required(),
 });

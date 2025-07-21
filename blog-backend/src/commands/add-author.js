@@ -1,29 +1,12 @@
-import fs from 'fs';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { PATH_TO_BLOGS } from '../config.js';
+import ora from 'ora';
+import { db } from '../config.js'; // Import the Firestore instance
 import logger from '../logger.js';
 
-const AUTHORS_FILE_NAME = 'authors.json';
-
 export async function addAuthor() {
-  logger.info(chalk.blue('Adding a new author...'));
-
-  const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
-  let authors = [];
-
-  if (fs.existsSync(authorsFilePath)) {
-    try {
-      authors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
-    } catch (error) {
-      logger.error(
-        chalk.red('Error parsing authors.json. Starting with an empty list.'),
-        error,
-      );
-    }
-  }
+  logger.info(chalk.blue('Adding a new author directly to Firestore...'));
 
   try {
     const authorDetails = await inquirer.prompt([
@@ -42,9 +25,10 @@ export async function addAuthor() {
       ...authorDetails,
     };
 
-    authors.push(newAuthor);
-
-    fs.writeFileSync(authorsFilePath, JSON.stringify(authors, null, 4));
+    const spinner = ora('Saving author to Firestore...').start();
+    // Use the author's ID as the document ID for easy lookups
+    await db.collection('authors').doc(newAuthor.id).set(newAuthor);
+    spinner.succeed();
 
     logger.info(chalk.green(`\nSuccessfully added author: ${newAuthor.name}`));
     logger.info(chalk.yellow(`Author ID: ${newAuthor.id}`));

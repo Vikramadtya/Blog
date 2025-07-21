@@ -62,12 +62,14 @@ export async function createBlog() {
     let authors = [];
     let tags = [];
 
-    if (fs.existsSync(authorsFilePath)) {
-      authors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
-    } else {
+    // --- 1. Fetch Authors from Firestore ---
+    const authorsSnapshot = await db.collection('authors').get();
+    authorsSnapshot.forEach((doc) => authors.push(doc.data()));
+
+    if (authors.length === 0) {
       spinner.fail(
         chalk.red(
-          `authors.json not found. Please add an author first using 'blog-cli add-author'.`,
+          `No authors found in Firestore. Please add an author first using 'blog-cli add-author'.`,
         ),
       );
       return;

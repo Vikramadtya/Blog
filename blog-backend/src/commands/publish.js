@@ -5,6 +5,7 @@ import { PATH_TO_BLOGS, METADATA_FILE_NAME } from '../config.js';
 import logger from '../logger.js';
 import { processBlogs } from './process.js';
 import { uploadBlog } from './upload.js';
+import { analyseBlog } from './analyse.js';
 
 /**
  * Publishes a blog post.
@@ -49,4 +50,7 @@ export async function publishBlog(blogId) {
   logger.info(
     chalk.cyan(`\nBlog "${metadata.title}" has been successfully published!`),
   );
+
+  // 6. The analysis of the published blog
+  await analyseBlog(blogId, {});
 }

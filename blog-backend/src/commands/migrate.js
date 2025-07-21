@@ -14,102 +14,6 @@ import { getRandomColor } from '../utils/helpers.js';
 import { validate as isValidUuid } from 'uuid';
 
 const TAGS_FILE_NAME = 'tags.json';
-const AUTHORS_FILE_NAME = 'authors.json';
-
-/**
- * Performs a two-way sync for authors between Firestore and the local authors.json file.
- * It fetches remote authors, merges them with new local authors, and updates both targets.
- * @param {object} options - Command options, including `dryRun`.
- */
-async function migrateAuthors(options = {}) {
-  const spinner = ora('Syncing authors with Firestore...').start();
-  try {
-    // 1. Fetch all authors from Firestore to establish a baseline.
-    const authorsSnapshot = await db.collection('authors').get();
-    const remoteAuthors = new Map();
-    authorsSnapshot.forEach((doc) => {
-      const authorData = doc.data();
-      remoteAuthors.set(authorData.id, authorData);
-    });
-
-    // 2. Safely load local authors. If the file is missing or corrupt, treat it as empty.
-    const authorsFilePath = path.join(PATH_TO_BLOGS, AUTHORS_FILE_NAME);
-    let localAuthors = [];
-    if (fs.existsSync(authorsFilePath)) {
-      try {
-        localAuthors = JSON.parse(fs.readFileSync(authorsFilePath, 'utf-8'));
-      } catch (error) {
-        spinner.warn(
-          chalk.yellow(
-            'Could not parse local authors.json. It may be corrupt. Will rebuild from remote.',
-          ),
-        );
-      }
-    }
-
-    // 3. Merge local authors into the main list, identifying new ones.
-    const finalAuthors = new Map(remoteAuthors);
-    const newAuthorsToCreate = [];
-    localAuthors.forEach((localAuthor) => {
-      if (localAuthor.id && !finalAuthors.has(localAuthor.id)) {
-        finalAuthors.set(localAuthor.id, localAuthor);
-        newAuthorsToCreate.push(localAuthor);
-      }
-    });
-
-    // --- Dry Run Logic ---
-    if (options.dryRun) {
-      spinner.stop();
-      logger.info(chalk.yellow('\n[DRY RUN] Author Synchronization Plan:'));
-      if (newAuthorsToCreate.length > 0) {
-        logger.info(
-          chalk.yellow(
-            '  The following new authors would be created in Firestore:',
-          ),
-        );
-        newAuthorsToCreate.forEach((author) => {
-          logger.info(chalk.cyan(`    - ${author.name} (ID: ${author.id})`));
-        });
-      } else {
-        logger.info(
-          chalk.green(
-            '  No new authors to create. Local authors are in sync with remote.',
-          ),
-        );
-      }
-      logger.info(
-        chalk.yellow(
-          '  The local `authors.json` file would be overwritten with the full, merged list.',
-        ),
-      );
-      return;
-    }
-
-    // --- Live Execution Logic ---
-    // If new authors were discovered locally, write them to Firestore.
-    if (newAuthorsToCreate.length > 0) {
-      const batch = db.batch();
-      newAuthorsToCreate.forEach((author) => {
-        const authorRef = db.collection('authors').doc(author.id);
-        batch.set(authorRef, author);
-      });
-      await batch.commit();
-    }
-
-    // Always overwrite the local file with the merged, definitive list.
-    fs.writeFileSync(
-      authorsFilePath,
-      JSON.stringify(Array.from(finalAuthors.values()), null, 4),
-    );
-
-    spinner.succeed(
-      chalk.green(`Authors synced. Local authors.json is now up-to-date.`),
-    );
-  } catch (error) {
-    spinner.fail('Failed to sync authors.');
-    logger.error(error);
-  }
-}
 
 /**
  * Performs a two-way sync for tags. It fetches from Firestore, scans local blogs for usage,
@@ -240,7 +144,7 @@ export async function migrate(options) {
       ),
     );
   }
-  await migrateAuthors(options);
+
   await migrateTags(options);
 
   if (options.dryRun) {
