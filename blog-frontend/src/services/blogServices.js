@@ -1,3 +1,5 @@
+import { getBlogMetadataByType, getBlogMetadataWithTagId } from "./apiServices";
+
 export const getBlogToc = (content) => {
   return content
     .split("\n")
@@ -14,3 +16,11 @@ export const getBlogToc = (content) => {
       };
     });
 };
+
+export async function getTagToBlogMap(tags) {
+  const tagToMetadataBlog = {};
+  for (const tag of tags) {
+    tagToMetadataBlog[tag.id] = await getBlogMetadataWithTagId(tag.id);
+  }
+  return tagToMetadataBlog;
+}

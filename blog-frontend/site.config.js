@@ -33,7 +33,7 @@ export const siteMetadata = {
   },
   githubRawEndpoint:
     "https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/blogs",
-  apiBaseUrl: "https://www.neuralcook.com/api/blog",
+  apiBaseUrl: "https://www.neuralcook.com",
   portfolioLink: "https://www.vikramaditya-singh.in",
   openToWork: true,
   giscus: {

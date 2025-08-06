@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import Tag from "../atoms/tag";
+import Image from "next/image";
 
 const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
   const [blogs, setBlogs] = useState(allBlogs);
@@ -69,7 +70,9 @@ const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
 
               {blog.previewImageSrc && (
                 <div className="hidden w-80 shrink-0 md:block">
-                  <img
+                  <Image
+                    width={10}
+                    height={10}
                     src={blog.previewImageSrc}
                     alt={blog.title}
                     className="h-44 w-full rounded-md object-cover shadow-sm"

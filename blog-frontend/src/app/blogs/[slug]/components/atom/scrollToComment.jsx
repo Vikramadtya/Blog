@@ -1,11 +1,14 @@
 "use client";
 
 import Icon from "../../../../../components/atom/icon";
+import React from "react";
+import ShareButton from "./shareButton";
 
-const ScrollToComment = () => {
+const ScrollToComment = React.forwardRef(({}, ref) => {
   return (
     <div>
       <div
+        ref={ref}
         onClick={() =>
           window.scrollTo({
             top: document.getElementById("comments").offsetTop,
@@ -17,6 +20,8 @@ const ScrollToComment = () => {
       </div>
     </div>
   );
-};
+});
+
+ScrollToComment.displayName = "ScrollToComment";
 
 export default ScrollToComment;

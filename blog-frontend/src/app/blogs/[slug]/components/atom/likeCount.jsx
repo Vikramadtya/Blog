@@ -1,17 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import Icon from "../../../../../components/atom/icon";
-import { getMetadata } from "../../../../../services/apiServices";
+import { getBlogMetadataById } from "../../../../../services/apiServices";
 
 const LikeCount = ({ id, likes }) => {
   const [currentLikes, setCurrentLikes] = useState(likes);
 
   useEffect(() => {
-    getMetadata(id)
-      .then((res) => res.json())
-      .then((data) => {
-        setCurrentLikes(data[0]?.likes ?? likes);
-      });
+    getBlogMetadataById(id).then((data) => {
+      setCurrentLikes(data?.likes ?? likes);
+    });
   }, [id, likes]);
 
   return (

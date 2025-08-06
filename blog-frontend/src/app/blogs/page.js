@@ -1,10 +1,13 @@
 import React from "react";
 import MarkDownContentList from "../../components/molecules/markDownContentList";
-import { getAllBlogs, getIdToMetadata } from "../../services/apiServices";
+import { BLOG_TYPES, getBlogMetadataByType } from "../../services/apiServices";
 
 export default async function Blog() {
-  const blogs = await getAllBlogs();
-  const blogIdToMetadata = await getIdToMetadata();
+  const blogs = await getBlogMetadataByType(BLOG_TYPES.blog);
+  const blogIdToMetadata = blogs.reduce((acc, data) => {
+    acc[data.id] = data;
+    return acc;
+  }, {});
 
   return (
     <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">

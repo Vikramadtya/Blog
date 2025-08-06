@@ -1,12 +1,15 @@
 "use client";
 import Icon from "../../../../../components/atom/icon";
 import { siteMetadata as siteConfig } from "../../../../../../site.config";
+import React from "react";
+import LikeButton from "./likeButton";
 
-const ShareButton = ({ blogSlug }) => {
+const ShareButton = React.forwardRef(({ blogSlug }, ref) => {
   const shareUrl = `${siteConfig.siteUrl}/blogs/${blogSlug}`;
 
   return (
     <div
+      ref={ref}
       id="share-button"
       onClick={() => {
         try {
@@ -19,6 +22,8 @@ const ShareButton = ({ blogSlug }) => {
       <Icon kind="share" className={"h-6 w-6"} />
     </div>
   );
-};
+});
+
+ShareButton.displayName = "ShareButton";
 
 export default ShareButton;

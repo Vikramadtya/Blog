@@ -1,18 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 import Icon from "../../../../../components/atom/icon";
-import { addView, getMetadata } from "../../../../../services/apiServices";
+import {
+  incrementBlogLikesOrViewsById,
+  METADATA_TYPE,
+} from "../../../../../services/apiServices";
+import { logger } from "../../../../api/lib/api-utils";
 
 const ViewCount = ({ id, views }) => {
   const [currentViews, setCurrentViews] = useState(views);
 
   useEffect(() => {
-    addView(id);
-    getMetadata(id)
-      .then((res) => res.json())
-      .then((data) => {
-        setCurrentViews(data[0]?.views ?? views);
-      });
+    incrementBlogLikesOrViewsById(id, METADATA_TYPE.views).then((response) => {
+      setCurrentViews(response.data.views ?? views);
+    });
   }, [id, views]);
 
   return (

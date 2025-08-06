@@ -12,14 +12,15 @@ import {
 import Link from "next/link";
 import * as React from "react";
 import { TooltipContent, TooltipTrigger } from "./tooltip";
+import ShareButton from "./shareButton";
 
-const TableOfContent = ({ tableOfContent }) => {
+const TableOfContent = React.forwardRef(({ tableOfContent }, ref) => {
   const [ThemeSound] = useSound("/sounds/switch-on.mp3");
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
-      <div>
+      <div ref={ref}>
         <DropdownMenu
           onOpenChange={() => {
             ThemeSound();
@@ -57,6 +58,7 @@ const TableOfContent = ({ tableOfContent }) => {
       </div>
     </>
   );
-};
+});
+TableOfContent.displayName = "ShareButton";
 
 export default TableOfContent;

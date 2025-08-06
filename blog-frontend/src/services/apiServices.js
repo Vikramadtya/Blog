@@ -1,8 +1,31 @@
 import { siteMetadata as siteConfig } from "../../site.config";
+import { logger } from "../app/api/lib/api-utils";
 
 const API_BASE_URL = siteConfig.apiBaseUrl;
 
 const GITHUB_RAW_ENDPOINT = siteConfig.githubRawEndpoint;
+
+export const BLOG_TYPES = {
+  blog: {
+    name: "blog",
+    type: "blog",
+  },
+  snippet: {
+    name: "snippet",
+    type: "snippet",
+  },
+};
+
+export const METADATA_TYPE = {
+  likes: {
+    name: "likes",
+    type: "likes",
+  },
+  views: {
+    name: "views",
+    type: "views",
+  },
+};
 
 /**
  * A robust utility function to handle API requests.
@@ -47,33 +70,6 @@ function postRequest(endpoint, body) {
 }
 
 /**
- * Fetches metadata for a given blog ID.
- * @param {string} id - The ID of the blog.
- * @returns {Promise<any>} - The metadata for the blog.
- */
-export function getMetadata(id) {
-  return fetcher(`${API_BASE_URL}/metadata?id=${id}`);
-}
-
-/**
- * Increments the view count for a given blog ID.
- * @param {string} id - The ID of the blog.
- * @returns {Promise<any>}
- */
-export function addView(id) {
-  return postRequest(`${API_BASE_URL}/metadata`, { id, views: true });
-}
-
-/**
- * Increments the like count for a given blog ID.
- * @param {string} id - The ID of the blog.
- * @returns {Promise<any>}
- */
-export function addLike(id) {
-  return postRequest(`${API_BASE_URL}/metadata`, { id, likes: true });
-}
-
-/**
  * Submits a user's email for notification.
  * @param {FormData} formData - The form data containing the user's email.
  * @returns {Promise<any>}
@@ -83,64 +79,58 @@ export function notify(formData) {
 }
 
 /**
- * Fetches blogs, optionally filtering by type.
- * @param {string} [type] - The type of blog to fetch (e.g., "blog", "snippet").
- * @returns {Promise<any>} - A list of blogs.
- */
-function getBlogs(type) {
-  const url = type
-    ? `${API_BASE_URL}/data?type=${type}`
-    : `${API_BASE_URL}/data`;
-  return fetcher(url);
-}
-
-export const getAllBlogs = () => getBlogs("blog");
-export const getLatestBlogs = () => getBlogs();
-export const getFeaturedSnippets = () => getBlogs("snippet");
-export const getFeaturedBlogs = () => getBlogs("blog");
-
-/**
- * Fetches all tags.
- * @returns {Promise<any>} - A list of all tags.
- */
-export function getAllTags() {
-  return fetcher(`${API_BASE_URL}/tags`);
-}
-
-/**
- * Fetches all blog metadata and returns it as a map.
- * @returns {Promise<object>} - A map of blog IDs to their metadata.
- */
-export async function getIdToMetadata() {
-  const metadata = await fetcher(`${API_BASE_URL}/metadata`);
-  return metadata.reduce((acc, data) => {
-    acc[data.id] = data;
-    return acc;
-  }, {});
-}
-
-/**
- * Fetches a map of tags to blogs.
- * @returns {Promise<any>} - A map of tags to blogs.
- */
-export function getTagsToBlogs() {
-  return fetcher(`${API_BASE_URL}/data/tags`);
-}
-
-/**
- * Fetches a blog by its slug.
- * @param {string} slug - The slug of the blog to fetch.
- * @returns {Promise<any>} - The blog data.
- */
-export function getBlogBySlug(slug) {
-  return fetcher(`${API_BASE_URL}/data?slug=${slug}`);
-}
-
-/**
  * Fetches the content of a blog post from GitHub.
  * @param {string} id - The ID of the blog post.
  * @returns {Promise<string>} - The content of the blog post.
  */
 export function getBlogContent(id) {
   return fetcher(`${GITHUB_RAW_ENDPOINT}/${id}/blog.md`);
+}
+
+export async function getAllTags() {
+  const response = await fetcher(`${API_BASE_URL}/api/blog/tags`);
+  logger.info(
+    `- [SERVER SIDE FETCH] for getAllTags got response: \n ${JSON.stringify(response)}`,
+  );
+  return response.success === true ? response.data : [];
+}
+
+export async function getBlogMetadataWithTagId(tagId) {
+  const response = await fetcher(`${API_BASE_URL}/api/blog/data?tag=${tagId}`);
+  logger.info(
+    `- [SERVER SIDE FETCH] for getBlogsWithTag(${tagId}) got response: \n ${JSON.stringify(response)}`,
+  );
+  return response.success === true ? response.data : [];
+}
+
+export async function getBlogMetadataById(blogId) {
+  const response = await fetcher(`${API_BASE_URL}/api/blog/data?id=${blogId}`);
+  logger.info(
+    `- [SERVER SIDE FETCH] for getMetadata(${blogId}) got response: \n ${JSON.stringify(response)}`,
+  );
+  return response.success === true ? response.data[0] : {};
+}
+
+export async function getBlogMetadataByType(value) {
+  const url = `${API_BASE_URL}/api/blog/data${value === undefined ? "" : "?type=" + value.type}`;
+  const response = await fetcher(url);
+  logger.info(
+    `- [SERVER SIDE FETCH] for getBlogMetadataByType(${value === undefined ? "" : value.name}) got response: \n ${JSON.stringify(response)}`,
+  );
+  return response.success === true ? response.data : [];
+}
+
+export async function getBlogMetadataBySlug(slug) {
+  const response = await fetcher(`${API_BASE_URL}/api/blog/data?slug=${slug}`);
+  logger.info(
+    `- [SERVER SIDE FETCH] for getBlogBySlug(${slug}) got response: \n ${JSON.stringify(response)}`,
+  );
+  return response.success === true ? response.data[0] : {};
+}
+
+export async function incrementBlogLikesOrViewsById(id, metadata) {
+  return await postRequest(`${API_BASE_URL}/api/blog/data`, {
+    id: id,
+    field: metadata.type,
+  });
 }

@@ -15,20 +15,22 @@ import { prettyCodeOptions } from "../../../utils/markdownConstants";
 import {
   getBlogContent,
   getAllBlogs,
-  getBlogBySlug,
-  getMetadata,
+  getBlogMetadataBySlug,
+  getBlogMetadataById,
+  getBlogMetadataByType,
+  BLOG_TYPES,
 } from "../../../services/apiServices";
 import { getBlogToc } from "../../../services/blogServices";
 
 // Static params for SSG
 export async function generateStaticParams() {
-  const blogs = await getAllBlogs();
+  const blogs = await getBlogMetadataByType(BLOG_TYPES.blog);
   return blogs.map((blog) => blog.slug);
 }
 
 // SEO metadata generation
 export async function generateMetadata({ params }) {
-  const metadata = await getBlogBySlug(params.slug);
+  const metadata = await getBlogMetadataBySlug(params.slug);
   return {
     title: metadata.title,
     description: metadata.description,
@@ -39,8 +41,7 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const { slug } = params;
 
-  const [blogData] = await getBlogBySlug(slug);
-  const [metaData] = await getMetadata(blogData.id);
+  const blogData = await getBlogMetadataBySlug(slug);
   const content = await getBlogContent(blogData.id);
   const tableOfContent = getBlogToc(content);
 
@@ -55,8 +56,8 @@ export default async function Post({ params }) {
           title={blogData.title}
           tags={blogData.tags}
           date={blogData.createdAt}
-          views={metaData.views}
-          likes={metaData.likes}
+          views={blogData.views}
+          likes={blogData.likes}
         />
 
         <Separator className="my-16" />

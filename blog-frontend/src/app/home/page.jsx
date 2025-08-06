@@ -2,20 +2,21 @@ import React, { Suspense } from "react";
 import LatestPost from "./components/molecules/latestPost";
 import BackGroundParticle from "./components/atoms/backGroundParticle";
 import Subscribe from "./components/atoms/subscribe";
-import {
-  getIdToMetadata,
-  getFeaturedSnippets,
-  getAllBlogs,
-} from "../../services/apiServices";
+import { getBlogMetadataByType, BLOG_TYPES } from "../../services/apiServices";
 import LoadingSpinner from "../../components/atom/loadingSpinner";
 import FeaturedSection from "./components/atoms/featuredSection";
 
 export default async function Home() {
-  const [latestBlog, snippets, blogIdToMetadata] = await Promise.all([
-    getAllBlogs(),
-    getFeaturedSnippets(),
-    getIdToMetadata(),
+  const [latestBlog, snippets, blogs] = await Promise.all([
+    getBlogMetadataByType(BLOG_TYPES.blog),
+    getBlogMetadataByType(BLOG_TYPES.snippet),
+    getBlogMetadataByType(undefined),
   ]);
+
+  const blogIdToMetadata = blogs.reduce((acc, data) => {
+    acc[data.id] = data;
+    return acc;
+  }, {});
 
   const [firstLatestBlog] = latestBlog;
 

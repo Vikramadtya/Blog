@@ -1,16 +1,13 @@
 import React from "react";
 
-import {
-  getAllBlogs,
-  getAllTags,
-  getTagsToBlogs,
-} from "../../services/apiServices";
+import { getAllBlogs, getAllTags } from "../../services/apiServices";
 import TagBasedList from "./components/molecules/tagBasedList";
+import { getTagToBlogMap } from "../../services/blogServices";
 
-export default async function Blog() {
+export default async function Tags() {
   const tags = await getAllTags();
-  const tagToMetadataBlog = await getTagsToBlogs();
-  const allBlogs = await getAllBlogs();
+  const tagToMetadataBlog = await getTagToBlogMap(tags);
+  const allBlogs = tagToMetadataBlog["00000000-0000-0000-0000-000000000000"];
 
   return (
     <main className="flex flex-col items-center justify-between px-12 md:px-24 lg:px-32 xl:px-48">
