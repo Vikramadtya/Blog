@@ -1,0 +1,60 @@
+{
+    "author": "bcf59225-6b0a-4a5b-8d13-ecfb3840147a",
+    "blogNumber": 2,
+    "createdAt": "2024-09-20 09:27:58.737884",
+    "demo": {
+        "live": false,
+        "preview": null,
+        "repository": null
+    },
+    "hash": "5bb26c2e0e690ed11055f466c896f239b5f9d7dddce9f36d67ef392e149c85a7",
+    "id": "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
+    "previewImageSrc": "https://www.neuralcook.com/images/sorting-visualizer.jpg",
+    "publish": true,
+    "slug": "sort-visualizer",
+    "summary": "An interactive web application showcasing the functionality of sorting algorithms like Quick Sort, Merge Sort, and Bubble Sort. Built with Next.js and deployed on Vercel, it provides a dynamic and intuitive visual learning experience for algorithm enthusiasts.\n",
+    "tags": [
+        "deployed",
+        "javascript",
+        "sort algorithms"
+    ],
+    "title": "Sort Visualizer",
+    "type": "blog",
+    "updatedAt": "2025-07-21T08:47:33.121Z",
+    "version": 11,
+    "toc": [
+        {
+            "level": 1,
+            "title": "Why I Built This Sorting Visualizer"
+        },
+        {
+            "level": 1,
+            "title": "What Makes My Tool Unique?"
+        },
+        {
+            "level": 1,
+            "title": "Who Is This For?"
+        }
+    ],
+    "readingTime": "2 min read",
+    "wordCount": 315,
+    "imageCount": 0,
+    "links": {
+        "internal": [],
+        "external": [
+            "https://viki-sort-visualizer.vercel.app/"
+        ]
+    },
+    "code": {
+        "count": 0,
+        "languages": []
+    },
+    "excerpt": "",
+    "keywords": [
+        "you",
+        "i",
+        "algorithms",
+        "sorting",
+        "your"
+    ]
+}

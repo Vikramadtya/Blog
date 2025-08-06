@@ -1,0 +1,43 @@
+{
+    "author": "bcf59225-6b0a-4a5b-8d13-ecfb3840147a",
+    "blogNumber": 1,
+    "createdAt": "2024-12-20 00:11:46.961986",
+    "demo": {
+        "live": false,
+        "preview": null,
+        "repository": null
+    },
+    "hash": "7b3a0cc785897cf4495601fef1d4d8b5e871c78d564b4a2e2e7167d284f69507",
+    "id": "f8b34c36-0716-4cb2-8fee-3ed013a68260",
+    "previewImageSrc": "https://www.neuralcook.com/images/first-blog.png",
+    "publish": true,
+    "slug": "first-blog",
+    "summary": "A short introduction to technical writing",
+    "tags": [
+        "deployed"
+    ],
+    "title": "My First Blog",
+    "type": "blog",
+    "updatedAt": "2025-07-21T08:47:33.138Z",
+    "version": 11,
+    "toc": [],
+    "readingTime": "2 min read",
+    "wordCount": 303,
+    "imageCount": 0,
+    "links": {
+        "internal": [],
+        "external": []
+    },
+    "code": {
+        "count": 0,
+        "languages": []
+    },
+    "excerpt": "",
+    "keywords": [
+        "i",
+        "my",
+        "s",
+        "this",
+        "blog"
+    ]
+}

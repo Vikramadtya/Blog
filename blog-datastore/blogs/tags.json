@@ -1,0 +1,81 @@
+[
+    {
+        "color": "#27ae60",
+        "blogs": [
+            "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
+            "9aecebee-4b11-4014-a6aa-8c11aac01dd1"
+        ],
+        "count": 2,
+        "name": "code",
+        "id": "1e4f5ec6-b541-4b29-8536-7e335b6e8636"
+    },
+    {
+        "color": "#e74c3c",
+        "blogs": [
+            "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
+            "9aecebee-4b11-4014-a6aa-8c11aac01dd1"
+        ],
+        "count": 2,
+        "name": "snippet",
+        "id": "255dfcc7-9a0d-4fc6-a7ae-937f84b21479"
+    },
+    {
+        "color": "#3498db",
+        "blogs": [
+            "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599"
+        ],
+        "count": 1,
+        "name": "sort algorithms",
+        "id": "71307e7d-06f6-4c54-8606-0aa177ed5a2b"
+    },
+    {
+        "color": "#8e44ad",
+        "blogs": [
+            "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
+            "9aecebee-4b11-4014-a6aa-8c11aac01dd1"
+        ],
+        "count": 2,
+        "name": "linux",
+        "id": "a040ac00-59a4-4b18-8e89-5da3494156a1"
+    },
+    {
+        "color": "#f1c40f",
+        "blogs": [
+            "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599"
+        ],
+        "count": 1,
+        "name": "javascript",
+        "id": "ae2b4f2f-736e-4a82-afb0-1e7c3fcd7100"
+    },
+    {
+        "color": "#f1c40f",
+        "blogs": [
+            "9aecebee-4b11-4014-a6aa-8c11aac01dd1"
+        ],
+        "count": 1,
+        "name": "tar",
+        "id": "b0c66955-6a53-41ef-b593-9f649c209984"
+    },
+    {
+        "color": "#8e44ad",
+        "blogs": [
+            "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
+            "f8b34c36-0716-4cb2-8fee-3ed013a68260"
+        ],
+        "count": 2,
+        "name": "deployed",
+        "id": "bb4fee34-bcda-47aa-968a-0d5b2bde67a5"
+    },
+    {
+        "id": "00000000-0000-0000-0000-000000000000",
+        "name": "all",
+        "color": "#3498db",
+        "blogs": [
+            "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
+            "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
+            "9aecebee-4b11-4014-a6aa-8c11aac01dd1",
+            "f8b34c36-0716-4cb2-8fee-3ed013a68260"
+        ],
+        "count": 4
+    }
+]

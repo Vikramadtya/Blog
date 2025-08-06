@@ -1,0 +1,61 @@
+{
+    "author": "bcf59225-6b0a-4a5b-8d13-ecfb3840147a",
+    "blogNumber": 3,
+    "createdAt": "2024-12-20 00:13:39.323081",
+    "demo": {
+        "live": false,
+        "preview": null,
+        "repository": null
+    },
+    "hash": "990734fc9b50d11076b5ef1c294c9109e7f193002acf6d29c3fbd7a0db26dfc3",
+    "id": "9aecebee-4b11-4014-a6aa-8c11aac01dd1",
+    "previewImageSrc": "",
+    "publish": true,
+    "slug": "tar-command-chronicle",
+    "summary": "Dive into the magic of the tar command and uncover its most practical and time-saving uses.",
+    "tags": [
+        "tar",
+        "linux",
+        "code",
+        "snippet"
+    ],
+    "title": "The Tar Command Chronicles: Bundle, Zip, and Conquer!",
+    "type": "snippet",
+    "updatedAt": "2025-07-21T08:47:33.133Z",
+    "version": 13,
+    "toc": [
+        {
+            "level": 1,
+            "title": "Compress"
+        },
+        {
+            "level": 1,
+            "title": "Extract"
+        },
+        {
+            "level": 1,
+            "title": "List the contents "
+        }
+    ],
+    "readingTime": "1 min read",
+    "wordCount": 180,
+    "imageCount": 0,
+    "links": {
+        "internal": [],
+        "external": []
+    },
+    "code": {
+        "count": 4,
+        "languages": [
+            "shell"
+        ]
+    },
+    "excerpt": "",
+    "keywords": [
+        "tar",
+        "archive",
+        "file",
+        "directory",
+        "compress"
+    ]
+}

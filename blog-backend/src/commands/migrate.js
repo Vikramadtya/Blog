@@ -14,6 +14,7 @@ import { getRandomColor } from '../utils/helpers.js';
 import { validate as isValidUuid } from 'uuid';
 
 const TAGS_FILE_NAME = 'tags.json';
+const DEFAULT_TAG = 'all';
 
 /**
  * Performs a two-way sync for tags. It fetches from Firestore, scans local blogs for usage,
@@ -38,6 +39,8 @@ async function migrateTags(options = {}) {
       .map((dirent) => dirent.name);
 
     const localTagUsage = new Map();
+    localTagUsage.set(DEFAULT_TAG, []);
+
     for (const blogId of blogDirs) {
       const metadataPath = path.join(PATH_TO_BLOGS, blogId, METADATA_FILE_NAME);
       if (fs.existsSync(metadataPath)) {
@@ -50,6 +53,9 @@ async function migrateTags(options = {}) {
             localTagUsage.get(tagName).push(blogId);
           });
         }
+
+        // add to all tag
+        localTagUsage.get(DEFAULT_TAG).push(blogId);
       }
     }
 
@@ -66,7 +72,10 @@ async function migrateTags(options = {}) {
         tagsToUpdate.push(tagName);
       } else {
         const newTag = {
-          id: uuidv4(),
+          id:
+            tagName === 'all'
+              ? '00000000-0000-0000-0000-000000000000'
+              : uuidv4(),
           name: tagName,
           color: getRandomColor(),
           blogs,
