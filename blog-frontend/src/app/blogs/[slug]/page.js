@@ -14,9 +14,7 @@ import { useMDXComponents } from "./components/atom/mdx-components";
 import { prettyCodeOptions } from "../../../utils/markdownConstants";
 import {
   getBlogContent,
-  getAllBlogs,
   getBlogMetadataBySlug,
-  getBlogMetadataById,
   getBlogMetadataByType,
   BLOG_TYPES,
 } from "../../../services/apiServices";

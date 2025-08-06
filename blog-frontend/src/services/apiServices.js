@@ -86,8 +86,13 @@ export function notify(formData) {
  * @param {string} id - The ID of the blog post.
  * @returns {Promise<string>} - The content of the blog post.
  */
-export function getBlogContent(id) {
-  return fetcher(`${GITHUB_RAW_ENDPOINT}/${id}/blog.md`);
+export async function getBlogContent(id) {
+  logger.info(`- [SERVER SIDE FETCH] for getBlogContent(${id})`);
+
+  const response = await fetcher(`${GITHUB_RAW_ENDPOINT}/${id}/blog.md`);
+
+  logger.info(`- [SERVER SIDE FETCH] for getBlogContent(${id}) got response`);
+  return response;
 }
 
 export async function getAllTags() {
