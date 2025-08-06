@@ -32,7 +32,7 @@ export const siteMetadata = {
     day: "numeric",
   },
   githubRawEndpoint:
-    "https://raw.githubusercontent.com/Vikramadtya/Blog-Scratch/main/blogs",
+    "https://raw.githubusercontent.com/Vikramadtya/Blog/refs/heads/main/blog-datastore/blogs/",
   apiBaseUrl: "https://www.neuralcook.com",
   portfolioLink: "https://www.vikramaditya-singh.in",
   openToWork: true,
