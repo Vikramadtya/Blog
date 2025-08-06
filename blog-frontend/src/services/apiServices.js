@@ -1,5 +1,5 @@
 import { siteMetadata as siteConfig } from "../../site.config";
-import { logger } from "../app/api/lib/api-utils";
+import { consola } from "consola";
 
 const API_BASE_URL = siteConfig.apiBaseUrl;
 
@@ -37,6 +37,8 @@ export const METADATA_TYPE = {
  */
 async function fetcher(url, options = {}) {
   try {
+    consola.info(`calling ${url} with options ${JSON.stringify(options)}`);
+
     const response = await fetch(url, options);
     if (!response.ok) {
       throw new Error(`Network request failed: ${response.statusText}`);
@@ -87,34 +89,28 @@ export function notify(formData) {
  * @returns {Promise<string>} - The content of the blog post.
  */
 export async function getBlogContent(id) {
-  logger.info(`- [SERVER SIDE FETCH] for getBlogContent(${id})`);
-
-  const response = await fetcher(`${GITHUB_RAW_ENDPOINT}/${id}/blog.md`);
-
-  logger.info(`- [SERVER SIDE FETCH] for getBlogContent(${id}) got response`);
-  return response;
+  consola.info(`getBlogContent(${id})`);
+  return await fetcher(`${GITHUB_RAW_ENDPOINT}/${id}/blog.md`);
 }
 
 export async function getAllTags() {
   const response = await fetcher(`${API_BASE_URL}/api/blog/tags`);
-  logger.info(
-    `- [SERVER SIDE FETCH] for getAllTags got response: \n ${JSON.stringify(response)}`,
-  );
+  consola.info(`getAllTags got response: \n ${JSON.stringify(response)}`);
   return response.success === true ? response.data : [];
 }
 
 export async function getBlogMetadataWithTagId(tagId) {
   const response = await fetcher(`${API_BASE_URL}/api/blog/data?tag=${tagId}`);
-  logger.info(
-    `- [SERVER SIDE FETCH] for getBlogsWithTag(${tagId}) got response: \n ${JSON.stringify(response)}`,
+  consola.info(
+    `getBlogsWithTag(${tagId}) got response: \n ${JSON.stringify(response)}`,
   );
   return response.success === true ? response.data : [];
 }
 
 export async function getBlogMetadataById(blogId) {
   const response = await fetcher(`${API_BASE_URL}/api/blog/data?id=${blogId}`);
-  logger.info(
-    `- [SERVER SIDE FETCH] for getMetadata(${blogId}) got response: \n ${JSON.stringify(response)}`,
+  consola.info(
+    `getMetadata(${blogId}) got response: \n ${JSON.stringify(response)}`,
   );
   return response.success === true ? response.data[0] : {};
 }
@@ -122,16 +118,16 @@ export async function getBlogMetadataById(blogId) {
 export async function getBlogMetadataByType(value) {
   const url = `${API_BASE_URL}/api/blog/data${value === undefined ? "" : "?type=" + value.type}`;
   const response = await fetcher(url);
-  logger.info(
-    `- [SERVER SIDE FETCH] for getBlogMetadataByType(${value === undefined ? "" : value.name}) got response: \n ${JSON.stringify(response)}`,
+  consola.info(
+    `getBlogMetadataByType(${value === undefined ? "" : value.name}) got response: \n ${JSON.stringify(response)}`,
   );
   return response.success === true ? response.data : [];
 }
 
 export async function getBlogMetadataBySlug(slug) {
   const response = await fetcher(`${API_BASE_URL}/api/blog/data?slug=${slug}`);
-  logger.info(
-    `- [SERVER SIDE FETCH] for getBlogBySlug(${slug}) got response: \n ${JSON.stringify(response)}`,
+  consola.info(
+    `getBlogBySlug(${slug}) got response: \n ${JSON.stringify(response)}`,
   );
   return response.success === true ? response.data[0] : {};
 }
