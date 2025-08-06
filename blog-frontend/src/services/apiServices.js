@@ -50,7 +50,10 @@ async function fetcher(url, options = {}) {
       return text;
     }
   } catch (error) {
-    console.error("API service error:", error);
+    console.error(
+      `API service error: ${url} option : ${JSON.stringify(options)}`,
+      error,
+    );
     throw error;
   }
 }
