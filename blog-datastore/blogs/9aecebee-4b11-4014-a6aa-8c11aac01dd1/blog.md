@@ -1,4 +1,4 @@
-<html><head></head><body>Tar bundles multiple files into a single archive file, and can optionally compress them in Linux systems.
+Tar bundles multiple files into a single archive file, and can optionally compress them in Linux systems.
 
 # Compress
 To compress a file or directory
@@ -8,7 +8,7 @@ To compress a file or directory
 tar -cvf archive_file_name.tar <location-to-the-directory-or-file>
 ```
 
-the options used in the above command are 
+the options used in the above command are
 
 
 - `-c` for creating a new archive
@@ -21,7 +21,7 @@ to compress the archive using gzip use the option `-z` so the archive will be a 
 tar -cvfz compressed_archive_file_name.tar.gz <location-to-the-directory-or-file>
 ```
 
-&gt; some other **gzip** (`-z`) alternative to compress the archive are **bzip2* (`-j`) and  **xz** (`-J`)
+> some other **gzip** (`-z`) alternative to compress the archive are **bzip2* (`-j`) and  **xz** (`-J`)
 
 # Extract
 To compress a file or directory
@@ -37,7 +37,7 @@ the options used in the above command are
 - `-v` to show the detailed output of the process.
 - `-f` to specify the archive file.
 
-# List the contents 
+# List the contents
 To see the files in an archive
 
 ```shell
@@ -45,4 +45,4 @@ tar -tvf compressed_file_name.tar
 ```
 
 
-&gt; For a compressed archive provide the valid `-z` or `-j` or `-J` option</location-to-the-directory-where-to-uncompress></location-to-the-directory-or-file></location-to-the-directory-or-file></body></html>
+> For a compressed archive provide the valid `-z` or `-j` or `-J` option 

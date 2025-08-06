@@ -7,7 +7,7 @@
         "preview": null,
         "repository": null
     },
-    "hash": "5bb26c2e0e690ed11055f466c896f239b5f9d7dddce9f36d67ef392e149c85a7",
+    "hash": "74dcc173c3362f252ae31658b3918975bc032d36c0087ff9aeb3ac4b8ac78864",
     "id": "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
     "previewImageSrc": "https://www.neuralcook.com/images/sorting-visualizer.jpg",
     "publish": true,
@@ -20,8 +20,8 @@
     ],
     "title": "Sort Visualizer",
     "type": "blog",
-    "updatedAt": "2025-07-21T08:47:33.121Z",
-    "version": 11,
+    "updatedAt": "2025-08-06T18:21:35.535Z",
+    "version": 13,
     "toc": [
         {
             "level": 1,
@@ -37,7 +37,7 @@
         }
     ],
     "readingTime": "2 min read",
-    "wordCount": 315,
+    "wordCount": 316,
     "imageCount": 0,
     "links": {
         "internal": [],

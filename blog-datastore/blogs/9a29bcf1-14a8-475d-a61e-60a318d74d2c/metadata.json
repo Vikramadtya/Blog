@@ -7,7 +7,7 @@
         "preview": null,
         "repository": null
     },
-    "hash": "d80e0521dde772d8926e756fea10d6ba81d8366d61253187b23824aa0a797faa",
+    "hash": "f57c47b79fdb2ac7b0af43916a6efeb21dac7e0b649ef2f8a36b3f49f783100c",
     "id": "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
     "previewImageSrc": "",
     "publish": true,
@@ -20,8 +20,8 @@
     ],
     "title": "Port Wars: Hunt Down and Terminate Rogue Processes!",
     "type": "snippet",
-    "updatedAt": "2025-07-21T08:47:33.127Z",
-    "version": 8,
+    "updatedAt": "2025-08-06T18:21:35.542Z",
+    "version": 10,
     "toc": [
         {
             "level": 3,
@@ -45,8 +45,8 @@
     "keywords": [
         "port",
         "kill",
-        "pid",
-        "html",
-        "head"
+        "use",
+        "command",
+        "lsof"
     ]
 }

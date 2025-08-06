@@ -1,5 +1,17 @@
 [
     {
+        "color": "#3498db",
+        "blogs": [
+            "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
+            "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
+            "9aecebee-4b11-4014-a6aa-8c11aac01dd1",
+            "f8b34c36-0716-4cb2-8fee-3ed013a68260"
+        ],
+        "count": 4,
+        "name": "all",
+        "id": "00000000-0000-0000-0000-000000000000"
+    },
+    {
         "color": "#27ae60",
         "blogs": [
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
@@ -65,17 +77,5 @@
         "count": 2,
         "name": "deployed",
         "id": "bb4fee34-bcda-47aa-968a-0d5b2bde67a5"
-    },
-    {
-        "id": "00000000-0000-0000-0000-000000000000",
-        "name": "all",
-        "color": "#3498db",
-        "blogs": [
-            "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
-            "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
-            "9aecebee-4b11-4014-a6aa-8c11aac01dd1",
-            "f8b34c36-0716-4cb2-8fee-3ed013a68260"
-        ],
-        "count": 4
     }
 ]

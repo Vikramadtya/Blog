@@ -4,21 +4,17 @@ import crypto from 'crypto';
 import admin from 'firebase-admin';
 import ora from 'ora';
 import chalk from 'chalk';
-import { JSDOM } from 'jsdom';
-import {
-  PATH_TO_BLOGS,
-  METADATA_FILE_NAME,
-  BLOG_FILE_NAME,
-} from '../config.js';
+import {JSDOM} from 'jsdom';
+import {BLOG_FILE_NAME, METADATA_FILE_NAME, PATH_TO_BLOGS,} from '../config.js';
 import logger from '../logger.js';
 import {
-  generateToc,
-  estimateReadingTime,
   countWords,
-  extractLinks,
+  estimateReadingTime,
   extractCodeInfo,
   extractKeywords,
+  extractLinks,
   generateExcerpt,
+  generateToc,
 } from '../utils/helpers.js';
 
 async function uploadImage(blogId, imagePath) {
@@ -35,33 +31,7 @@ async function processHtmlContent(html, blogId, options) {
   const dom = new JSDOM(html);
   const document = dom.window.document;
   const images = document.querySelectorAll('img');
-  let imageUploads = [];
-  for (const img of images) {
-    const src = img.getAttribute('src');
-    if (src && src.startsWith('./')) {
-      if (options.uploadImages) {
-        const imagePath = path.join(PATH_TO_BLOGS, blogId, src);
-        if (fs.existsSync(imagePath)) {
-          const uploadPromise = uploadImage(blogId, imagePath).then(
-            (publicUrl) => {
-              img.setAttribute('src', publicUrl);
-            },
-          );
-          imageUploads.push(uploadPromise);
-        }
-      } else {
-        img.setAttribute(
-          'src',
-          `https://github.com/Vikramadtya/Blog-Datastore/blob/main/blogs/${blogId}/${src.substring(2)}`,
-        );
-      }
-    }
-  }
-  if (imageUploads.length > 0) {
-    await Promise.all(imageUploads);
-  }
-  const imageCount = images.length;
-  return { html: dom.serialize(), imageCount };
+  return images.length ;
 }
 
 export async function processBlogs(blogId, options) {
@@ -92,14 +62,11 @@ async function processSingleBlog(blogId, options) {
     }
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
     const blogContent = fs.readFileSync(blogContentPath, 'utf-8');
-    const { html: processedContent, imageCount } = await processHtmlContent(
-      blogContent,
-      blogId,
-      options,
-    );
+    const imageCount  = await processHtmlContent(blogContent);
+
     const blogHash = crypto
       .createHash('sha256')
-      .update(processedContent)
+      .update(blogContent)
       .digest('hex');
 
     // --- UPDATE ALL METADATA ---
@@ -107,10 +74,10 @@ async function processSingleBlog(blogId, options) {
     metadata.readingTime = estimateReadingTime(blogContent);
     metadata.wordCount = countWords(blogContent);
     metadata.imageCount = imageCount;
-    metadata.links = extractLinks(processedContent);
+    metadata.links = extractLinks(blogContent);
     metadata.code = extractCodeInfo(blogContent);
-    metadata.excerpt = generateExcerpt(processedContent);
-    metadata.keywords = extractKeywords(processedContent);
+    metadata.excerpt = generateExcerpt(blogContent);
+    metadata.keywords = extractKeywords(blogContent);
 
     if (!options.forceUpdateMetadata && metadata.hash === blogHash) {
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 4));
@@ -119,7 +86,6 @@ async function processSingleBlog(blogId, options) {
       metadata.hash = blogHash;
       metadata.version = (metadata.version || 1) + 1;
       metadata.updatedAt = new Date().toISOString();
-      fs.writeFileSync(blogContentPath, processedContent);
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 4));
       spinner.succeed(
         chalk.green(`Successfully processed and updated blog ${blogId}.`),

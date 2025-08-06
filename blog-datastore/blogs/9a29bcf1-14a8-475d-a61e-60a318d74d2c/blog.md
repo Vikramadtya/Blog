@@ -1,4 +1,4 @@
-<html><head></head><body>On macOS use the command `lsof -i` with the port number to find out what is running on a specific port.
+On macOS use the command `lsof -i` with the port number to find out what is running on a specific port.
 
 ```shell
 sudo lsof -i :<portnumber>
@@ -12,4 +12,4 @@ use the `kill` command with the -9 option and the port PID number to kill a proc
 
 ```shell
 kill -9 <pid>
-```</pid></portnumber></body></html>
+```

@@ -1,4 +1,4 @@
-<html><head></head><body>As someone who's always been fascinated by the inner workings of algorithms, I know firsthand how challenging it can be to fully grasp sorting algorithms just by reading through lines of code. That’s why I created this <a href="https://viki-sort-visualizer.vercel.app/">Sorting Visualizer</a> to make learning these essential concepts more engaging, intuitive, and, most importantly, fun.
+As someone who's always been fascinated by the inner workings of algorithms, I know firsthand how challenging it can be to fully grasp sorting algorithms just by reading through lines of code. That’s why I created this <a href="https://viki-sort-visualizer.vercel.app/" >Sorting Visualizer</a> to make learning these essential concepts more engaging, intuitive, and, most importantly, fun.
 
 
 # Why I Built This Sorting Visualizer
@@ -12,5 +12,4 @@ I realized that understanding these algorithms becomes much easier when you can 
 # Who Is This For?
 Whether you’re a student struggling to visualize how sorting algorithms function, a developer looking to refresh your knowledge, or just someone curious about how data gets sorted behind the scenes, this visualizer is designed for you. I’ve built it to be an invaluable resource for anyone who learns best by seeing concepts in action.
 
-If you’re ready to deepen your understanding of sorting algorithms, I invite you to check out my Sorting Visualizer. It’s an excellent way to see theory come to life and enhance your coding skills with each interaction. Dive in and start visualizing today!
-</body></html>
+If you’re ready to deepen your understanding of sorting algorithms, I invite you to check out my Sorting Visualizer. It’s an excellent way to see theory come to life and enhance your coding skills with each interaction. Dive in and start visualizing today! 

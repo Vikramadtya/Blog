@@ -7,7 +7,7 @@
         "preview": null,
         "repository": null
     },
-    "hash": "990734fc9b50d11076b5ef1c294c9109e7f193002acf6d29c3fbd7a0db26dfc3",
+    "hash": "92076acbc994ebc83b0845a51b4b8f057c6212cf4e6f6ffaffbc91c767e91d9b",
     "id": "9aecebee-4b11-4014-a6aa-8c11aac01dd1",
     "previewImageSrc": "",
     "publish": true,
@@ -21,8 +21,8 @@
     ],
     "title": "The Tar Command Chronicles: Bundle, Zip, and Conquer!",
     "type": "snippet",
-    "updatedAt": "2025-07-21T08:47:33.133Z",
-    "version": 13,
+    "updatedAt": "2025-08-06T18:21:35.547Z",
+    "version": 15,
     "toc": [
         {
             "level": 1,
@@ -34,11 +34,11 @@
         },
         {
             "level": 1,
-            "title": "List the contents "
+            "title": "List the contents"
         }
     ],
     "readingTime": "1 min read",
-    "wordCount": 180,
+    "wordCount": 181,
     "imageCount": 0,
     "links": {
         "internal": [],
@@ -55,7 +55,7 @@
         "tar",
         "archive",
         "file",
-        "directory",
-        "compress"
+        "compress",
+        "directory"
     ]
 }

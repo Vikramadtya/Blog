@@ -7,7 +7,7 @@
         "preview": null,
         "repository": null
     },
-    "hash": "7b3a0cc785897cf4495601fef1d4d8b5e871c78d564b4a2e2e7167d284f69507",
+    "hash": "0447857ded174522424857d854828fcd6016025f203bab29e2ead21c866f90a8",
     "id": "f8b34c36-0716-4cb2-8fee-3ed013a68260",
     "previewImageSrc": "https://www.neuralcook.com/images/first-blog.png",
     "publish": true,
@@ -18,11 +18,11 @@
     ],
     "title": "My First Blog",
     "type": "blog",
-    "updatedAt": "2025-07-21T08:47:33.138Z",
-    "version": 11,
+    "updatedAt": "2025-08-06T18:21:35.552Z",
+    "version": 13,
     "toc": [],
     "readingTime": "2 min read",
-    "wordCount": 303,
+    "wordCount": 302,
     "imageCount": 0,
     "links": {
         "internal": [],
