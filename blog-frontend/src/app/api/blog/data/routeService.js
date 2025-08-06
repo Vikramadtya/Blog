@@ -1,85 +1,114 @@
 import {
   collection,
   doc,
-  getDoc,
-  getDocs,
-  where,
+  increment,
   query,
+  updateDoc,
+  where,
+  documentId,
 } from "firebase/firestore";
 import { db } from "../../config/firebaseConfig";
-import { convertBlogData } from "../services";
+import { fetchCollection, getDocumentById } from "../../lib/commons";
+import datastore from "../../lib/datastore-info";
+import { logger } from "../../lib/api-utils";
 
 /**
- * A generic function to fetch blog data from Firestore.
- * @param {Query} query - The Firestore query to execute.
- * @returns {Promise<Array<object>>} - A promise that resolves to an array of blog data.
+ * Fetches blogs from Firestore with flexible filtering.
+ * - No filter: Fetches all blogs.
+ * - Filter with a single value: Fetches blogs where a field matches the value.
+ * - Filter with an array value: Fetches blogs where a field matches any value in the array.
+ *
+ * @param {object} [filter] - Optional filter object.
+ * @param {string} filter.key - The document field to filter by (e.g., "slug", "type", or "id" for the document ID).
+ * @param {any|Array<any>} filter.value - The value or array of values the field must match.
+ * @returns {Promise<Array<object>>} - A promise resolving to an array of blogs.
  */
-async function fetchBlogs(query) {
-  const querySnapshot = await getDocs(query);
-  return querySnapshot.docs.map(convertBlogData);
-}
+export function getBlogs(filter) {
+  const blogsCollection = collection(db, datastore.blog.name);
+  let firestoreQuery;
+  let context;
 
-/**
- * Fetches a single blog by its document ID.
- * @param {string} id - The document ID of the blog.
- * @returns {Promise<object>} - A promise that resolves to the blog data.
- */
-export async function getBlogById(id) {
-  const blogRef = doc(db, "blogs", id);
-  const blogSnap = await getDoc(blogRef);
-  if (!blogSnap.exists()) {
-    throw new Error(`Blog with ID ${id} not found.`);
-  }
-  return convertBlogData(blogSnap);
-}
+  if (filter && filter.key && filter.value !== undefined) {
+    const { key, value } = filter;
+    // Determine the field to query: use documentId() for 'id', otherwise use the provided key.
+    const fieldToQuery = key === "id" ? documentId() : key;
 
-/**
- * Fetches all blogs.
- * @returns {Promise<Array<object>>} - A promise that resolves to an array of all blogs.
- */
-export function getAllBlogs() {
-  const blogsCollection = collection(db, "blogs");
-  return fetchBlogs(blogsCollection);
-}
-
-/**
- * Fetches blogs by their slug.
- * @param {string} slug - The slug of the blog.
- * @returns {Promise<Array<object>>} - A promise that resolves to an array of matching blogs.
- */
-export function getBlogBySlug(slug) {
-  const blogsCollection = collection(db, "blogs");
-  const q = query(blogsCollection, where("slug", "==", slug));
-  return fetchBlogs(q);
-}
-
-/**
- * Fetches all blogs of a specific type.
- * @param {string} type - The type of the blogs to fetch.
- * @returns {Promise<Array<object>>} - A promise that resolves to an array of matching blogs.
- */
-export function getBlogsByType(type) {
-  const blogsCollection = collection(db, "blogs");
-  const q = query(blogsCollection, where("type", "==", type));
-  return fetchBlogs(q);
-}
-
-/**
- * Fetches a map of tags to their associated blog metadata.
- * @returns {Promise<object>} - A promise that resolves to a map of tags to blogs.
- */
-export async function getTagToMetadataMap() {
-  const blogs = await getAllBlogs();
-  const tagToMetadataBlog = {};
-
-  blogs.forEach((blog) => {
-    blog.tags.forEach((tag) => {
-      if (!tagToMetadataBlog[tag.id]) {
-        tagToMetadataBlog[tag.id] = [];
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        logger.warn(
+          `getBlogs called with an empty array for key: '${key}'. Returning no results.`,
+        );
+        return Promise.resolve([]); // Firestore 'in' queries cannot have an empty array.
       }
-      tagToMetadataBlog[tag.id].push(blog);
-    });
-  });
+      // Use the 'in' operator to find documents where the field matches any value in the array.
+      // NOTE: The 'in' operator is limited to 30 values per query.
+      context = `blogs where '${key}' is in [${value.length} values]`;
+      firestoreQuery = query(blogsCollection, where(fieldToQuery, "in", value));
+    } else {
+      // Use the '==' operator for a single value match.
+      context = `blogs where ${key} == "${value}"`;
+      firestoreQuery = query(blogsCollection, where(fieldToQuery, "==", value));
+    }
+  } else {
+    // No filter or an invalid filter was provided, so fetch all blogs.
+    context = "all blogs";
+    firestoreQuery = query(blogsCollection);
+    if (filter) {
+      logger.warn(
+        "getBlogs called with an incomplete filter. Fetching all blogs instead.",
+        filter,
+      );
+    }
+  }
 
-  return tagToMetadataBlog;
+  return fetchCollection(
+    firestoreQuery,
+    context,
+    datastore.blog.converter,
+    datastore.blog.type,
+  );
+}
+
+/**
+ * Increments a numeric field in a blog's metadata.
+ * @param {string} id - The ID of the blog.
+ * @param {string} field - The field to increment (e.g., "likes", "views").
+ * @returns {Promise<object>} - The updated metadata.
+ */
+export async function incrementMetadataField(id, field) {
+  const metadataRef = doc(db, datastore.blog.name, id);
+  await updateDoc(metadataRef, { [field]: increment(1) });
+  return getDocumentById(
+    id,
+    datastore.blog.converter,
+    datastore.blog.name,
+    datastore.blog.type,
+  );
+}
+
+export async function getAllBlogWithTag(filter) {
+  const { key, value } = filter;
+  const context = `blogs by tag id: ${value}`;
+  logger.info(`Fetching ${context}`);
+  try {
+    // Fetch the tag document to get the list of associated blog IDs
+    const tag = await getDocumentById(
+      value,
+      datastore.tag.converter,
+      datastore.tag.name,
+      datastore.tag.type,
+    );
+
+    if (!tag || !tag.blogs || tag.blogs.length === 0) {
+      logger.warn(`No blogs found for tag ID: ${value}`);
+      return [];
+    }
+
+    // Now, fetch the blogs using the array of blog IDs.
+    // This will be handled by the 'id' key logic below.
+    return getBlogs({ key: "id", value: tag.blogs });
+  } catch (error) {
+    logger.error(`Error fetching blogs for tag ${value}:`, error);
+    throw error;
+  }
 }

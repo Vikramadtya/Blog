@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
+import { consola } from "consola";
 
 // A simple server-side logger
-const logger = {
-  info: (message, ...args) => console.log(`[API INFO] ${message}`, ...args),
-  error: (message, ...args) => console.error(`[API ERROR] ${message}`, ...args),
+export const logger = {
+  info: (message) => consola.info(`[API BACKEND INFO] ${message}`),
+  error: (message) => consola.error(`[API BACKEND ERROR] ${message}`),
+  debug: (message) => consola.debug(`[API BACKEND DEBUG] ${message}`),
+  success: (message) => consola.success(`[API BACKEND SUCCESS] ${message}`),
+  warn: (message) => consola.warn(`[API BACKEND WARN] ${message}`),
 };
 
 /**
@@ -22,7 +26,17 @@ export function successResponse(data, status = 200) {
  * @param {number} [status=500] - The HTTP status code.
  * @returns {NextResponse}
  */
-export function errorResponse(message, status = 500) {
+export function errorResponse(message, error, status = 500) {
   logger.error(message);
-  return NextResponse.json({ success: false, error: { message } }, { status });
+  return NextResponse.json(
+    {
+      success: false,
+      message: { message },
+      error:
+        process.env.NODE_ENV !== "production" && error
+          ? error.message
+          : undefined,
+    },
+    { status },
+  );
 }

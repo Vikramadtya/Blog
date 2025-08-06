@@ -1,11 +1,3 @@
-export function isFilteringOn(request, key) {
-  return request.nextUrl.searchParams.get(key) !== null;
-}
-
-export function getParam(request, key) {
-  return request.nextUrl.searchParams.get(key);
-}
-
 export function convertBlogData(data) {
   return {
     id: data.get("id"),
@@ -21,12 +13,6 @@ export function convertBlogData(data) {
     blogNumber: data.get("blogNumber"),
     previewImageSrc: data.get("previewImageSrc"),
     type: data.get("type"),
-  };
-}
-
-export function convertMetaData(data) {
-  return {
-    id: data.get("id"),
     likes: data.get("likes"),
     views: data.get("views"),
   };
@@ -38,5 +24,16 @@ export function convertTagData(data) {
     name: data.get("name"),
     color: data.get("color"),
     count: data.get("blogs").length,
+    blogs: data.get("blogs"),
+  };
+}
+
+export function convertAuthorData(data) {
+  return {
+    id: data.get("id"),
+    name: data.get("name"),
+    username: data.get("username"),
+    email: data.get("email"),
+    avatar: data.get("avatar"),
   };
 }
