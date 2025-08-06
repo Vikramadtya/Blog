@@ -24,6 +24,7 @@
     "@types/mdx": "^2.0.13",
     "animate.css": "^4.1.1",
     "clsx": "^2.1.0",
+    "consola": "^3.4.2",
     "dayjs": "^1.11.13",
     "firebase": "^10.13.1",
     "gray-matter": "^4.0.3",
