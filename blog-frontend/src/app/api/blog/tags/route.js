@@ -1,7 +1,4 @@
-import { NextResponse } from "next/server";
 import { getTags } from "./routeService";
-import { getDocumentById } from "../../lib/commons";
-import datastore from "../../lib/datastore-info";
 import { errorResponse, logger, successResponse } from "../../lib/api-utils";
 
 export const dynamic = "force-dynamic";
@@ -23,23 +20,11 @@ export async function GET(request) {
   logger.info(`Received request to fetch ${context}`);
 
   try {
-    let data;
-    if (id) {
-      // Fetch a single tag by its document ID
-      data = await getDocumentById(
-        id,
-        datastore.tag.converter,
-        datastore.tag.name,
-        datastore.tag.type,
-      );
-    } else {
-      // Fetch all tags
-      data = await getTags();
-    }
+    const data = id ? await getTags({ key: "id", value: id }) : await getTags();
 
     if (!data || (Array.isArray(data) && data.length === 0)) {
       logger.warn(`No data found for: ${context}`);
-      return errorResponse(`Invalid request 'id' (${id})`, undefined, 400);
+      return errorResponse(`Invalid request 'id' (${id})`, undefined, 404);
     }
 
     logger.success(`Successfully fetched data for: ${context}`);

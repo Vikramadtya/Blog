@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 const Tag = ({ text, color }) => {
+  if (text === undefined) return;
+
   const background = color || "#e0e0e0"; // fallback to light gray
   const textColor =
     background === "#ffffff" || background === "#fff" ? "black" : "white";

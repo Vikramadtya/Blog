@@ -1,9 +1,9 @@
 import React from "react";
 import MarkDownContentList from "../../components/molecules/markDownContentList";
-import { BLOG_TYPES, getBlogMetadataByType } from "../../services/apiServices";
+import { BLOG_TYPES, getBlogsByType } from "../../services/serverDataService";
 
 export default async function Blog() {
-  const blogs = await getBlogMetadataByType(BLOG_TYPES.blog);
+  const blogs = await getBlogsByType(BLOG_TYPES.blog.type);
   const blogIdToMetadata = blogs.reduce((acc, data) => {
     acc[data.id] = data;
     return acc;

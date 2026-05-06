@@ -1,45 +1,34 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
+/**
+ * Tags route service — business logic for /api/blog/tags.
+ *
+ * Reads tag data from localDatastore and applies optional filtering.
+ */
 
-import { fetchCollection } from "../../lib/commons";
-import datastore from "../../lib/datastore-info";
+import { getAllTags, getTagById } from "../../lib/localDatastore";
 import { logger } from "../../lib/api-utils";
 
 /**
- * Fetches tags from Firestore. Can fetch all tags or filter by a key-value pair.
+ * Fetches tags from the local filesystem with optional filtering.
+ *
  * @param {object} [filter] - Optional filter object.
- * @param {string} filter.key - The document field to filter by (e.g., "slug", "type").
+ * @param {string} filter.key - The field to filter by (e.g., "id", "slug", "name").
  * @param {any} filter.value - The value the field must match.
- * @returns {Promise<Array<object>>} - A promise resolving to an array of tags.
+ * @returns {Promise<Array<object>|object|null>} - A promise resolving to tags or a single tag.
  */
 export async function getTags(filter) {
-  const tagCollection = collection(db, datastore.tag.name);
-  let firestoreQuery;
-  let context;
-
-  if (filter && filter.key && filter.value !== undefined) {
-    // A filter is provided, create a 'where' query
-    context = `tags where ${filter.key} == "${filter.value}"`;
-    firestoreQuery = query(
-      tagCollection,
-      where(filter.key, "==", filter.value),
-    );
-  } else {
-    // No filter or an invalid filter was provided, fetch all tags
-    context = "all tags";
-    firestoreQuery = query(tagCollection);
-    if (filter) {
-      logger.warn(
-        "getTags called with an incomplete filter. Fetching all tags instead.",
-        filter,
-      );
-    }
+  if (filter && filter.key === "id") {
+    logger.info(`Fetching tag by ID: ${filter.value}`);
+    return getTagById(filter.value);
   }
 
-  return fetchCollection(
-    firestoreQuery,
-    context,
-    datastore.tag.converter,
-    datastore.tag.type,
-  );
+  const tags = await getAllTags();
+
+  if (filter && filter.key && filter.value !== undefined) {
+    const { key, value } = filter;
+    logger.info(`Filtering tags where ${key} == "${value}"`);
+    return tags.filter((tag) => tag[key] === value);
+  }
+
+  logger.info(`Returning all tags (${tags.length})`);
+  return tags;
 }

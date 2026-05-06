@@ -1,28 +1,38 @@
+/**
+ * API route handler for /api/blog/data.
+ *
+ * This route is now primarily used by CLIENT components at runtime:
+ * - GET ?id=<blogId> → Fetches live metadata (likes/views) from Firebase
+ * - POST → Increments likes or views via Firebase
+ *
+ * Static data (blog lists, tags, content) is resolved at build time
+ * via localDatastore — no lambda invocations during SSG.
+ */
+
 import {
-  getAllBlogWithTag,
   getBlogs,
+  getDynamicMetadataById,
   incrementMetadataField,
 } from "./routeService";
-import { NextResponse } from "next/server";
-
-import { getDocumentById } from "../../lib/commons";
-import datastore from "../../lib/datastore-info";
 import { errorResponse, logger, successResponse } from "../../lib/api-utils";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/** Valid fields that can be incremented via POST. */
+const VALID_INCREMENT_FIELDS = ["likes", "views"];
+
 /**
  * Handles GET requests to fetch blog data.
- * Supports fetching by ID, slug, or type.
+ *
+ * - `?id=<blogId>` → Returns live Firebase data (likes/views) for client components
+ * - All other queries → Returns filesystem data via localDatastore
+ *
  * @param {Request} request - The incoming request object.
- * @returns {NextResponse} - The response containing the blog data or an error message.
+ * @returns {NextResponse}
  */
 export async function GET(request) {
-  logger.info(`Received request to get data`);
-
   const { searchParams } = new URL(request.url);
-
   const id = searchParams.get("id");
   const slug = searchParams.get("slug");
   const type = searchParams.get("type");
@@ -30,81 +40,71 @@ export async function GET(request) {
   const tag = searchParams.get("tag");
 
   logger.info(
-    `Received request with params: id=${id}, slug=${slug}, type=${type}, ids=${ids}`,
+    `GET /api/blog/data — id=${id}, slug=${slug}, type=${type}, ids=${ids}, tag=${tag}`,
   );
 
   try {
     let data;
+
     if (id) {
-      data = await getDocumentById(
-        id,
-        datastore.blog.converter,
-        datastore.blog.name,
-        datastore.blog.type,
-      );
-    } else if (tag) {
-      logger.info(`Fetching blogs by tag: ${tag}`);
-      data = await getAllBlogWithTag({ key: "tag", value: tag });
-    } else if (slug) {
-      logger.info(`Fetching blogs by slug: ${slug}`);
-      data = await getBlogs({ key: "slug", value: slug });
-    } else if (type) {
-      logger.info(`Fetching blogs by type: ${type}`);
-      data = await getBlogs({ key: "type", value: type });
-    } else if (ids) {
-      logger.info(`Fetching blogs by ID: ${ids}`);
-      data = await getBlogs({ key: "id", value: ids.split(",") });
+      // Client components fetch dynamic metadata (likes/views) from Firebase
+      data = await getDynamicMetadataById(id);
     } else {
-      logger.info("Fetching all blogs");
-      data = await getBlogs();
+      // All other queries go through localDatastore
+      let filter;
+      if (tag) {
+        filter = { key: "tag", value: tag };
+      } else if (slug) {
+        filter = { key: "slug", value: slug };
+      } else if (type) {
+        filter = { key: "type", value: type };
+      } else if (ids) {
+        filter = { key: "id", value: ids.split(",") };
+      }
+
+      data = await getBlogs(filter);
     }
-    logger.success("Successfully fetched blog data.");
+
+    logger.success("Successfully fetched blog data");
     return successResponse(data);
   } catch (error) {
-    logger.error("An error occurred while fetching blog data:", error);
+    logger.error("Failed to fetch blog data:", error);
     return errorResponse("An error occurred while fetching blog data.", error);
   }
 }
 
 /**
- * Handles POST requests to increment a specific metadata field (e.g., "likes" or "views").
+ * Handles POST requests to increment a blog's likes or views count.
  *
  * @param {Request} request - The incoming Next.js request object.
- * @returns {NextResponse} - The JSON response.
+ * @returns {NextResponse}
  */
 export async function POST(request) {
-  logger.info(`Received request to increment data`);
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return errorResponse("Invalid JSON in request body.", undefined, 400);
+  }
 
-  const body = await request.json();
+  const { id, field } = body;
+
+  logger.info(`POST /api/blog/data — id=${id}, field=${field}`);
+
+  if (!id || !field || !VALID_INCREMENT_FIELDS.includes(field)) {
+    return errorResponse(
+      `Invalid request. 'id' and a valid 'field' (${VALID_INCREMENT_FIELDS.join(" or ")}) are required.`,
+      undefined,
+      400,
+    );
+  }
 
   try {
-    let id = body.id;
-    let field = body.field;
-
-    const validFields = ["likes", "views"];
-
-    logger.info(
-      `Received request to increment '${field}' for document ID: ${id}`,
-    );
-
-    if (!id || !field || !validFields.includes(field)) {
-      logger.warn("Invalid request body received:", { id, field });
-      return errorResponse(
-        `Invalid request. 'id' and a valid 'field' (${validFields.join(" or ")}) are required.`,
-        undefined,
-        400,
-      );
-    }
-
     const updatedData = await incrementMetadataField(id, field);
-
-    logger.success(`Successfully incremented '${field}' for ID: ${id}`);
+    logger.success(`Incremented '${field}' for ID: ${id}`);
     return successResponse(updatedData);
   } catch (error) {
-    logger.error(
-      `Failed to increment '${body.field}' for ID: ${body.id}:`,
-      error,
-    );
+    logger.error(`Failed to increment '${field}' for ID: ${id}:`, error);
     return errorResponse("An error occurred while updating metadata.", error);
   }
 }

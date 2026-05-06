@@ -1,6 +1,6 @@
 import React from "react";
 
-import { getAllBlogs, getAllTags } from "../../services/apiServices";
+import { getAllTags } from "../../services/serverDataService";
 import TagBasedList from "./components/molecules/tagBasedList";
 import { getTagToBlogMap } from "../../services/blogServices";
 

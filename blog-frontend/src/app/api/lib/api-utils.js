@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { consola } from "consola";
+import { AppError } from "./errors";
 
 // A simple server-side logger
 export const logger = {
@@ -22,21 +23,30 @@ export function successResponse(data, status = 200) {
 
 /**
  * Sends an error JSON response using NextResponse.
+ *
+ * If the error is an AppError, the HTTP status is derived from its error code.
+ * Otherwise, falls back to the provided status (default 500).
+ *
  * @param {string} message - The error message.
- * @param {number} [status=500] - The HTTP status code.
+ * @param {Error} [error] - The original error object.
+ * @param {number} [status=500] - Fallback HTTP status code.
  * @returns {NextResponse}
  */
 export function errorResponse(message, error, status = 500) {
   logger.error(message);
+
+  const httpStatus = error instanceof AppError ? error.httpStatus : status;
+
   return NextResponse.json(
     {
       success: false,
-      message: { message },
-      error:
-        process.env.NODE_ENV !== "production" && error
-          ? error.message
-          : undefined,
+      message,
+      ...(process.env.NODE_ENV !== "production" &&
+        error && {
+          error: error.message,
+          code: error instanceof AppError ? error.code : undefined,
+        }),
     },
-    { status },
+    { status: httpStatus },
   );
 }

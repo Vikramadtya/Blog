@@ -13,22 +13,22 @@ import ShareBar from "./components/atom/shareBar";
 import { useMDXComponents } from "./components/atom/mdx-components";
 import { prettyCodeOptions } from "../../../utils/markdownConstants";
 import {
+  getBlogBySlug,
+  getBlogsByType,
   getBlogContent,
-  getBlogMetadataBySlug,
-  getBlogMetadataByType,
   BLOG_TYPES,
-} from "../../../services/apiServices";
+} from "../../../services/serverDataService";
 import { getBlogToc } from "../../../services/blogServices";
 
 // Static params for SSG
 export async function generateStaticParams() {
-  const blogs = await getBlogMetadataByType(BLOG_TYPES.blog);
+  const blogs = await getBlogsByType(BLOG_TYPES.blog.type);
   return blogs.map((blog) => blog.slug);
 }
 
 // SEO metadata generation
 export async function generateMetadata({ params }) {
-  const metadata = await getBlogMetadataBySlug(params.slug);
+  const metadata = await getBlogBySlug(params.slug);
   return {
     title: metadata.title,
     description: metadata.description,
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }) {
 export default async function Post({ params }) {
   const { slug } = params;
 
-  const blogData = await getBlogMetadataBySlug(slug);
+  const blogData = await getBlogBySlug(slug);
   const content = await getBlogContent(blogData.id);
   const tableOfContent = getBlogToc(content);
 

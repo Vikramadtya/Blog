@@ -1,140 +1,77 @@
+/**
+ * Client-side API service layer.
+ *
+ * This module is ONLY for client components that need dynamic data
+ * at runtime (likes, views, subscriptions). All static blog data
+ * is resolved at build time via serverDataService.js.
+ *
+ * Server components should NEVER import this module — use
+ * serverDataService.js instead.
+ */
+
+import { get, post, unwrapResponse } from "./httpClient";
 import { siteMetadata as siteConfig } from "../../site.config";
-import { consola } from "consola";
+
+// ─── Re-exports for backward compat with client components ──────────────────
+export { BLOG_TYPES, METADATA_TYPE } from "./constants";
+
+// ─── Configuration ───────────────────────────────────────────────────────────
 
 const API_BASE_URL = siteConfig.apiBaseUrl;
 
-const GITHUB_RAW_ENDPOINT = siteConfig.githubRawEndpoint;
+/**
+ * Builds a full API URL with optional query parameters.
+ *
+ * @param {string} path - The API path (e.g., "/api/blog/data").
+ * @param {Record<string, string>} [params={}] - Query parameters.
+ * @returns {string} The complete URL.
+ */
+function buildApiUrl(path, params = {}) {
+  const url = new URL(path, API_BASE_URL);
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) {
+      url.searchParams.set(key, value);
+    }
+  }
+  return url.toString();
+}
 
-export const BLOG_TYPES = {
-  blog: {
-    name: "blog",
-    type: "blog",
-  },
-  snippet: {
-    name: "snippet",
-    type: "snippet",
-  },
-};
-
-export const METADATA_TYPE = {
-  likes: {
-    name: "likes",
-    type: "likes",
-  },
-  views: {
-    name: "views",
-    type: "views",
-  },
-};
+// ─── Dynamic Data (Runtime Only) ─────────────────────────────────────────────
 
 /**
- * A robust utility function to handle API requests.
- * It attempts to parse the response as JSON, falling back to text if parsing fails.
- * @param {string} url - The URL to fetch.
- * @param {object} options - The options for the fetch request.
- * @returns {Promise<any>} - The response from the API.
- * @throws {Error} - Throws an error if the network request fails.
+ * Fetches a blog's live metadata from Firebase (likes, views).
+ * Used by client components to get real-time counts.
+ *
+ * @param {string} blogId - The blog ID.
+ * @returns {Promise<object>} A single blog metadata object with live counts.
  */
-async function fetcher(url, options = {}) {
-  try {
-    consola.info(`calling ${url} with options ${JSON.stringify(options)}`);
-
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error(`Network request failed: ${response.statusText}`);
-    }
-    const text = await response.text();
-    try {
-      // Try parsing as JSON, as APIs might not set the content-type header correctly.
-      return JSON.parse(text);
-    } catch (error) {
-      // If it's not JSON, return the raw text.
-      return text;
-    }
-  } catch (error) {
-    console.error(
-      `API service error: ${url} option : ${JSON.stringify(options)}`,
-      error,
-    );
-    throw error;
-  }
+export async function getBlogMetadataById(blogId) {
+  const response = await get(buildApiUrl("/api/blog/data", { id: blogId }));
+  const data = unwrapResponse(response, []);
+  return Array.isArray(data) ? data[0] ?? {} : data ?? {};
 }
 
 /**
- * A generic function for making POST requests.
- * @param {string} endpoint - The API endpoint.
- * @param {object} body - The request body.
- * @returns {Promise<any>}
+ * Increments a blog's likes or views count via Firebase.
+ *
+ * @param {string} id - The blog ID.
+ * @param {object} metadata - A METADATA_TYPE value ({ type: "likes" | "views" }).
+ * @returns {Promise<object>} The updated metadata.
  */
-function postRequest(endpoint, body) {
-  return fetcher(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+export async function incrementBlogLikesOrViewsById(id, metadata) {
+  return post(buildApiUrl("/api/blog/data"), {
+    id,
+    field: metadata.type,
   });
 }
 
+// ─── Notification Service ────────────────────────────────────────────────────
+
 /**
- * Submits a user's email for notification.
+ * Submits a user's email for notification subscription.
  * @param {FormData} formData - The form data containing the user's email.
  * @returns {Promise<any>}
  */
 export function notify(formData) {
-  return postRequest(`/api/notify`, { email: formData.get("email") });
-}
-
-/**
- * Fetches the content of a blog post from GitHub.
- * @param {string} id - The ID of the blog post.
- * @returns {Promise<string>} - The content of the blog post.
- */
-export async function getBlogContent(id) {
-  consola.info(`getBlogContent(${id})`);
-  return await fetcher(`${GITHUB_RAW_ENDPOINT}/${id}/blog.md`);
-}
-
-export async function getAllTags() {
-  const response = await fetcher(`${API_BASE_URL}/api/blog/tags`);
-  consola.info(`getAllTags got response: \n ${JSON.stringify(response)}`);
-  return response.success === true ? response.data : [];
-}
-
-export async function getBlogMetadataWithTagId(tagId) {
-  const response = await fetcher(`${API_BASE_URL}/api/blog/data?tag=${tagId}`);
-  consola.info(
-    `getBlogsWithTag(${tagId}) got response: \n ${JSON.stringify(response)}`,
-  );
-  return response.success === true ? response.data : [];
-}
-
-export async function getBlogMetadataById(blogId) {
-  const response = await fetcher(`${API_BASE_URL}/api/blog/data?id=${blogId}`);
-  consola.info(
-    `getMetadata(${blogId}) got response: \n ${JSON.stringify(response)}`,
-  );
-  return response.success === true ? response.data[0] : {};
-}
-
-export async function getBlogMetadataByType(value) {
-  const url = `${API_BASE_URL}/api/blog/data${value === undefined ? "" : "?type=" + value.type}`;
-  const response = await fetcher(url);
-  consola.info(
-    `getBlogMetadataByType(${value === undefined ? "" : value.name}) got response: \n ${JSON.stringify(response)}`,
-  );
-  return response.success === true ? response.data : [];
-}
-
-export async function getBlogMetadataBySlug(slug) {
-  const response = await fetcher(`${API_BASE_URL}/api/blog/data?slug=${slug}`);
-  consola.info(
-    `getBlogBySlug(${slug}) got response: \n ${JSON.stringify(response)}`,
-  );
-  return response.success === true ? response.data[0] : {};
-}
-
-export async function incrementBlogLikesOrViewsById(id, metadata) {
-  return await postRequest(`${API_BASE_URL}/api/blog/data`, {
-    id: id,
-    field: metadata.type,
-  });
+  return post(`/api/notify`, { email: formData.get("email") });
 }
