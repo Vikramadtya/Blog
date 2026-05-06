@@ -1,4 +1,3 @@
-import { getHighlighter } from "shiki";
 
 export const prettyCodeOptions = {
   // Use a light, clean theme inspired by Material Design
@@ -21,29 +20,6 @@ export const prettyCodeOptions = {
   },
 
   // Define syntax highlighting with preferred languages
-  getHighlighter: (options) =>
-    getHighlighter({
-      ...options,
-      langs: [
-        "bash",
-        "c",
-        "cpp",
-        "csharp",
-        "css",
-        "go",
-        "html",
-        "java",
-        "javascript",
-        "json",
-        "md",
-        "php",
-        "python",
-        "rust",
-        "shell",
-        "svelte",
-        "swift",
-        "typescript",
-        "yaml",
-      ],
-    }),
+  // In rehype-pretty-code 0.13.0+, shiki is handled internally.
+  // We can pass shiki options directly.
 };

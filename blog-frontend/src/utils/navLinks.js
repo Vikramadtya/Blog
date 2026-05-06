@@ -1,51 +1,11 @@
-import { siteMetadata } from "../../site.config";
+import { siteMetadata } from "../../site.config.mjs";
+import nav from "../../config/nav.json";
 
-export const navLinks = [
-  { key: 1, href: "/blogs", title: "All Posts", shortcut: "⌘+B" },
-  { key: 2, href: "/tags", title: "Tags", shortcut: "⌘+T" },
-  {
-    key: 3,
-    href: "/notes",
-    title: "Notes",
-    shortcut: "⌘+K",
-  },
-  {
-    key: 4,
-    href: siteMetadata.portfolioLink,
-    title: "Author",
-    shortcut: "⌘+A",
-  },
-];
+const injectPortfolioLink = (links) =>
+  links.map((link) => ({
+    ...link,
+    href: link.href === "PORTFOLIO_LINK" ? siteMetadata.portfolioLink : link.href,
+  }));
 
-export const dropDownMenuNavLinks = [
-  { key: 1, href: "/", title: "Home", icon: "home", shortcut: "⌘+H" },
-  {
-    key: 2,
-    href: "/blogs",
-    title: "All Posts",
-    icon: "all",
-    shortcut: "⌘+B",
-  },
-  {
-    key: 3,
-    href: "/tags",
-    title: "Tags",
-    icon: "tag",
-    shortcut: "⌘+T",
-  },
-  {
-    key: 4,
-    href: "/notes",
-    title: "Notes",
-    icon: "book",
-    shortcut: "⌘+K",
-  },
-  { key: 5, href: "", title: "", icon: "", shortcut: "" },
-  {
-    key: 6,
-    href: siteMetadata.portfolioLink,
-    title: "Author",
-    icon: "me",
-    shortcut: "⌘+A",
-  },
-];
+export const navLinks = injectPortfolioLink(nav.main);
+export const dropDownMenuNavLinks = injectPortfolioLink(nav.dropdown);
