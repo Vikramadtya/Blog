@@ -1,8 +1,7 @@
 /**
- * Local filesystem data-access layer (Repository Pattern).
- *
- * Reads blog metadata and tags from the local `blog-datastore` directory
- * and exposes a clean API surface with in-memory caching and indexing.
+ * Local filesystem data-access layer.
+ * 
+ * Provides a clean API for reading blog content and metadata with in-memory caching.
  */
 
 import fs from "fs/promises";
@@ -12,235 +11,166 @@ import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
 import { CACHE_TTL_MS } from "@/lib/constants";
 
-// ─── Configuration ───────────────────────────────────────────────────────────
-
-const DATASTORE_ROOT = path.join(
-  process.cwd(),
-  siteMetadata.localBlogDatastorePath,
-);
-
-// Initial check for datastore root
-(async () => {
-  try {
-    await fs.access(DATASTORE_ROOT);
-  } catch {
-    logger.error(`Datastore root not found: ${DATASTORE_ROOT}`);
+class BlogService {
+  constructor() {
+    this.root = path.join(process.cwd(), siteMetadata.localBlogDatastorePath);
+    this.cache = new Map();
+    this.slugIndex = new Map();
+    this.tagIndex = new Map();
+    this.isWarmed = false;
   }
-})();
 
-// ─── In-Memory Cache & Indices ───────────────────────────────────────────────
+  // ─── Cache Management ──────────────────────────────────────────────────────
 
-const cache = new Map();
-const slugIndex = new Map();
-const tagIndex = new Map();
-let isIndexWarmed = false;
-
-/**
- * Returns cached data if still valid.
- * @param {string} key
- * @returns {any|undefined}
- */
-function getFromCache(key) {
-  const entry = cache.get(key);
-  if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
-    return entry.data;
-  }
-  return undefined;
-}
-
-/**
- * Stores data in cache.
- * @param {string} key
- * @param {any} data
- */
-function setInCache(key, data) {
-  cache.set(key, { data, timestamp: Date.now() });
-}
-
-/**
- * Rebuilds memory indices for O(1) lookups.
- * @param {BlogMetadata[]} blogs
- */
-async function warmIndices(blogs) {
-  slugIndex.clear();
-  tagIndex.clear();
-
-  const tags = await getAllTags();
-
-  blogs.forEach((blog) => {
-    if (blog.slug) slugIndex.set(blog.slug, blog.id);
-  });
-
-  tags.forEach((tag) => {
-    if (tag.id && Array.isArray(tag.blogs)) {
-      tagIndex.set(tag.id, tag.blogs);
+  _getCached(key) {
+    const entry = this.cache.get(key);
+    if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
+      return entry.data;
     }
-  });
+    return null;
+  }
 
-  isIndexWarmed = true;
-  logger.debug(`Indices warmed: ${slugIndex.size} slugs, ${tagIndex.size} tags`);
-}
+  _setCache(key, data) {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
 
-// ─── Path Helpers ────────────────────────────────────────────────────────────
+  // ─── Validation & Normalization ────────────────────────────────────────────
 
-function resolvePath(...segments) {
-  return path.join(DATASTORE_ROOT, ...segments);
-}
+  _validateMetadata(raw, id) {
+    const required = ["title", "createdAt", "slug", "type"];
+    const missing = required.filter(f => !raw[f]);
+    if (missing.length > 0) {
+      logger.warn(`Blog [${id}] is missing required fields: ${missing.join(", ")}`);
+    }
+  }
 
-// ─── Normalization ───────────────────────────────────────────────────────────
+  _normalize(raw, id) {
+    this._validateMetadata(raw, id);
+    return {
+      ...raw,
+      id,
+      description: raw.summary || raw.description || "",
+      preview: raw.demo?.preview ?? null,
+      source: raw.demo?.repository ?? null,
+    };
+  }
 
-/**
- * @param {object} raw
- * @param {string} id
- * @returns {BlogMetadata}
- */
-function normalizeBlogMetadata(raw, id) {
-  return {
-    ...raw,
-    id,
-    description: raw.summary || "",
-    preview: raw.demo?.preview ?? null,
-    source: raw.demo?.repository ?? null,
-  };
-}
+  // ─── Path Helpers ──────────────────────────────────────────────────────────
 
-// ─── Core Data Access ────────────────────────────────────────────────────────
+  _resolve(...segments) {
+    return path.join(this.root, ...segments);
+  }
 
-/**
- * @returns {Promise<Tag[]>}
- */
-export async function getAllTags() {
-  const CACHE_KEY = "tags:all";
-  const cached = getFromCache(CACHE_KEY);
-  if (cached) return cached;
+  // ─── Public API ────────────────────────────────────────────────────────────
 
-  try {
-    const tagsFile = resolvePath("tags.json");
-    const content = await fs.readFile(tagsFile, "utf8");
-    const tags = JSON.parse(content);
-    setInCache(CACHE_KEY, tags);
-    return tags;
-  } catch (error) {
-    logger.warn(`Could not read tags.json: ${error.message}`);
-    return []; // Return empty array instead of throwing to be more generic
+  async getAllTags() {
+    const key = "tags:all";
+    const cached = this._getCached(key);
+    if (cached) return cached;
+
+    try {
+      const content = await fs.readFile(this._resolve("tags.json"), "utf8");
+      const tags = JSON.parse(content);
+      this._setCache(key, tags);
+      return tags;
+    } catch (error) {
+      logger.warn(`Tags registry not found at ${this.root}/tags.json`);
+      return [];
+    }
+  }
+
+  async getBlogMetadataById(id) {
+    if (!id) return null;
+    const key = `blog:${id}`;
+    const cached = this._getCached(key);
+    if (cached) return cached;
+
+    try {
+      const content = await fs.readFile(this._resolve(id, "metadata.json"), "utf8");
+      const normalized = this._normalize(JSON.parse(content), id);
+      this._setCache(key, normalized);
+      return normalized;
+    } catch (err) {
+      if (err.code === "ENOENT") return null;
+      throw new AppError(`Failed to read metadata for ${id}`, ErrorCode.FILESYSTEM, err);
+    }
+  }
+
+  async getAllBlogs() {
+    const key = "blogs:all";
+    const cached = this._getCached(key);
+    if (cached && this.isWarmed) return cached;
+
+    try {
+      const entries = await fs.readdir(this.root, { withFileTypes: true });
+      const ids = entries
+        .filter(e => e.isDirectory() && !e.name.startsWith("."))
+        .map(e => e.name);
+
+      const blogs = (await Promise.all(ids.map(id => this.getBlogMetadataById(id))))
+        .filter(Boolean)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // Rebuild Indices
+      this.slugIndex.clear();
+      this.tagIndex.clear();
+      const tags = await this.getAllTags();
+
+      blogs.forEach(b => {
+        if (b.slug) this.slugIndex.set(b.slug, b.id);
+      });
+      tags.forEach(t => {
+        if (t.id && Array.isArray(t.blogs)) this.tagIndex.set(t.id, t.blogs);
+      });
+
+      this.isWarmed = true;
+      this._setCache(key, blogs);
+      logger.success(`Indexed ${blogs.length} blogs and ${tags.length} tags`);
+      return blogs;
+    } catch (err) {
+      throw new AppError("Failed to list blog datastore", ErrorCode.FILESYSTEM, err);
+    }
+  }
+
+  async getBlogBySlug(slug) {
+    if (!this.isWarmed) await this.getAllBlogs();
+    const id = this.slugIndex.get(slug);
+    return id ? this.getBlogMetadataById(id) : null;
+  }
+
+  async getBlogsByTagId(tagId) {
+    if (!this.isWarmed) await this.getAllBlogs();
+    const ids = this.tagIndex.get(tagId) || [];
+    return (await Promise.all(ids.map(id => this.getBlogMetadataById(id)))).filter(Boolean);
+  }
+
+  async getBlogsByType(type) {
+    const all = await this.getAllBlogs();
+    return type ? all.filter(b => b.type === type) : all;
+  }
+
+  async getBlogContent(id) {
+    try {
+      return await fs.readFile(this._resolve(id, "blog.md"), "utf8");
+    } catch (err) {
+      throw new AppError(`Content missing for ${id}`, ErrorCode.NOT_FOUND, err);
+    }
+  }
+
+  async getTagById(id) {
+    const tags = await this.getAllTags();
+    return tags.find(t => t.id === id) || null;
   }
 }
 
-/**
- * @param {string} id
- * @returns {Promise<BlogMetadata|null>}
- */
-export async function getBlogMetadataById(id) {
-  if (!id) return null;
+// Export singleton instance
+const service = new BlogService();
 
-  const CACHE_KEY = `blog:${id}`;
-  const cached = getFromCache(CACHE_KEY);
-  if (cached) return cached;
-
-  try {
-    const metadataFile = resolvePath(id, "metadata.json");
-    const content = await fs.readFile(metadataFile, "utf8");
-    const raw = JSON.parse(content);
-    const normalized = normalizeBlogMetadata(raw, id);
-    setInCache(CACHE_KEY, normalized);
-    return normalized;
-  } catch (error) {
-    if (error.code === "ENOENT") return null;
-    throw new AppError(`Read error for blog ${id}`, ErrorCode.FILESYSTEM, error);
-  }
-}
-
-/**
- * @returns {Promise<BlogMetadata[]>}
- */
-export async function getAllBlogs() {
-  const CACHE_KEY = "blogs:all";
-  const cached = getFromCache(CACHE_KEY);
-  if (cached && isIndexWarmed) return cached;
-
-  try {
-    const entries = await fs.readdir(DATASTORE_ROOT, { withFileTypes: true });
-    const blogIds = entries
-      .filter((e) => e.isDirectory() && !e.name.startsWith("."))
-      .map((e) => e.name);
-
-    // Fetch all metadata concurrently
-    const blogs = await Promise.all(
-      blogIds.map((id) => getBlogMetadataById(id).catch(() => null))
-    );
-    const result = blogs.filter(Boolean);
-
-    // Sort by date descending
-    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    await warmIndices(result);
-    setInCache(CACHE_KEY, result);
-
-    logger.success(`Datastore indexed (${result.length} posts)`);
-    return result;
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError("Failed to fetch all blogs", ErrorCode.FILESYSTEM, error);
-  }
-}
-
-// ─── Indexed Query Helpers ───────────────────────────────────────────────────
-
-/**
- * @param {string} slug
- * @returns {Promise<BlogMetadata|null>}
- */
-export async function getBlogBySlug(slug) {
-  if (!slug) return null;
-
-  if (!isIndexWarmed) await getAllBlogs();
-  const id = slugIndex.get(slug);
-  
-  if (!id) return null;
-  return getBlogMetadataById(id);
-}
-
-/**
- * @param {string} tagId
- * @returns {Promise<BlogMetadata[]>}
- */
-export async function getBlogsByTagId(tagId) {
-  if (!tagId) return [];
-
-  if (!isIndexWarmed) await getAllBlogs();
-  const blogIds = tagIndex.get(tagId);
-  if (!blogIds || blogIds.length === 0) return [];
-
-  const blogs = await Promise.all(
-    blogIds.map((id) => getBlogMetadataById(id).catch(() => null))
-  );
-  return blogs.filter(Boolean);
-}
-
-/**
- * @param {string} [type]
- * @returns {Promise<BlogMetadata[]>}
- */
-export async function getBlogsByType(type) {
-  const allBlogs = await getAllBlogs();
-  return type ? allBlogs.filter((b) => b.type === type) : allBlogs;
-}
-
-/**
- * @param {string} id
- * @returns {Promise<string>}
- */
-export async function getBlogContent(id) {
-  try {
-    const filePath = resolvePath(id, "blog.md");
-    return await fs.readFile(filePath, "utf8");
-  } catch (error) {
-    const code = error.code === "ENOENT" ? ErrorCode.NOT_FOUND : ErrorCode.FILESYSTEM;
-    throw new AppError(`Content read error for ${id}`, code, error);
-  }
-}
-
-export async function getTagById(id) {
-  const tags = await getAllTags();
-  return tags.find((t) => t.id === id) || null;
-}
+export const getAllTags = () => service.getAllTags();
+export const getAllBlogs = () => service.getAllBlogs();
+export const getBlogMetadataById = (id) => service.getBlogMetadataById(id);
+export const getBlogBySlug = (slug) => service.getBlogBySlug(slug);
+export const getBlogsByTagId = (tagId) => service.getBlogsByTagId(tagId);
+export const getBlogsByType = (type) => service.getBlogsByType(type);
+export const getBlogContent = (id) => service.getBlogContent(id);
+export const getTagById = (id) => service.getTagById(id);
