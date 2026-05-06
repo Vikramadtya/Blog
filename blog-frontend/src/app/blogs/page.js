@@ -1,5 +1,5 @@
 import React from "react";
-import MarkDownContentList from "@/components/molecules/MarkDownContentList";
+import MarkdownContentList from "@/components/molecules/MarkdownContentList";
 import { getBlogsByType } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
 
@@ -45,7 +45,7 @@ export default async function Blog() {
         </p>
         {/* Blog Grid */}
         <section className="mx-auto w-full max-w-7xl">
-          <MarkDownContentList
+          <MarkdownContentList
             blogs={blogs}
             blogIdToMetadata={blogIdToMetadata}
           />

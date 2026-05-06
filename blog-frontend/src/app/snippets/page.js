@@ -1,7 +1,7 @@
 import React from "react";
 import { getBlogsByType } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
-import MarkDownContentList from "@/components/molecules/MarkDownContentList";
+import MarkdownContentList from "@/components/molecules/MarkdownContentList";
 
 import { siteMetadata } from "../../../site.config";
 import content from "../../../config/content.json";
@@ -34,7 +34,7 @@ export default async function Snippets() {
 
         {/* Snippets Grid */}
         <section className="mx-auto w-full max-w-7xl">
-          <MarkDownContentList
+          <MarkdownContentList
             blogs={snippets}
             blogIdToMetadata={snippetIdToMetadata}
           />
