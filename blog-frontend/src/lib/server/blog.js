@@ -26,13 +26,16 @@ async function sendSlackNotification(message) {
   if (!url) return;
 
   try {
-    await fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       body: JSON.stringify({ text: message }),
       headers: { "Content-Type": "application/json" },
     });
+    if (!response.ok) {
+      logger.warn(`Slack notification returned status ${response.status}`);
+    }
   } catch (err) {
-    logger.error("Slack notification failed", err);
+    logger.error("Slack notification network error", err);
   }
 }
 
@@ -111,17 +114,19 @@ export function getBlogToc(content) {
   if (!content) return [];
 
   return content
-    .split("\n")
-    .filter((line) => /^#{1,6}\s+.+/.test(line))
-    .map((heading) => ({
-      heading,
-      slug: heading
-        .replace(/#/g, "")
-        .trim()
-        .toLowerCase()
-        .replace(/\?/g, "")
-        .replace(/\s+/g, "-"),
-    }));
+    .split(/\r?\n/)
+    .filter((line) => /^#{2,4}\s+.+/.test(line)) // Focus on H2-H4 for TOC
+    .map((heading) => {
+      const cleanHeading = heading.replace(/^#+\s+/, "").trim();
+      return {
+        heading: cleanHeading,
+        slug: cleanHeading
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "") // Remove special chars
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-"), // Collapse multiple hyphens
+      };
+    });
 }
 
 /**

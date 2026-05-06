@@ -28,7 +28,8 @@ const Card = ({
           alt={title}
           width={400}
           height={250}
-          className="w-full object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="aspect-video w-full object-cover"
         />
       )}
 

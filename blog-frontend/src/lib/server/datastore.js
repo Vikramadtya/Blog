@@ -160,10 +160,18 @@ export async function getAllBlogs() {
 
   try {
     const entries = await fs.readdir(DATASTORE_ROOT, { withFileTypes: true });
-    const blogIds = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+    const blogIds = entries
+      .filter((e) => e.isDirectory() && !e.name.startsWith("."))
+      .map((e) => e.name);
 
-    const blogs = await Promise.all(blogIds.map(getBlogMetadataById));
+    // Fetch all metadata concurrently
+    const blogs = await Promise.all(
+      blogIds.map((id) => getBlogMetadataById(id).catch(() => null))
+    );
     const result = blogs.filter(Boolean);
+
+    // Sort by date descending
+    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     await warmIndices(result);
     setInCache(CACHE_KEY, result);
@@ -187,7 +195,9 @@ export async function getBlogBySlug(slug) {
 
   if (!isIndexWarmed) await getAllBlogs();
   const id = slugIndex.get(slug);
-  return id ? getBlogMetadataById(id) : null;
+  
+  if (!id) return null;
+  return getBlogMetadataById(id);
 }
 
 /**
@@ -199,9 +209,11 @@ export async function getBlogsByTagId(tagId) {
 
   if (!isIndexWarmed) await getAllBlogs();
   const blogIds = tagIndex.get(tagId);
-  if (!blogIds) return [];
+  if (!blogIds || blogIds.length === 0) return [];
 
-  const blogs = await Promise.all(blogIds.map(getBlogMetadataById));
+  const blogs = await Promise.all(
+    blogIds.map((id) => getBlogMetadataById(id).catch(() => null))
+  );
   return blogs.filter(Boolean);
 }
 

@@ -1,6 +1,4 @@
 import "./globals.css";
-// import "animate.css";
-// import { Inter } from "next/font/google";
 import Header from "@/components/organisms/header/Header";
 import ThemeProvider from "@/components/utils/ThemeProvider";
 import Footer from "@/components/organisms/footer/Footer";

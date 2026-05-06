@@ -66,7 +66,8 @@ const LatestPost = ({ title, description, tags, slug, previewImageSrc }) => {
               width={600}
               height={400}
               priority
-              className="max-h-96 rounded-xl object-cover shadow-lg"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="max-h-[400px] w-full rounded-xl object-cover shadow-lg"
             />
           )}
         </div>
