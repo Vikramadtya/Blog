@@ -19,7 +19,7 @@ import {
 } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
 import { getBlogToc } from "@/lib/server/blog";
-import { siteMetadata } from "../../../../site.config";
+import { siteMetadata } from "../../../../site.config.mjs";
 
 // Static params for SSG
 export async function generateStaticParams() {

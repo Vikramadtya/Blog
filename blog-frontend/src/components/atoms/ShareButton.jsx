@@ -1,6 +1,6 @@
 "use client";
 import Icon from "@/components/atoms/Icon";
-import { siteMetadata as siteConfig } from "../../../site.config";
+import { siteMetadata as siteConfig } from "../../../site.config.mjs";
 import React from "react";
 import LikeButton from "@/components/atoms/LikeButton";
 

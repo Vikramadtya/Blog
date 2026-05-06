@@ -20,6 +20,8 @@
   "locale": "en-US",
   "hostname": "www.neuralcook.com",
   "portfolioLink": "https://www.vikramaditya-singh.in",
+  "keywords": ["Next.js", "Tailwind CSS", "Blog", "Neural Cook", "Software Engineering", "Web Development", "JavaScript", "React"],
+  "twitterHandle": "@Twitter",
   "openToWork": true,
   "analytics": {
     "umamiSrcSrcipt": "https://eu.umami.is/script.js",

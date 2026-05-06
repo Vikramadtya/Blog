@@ -1,4 +1,4 @@
-import { siteMetadata } from "../../site.config";
+import { siteMetadata } from "../../site.config.mjs";
 import nav from "../../config/nav.json";
 
 const injectPortfolioLink = (links) =>

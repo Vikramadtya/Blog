@@ -1,6 +1,6 @@
 "use client";
 import Giscus from "@giscus/react";
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 
 import { useTheme } from "next-themes";
 

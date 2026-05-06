@@ -7,7 +7,7 @@ import * as datastore from "@/lib/server/datastore";
 import * as firebase from "@/lib/server/firebase";
 import { db, COLLECTIONS, getDocumentById, convertBlogData } from "@/lib/server/firebase";
 import { doc, updateDoc, increment, collection, addDoc, Timestamp } from "firebase/firestore";
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
 

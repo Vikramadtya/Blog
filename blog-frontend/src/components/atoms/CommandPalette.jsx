@@ -12,7 +12,7 @@ import Command from "../../../public/icons/command.svg";
 
 import { dropDownMenuNavLinks } from "@/utils/navLinks";
 
-export default function CommandPalett() {
+export default function CommandPalette() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");

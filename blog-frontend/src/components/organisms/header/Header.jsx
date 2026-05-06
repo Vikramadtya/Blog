@@ -1,13 +1,13 @@
 import React from "react";
 import Link from "next/link";
 
-import CommandPallet from "@/components/atoms/CommandPallet";
+import CommandPalette from "@/components/atoms/CommandPalette";
 import CurrentPath from "@/components/atoms/CurrentPath";
 import ThemeToggle from "@/components/atoms/ThemeSwitch";
-import DropMenu from "@/components/atoms/DropMenu";
+import MobileNavMenu from "@/components/atoms/MobileNavMenu";
 import Logo from "@/components/atoms/Logo";
 
-import { siteMetadata } from "../../../../site.config";
+import { siteMetadata } from "../../../../site.config.mjs";
 import { navLinks } from "@/utils/navLinks";
 
 const Header = () => {
@@ -40,8 +40,8 @@ const Header = () => {
           </nav>
 
           <ThemeToggle />
-          <DropMenu />
-          <CommandPallet />
+          <MobileNavMenu />
+          <CommandPalette />
         </div>
       </div>
     </header>

@@ -3,7 +3,7 @@ import { getBlogsByType } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
 import MarkdownContentList from "@/components/molecules/MarkdownContentList";
 
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 import content from "../../../config/content.json";
 
 export async function generateMetadata() {

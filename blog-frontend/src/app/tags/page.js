@@ -3,7 +3,7 @@ import React from "react";
 import { getAllTags, getTagToBlogMap } from "@/lib/server/blog";
 import TagBasedList from "@/components/molecules/TagBasedList";
 
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 import content from "../../../config/content.json";
 
 export async function generateMetadata() {

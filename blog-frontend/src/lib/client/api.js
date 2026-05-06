@@ -3,7 +3,7 @@
  * Handles dynamic runtime interactions (likes, views, subscriptions).
  */
 
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 import { consola } from "consola";
 
 const DEFAULT_TIMEOUT_MS = 10_000;

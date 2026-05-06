@@ -2,9 +2,9 @@ import "./globals.css";
 // import "animate.css";
 // import { Inter } from "next/font/google";
 import Header from "@/components/organisms/header/Header";
-import ThemeProvider from "@/components/utils/themeProvider";
+import ThemeProvider from "@/components/utils/ThemeProvider";
 import Footer from "@/components/organisms/footer/Footer";
-import { siteMetadata } from "../../site.config";
+import { siteMetadata } from "../../site.config.mjs";
 
 const inter = { className: "font-sans" }; // Fallback for offline build
 
@@ -15,7 +15,7 @@ export const metadata = {
     template: `%s | ${siteMetadata.title}`,
   },
   description: siteMetadata.description,
-  keywords: ["Next.js", "Tailwind CSS", "Blog", "Neural Cook", "Software Engineering"],
+  keywords: siteMetadata.keywords || ["Next.js", "Tailwind CSS", "Blog", "Neural Cook", "Software Engineering"],
   authors: [{ name: siteMetadata.author, url: siteMetadata.portfolioLink }],
   creator: siteMetadata.author,
   openGraph: {
@@ -39,7 +39,7 @@ export const metadata = {
     title: siteMetadata.title,
     description: siteMetadata.description,
     images: [siteMetadata.socialBanner],
-    creator: "@Twitter", // Fallback if not in siteMetadata
+    creator: siteMetadata.twitterHandle || "@Twitter",
   },
   robots: {
     index: true,

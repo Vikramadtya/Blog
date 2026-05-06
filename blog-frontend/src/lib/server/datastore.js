@@ -7,7 +7,7 @@
 
 import fs from "fs/promises";
 import path from "path";
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
 import { CACHE_TTL_MS } from "@/lib/constants";

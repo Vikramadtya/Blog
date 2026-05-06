@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
 import Icon from "@/components/atoms/Icon";
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 
 const Card = ({
   title,

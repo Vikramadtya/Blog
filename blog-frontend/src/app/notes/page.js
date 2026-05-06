@@ -1,7 +1,7 @@
 import Link from "next/link";
 import notesData from "../../../config/notes.json";
 import content from "../../../config/content.json";
-import { siteMetadata } from "../../../site.config";
+import { siteMetadata } from "../../../site.config.mjs";
 
 export async function generateMetadata() {
   return {

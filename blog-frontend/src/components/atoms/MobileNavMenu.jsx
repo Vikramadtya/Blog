@@ -18,7 +18,7 @@ import MenuOpen from "../../../public/icons/menu-open.svg";
 import MenuClose from "../../../public/icons/menu-close.svg";
 import { dropDownMenuNavLinks } from "@/utils/navLinks";
 
-const DropMenu = () => {
+const MobileNavMenu = () => {
   const [playSound] = useSound("/sounds/switch-on.mp3");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -65,4 +65,4 @@ const DropMenu = () => {
   );
 };
 
-export default DropMenu;
+export default MobileNavMenu;
