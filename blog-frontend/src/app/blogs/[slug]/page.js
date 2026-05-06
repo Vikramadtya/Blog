@@ -10,7 +10,7 @@ import StickyBar from "@/components/atoms/StickyBar";
 import ScrollProgressBar from "@/components/atoms/ScrollPercentageBar";
 import ShareBar from "@/components/atoms/ShareBar";
 
-import { useMDXComponents } from "@/components/atoms/MdxComponents";
+import { getMDXComponents } from "@/components/atoms/MdxComponents";
 import { prettyCodeOptions } from "@/utils/markdownConstants";
 import {
   getBlogBySlug,
@@ -93,6 +93,8 @@ export default async function Post({ params }) {
       },
     },
     "description": blogData.description,
+    "keywords": blogData.tags.map((t) => t.name).join(", "),
+    "wordCount": content.split(/\s+/).length,
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
@@ -162,7 +164,7 @@ export default async function Post({ params }) {
                 ],
               },
             }}
-            components={useMDXComponents()}
+            components={getMDXComponents()}
           />
         </section>
 

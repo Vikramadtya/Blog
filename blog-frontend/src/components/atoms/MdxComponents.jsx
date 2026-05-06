@@ -1,4 +1,4 @@
-export function useMDXComponents(components) {
+export function getMDXComponents(components) {
   return {
     h1: ({ id, children }) => (
       <h1

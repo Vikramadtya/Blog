@@ -56,6 +56,10 @@ export const metadata = {
       "application/rss+xml": `${siteMetadata.siteUrl}/feed.xml`,
     },
   },
+  verification: {
+    google: siteMetadata.googleVerification || "",
+    bing: siteMetadata.bingVerification || "",
+  },
 };
 
 export default function RootLayout({ children }) {

@@ -13,6 +13,9 @@ export async function generateMetadata() {
   return {
     title: siteMetadata.title,
     description: siteMetadata.description,
+    alternates: {
+      canonical: `${siteMetadata.siteUrl}/home`,
+    },
   };
 }
 
@@ -46,11 +49,28 @@ export default async function Home() {
     },
   };
 
+  const breadcrumbsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": `${siteMetadata.siteUrl}/home`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
       />
       {/* Background FX */}
       <BackGroundParticle />

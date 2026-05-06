@@ -10,6 +10,9 @@ export async function generateMetadata() {
   return {
     title: `${content.blogs.title} | ${siteMetadata.title}`,
     description: content.blogs.description,
+    alternates: {
+      canonical: `${siteMetadata.siteUrl}/blogs`,
+    },
   };
 }
 
@@ -28,11 +31,34 @@ export default async function Blog() {
     "url": `${siteMetadata.siteUrl}/blogs`,
   };
 
+  const breadcrumbsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": `${siteMetadata.siteUrl}/home`,
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blogs",
+        "item": `${siteMetadata.siteUrl}/blogs`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
       />
       <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">
       {/* Header Section */}
