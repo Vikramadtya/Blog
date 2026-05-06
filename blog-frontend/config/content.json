@@ -1,0 +1,40 @@
+{
+  "shared": {
+    "readMore": "Read the blog",
+    "readLabel": "Read",
+    "like": "Like",
+    "comments": "Comments",
+    "toc": "Table of Contents",
+    "copyUrl": "or click to copy URL"
+  },
+  "home": {
+    "latestLabel": "Latest",
+    "featuredBlogsTitle": "Featured Blogs",
+    "featuredSnippetsTitle": "Featured Code Snippets"
+  },
+  "blogs": {
+    "title": "Blog Posts",
+    "description": "Dive into my curated collection of blog posts covering tech insights, tutorials, and thoughts. Click on any post to explore its content, learn about the technologies involved, and see how I contributed."
+  },
+  "snippets": {
+    "title": "Code Snippets",
+    "description": "A collection of reusable code snippets, utility functions, and tips to speed up your development workflow."
+  },
+  "notes": {
+    "title": "Notes",
+    "description": "Check out my curated technical writings and guides."
+  },
+  "tags": {
+    "title": "Tags"
+  },
+  "subscribe": {
+    "title": "Stay Updated",
+    "description": "Get notified when I publish new posts.",
+    "buttonText": "Notify Me",
+    "placeholder": "Enter your email"
+  },
+  "footer": {
+    "copyrightText": "All rights reserved.",
+    "buildWithText": "Built with"
+  }
+}

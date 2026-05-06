@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
 
-import CommandPallet from "../../../components/organisms/header/atoms/commandPallet";
-import CurrentPath from "../../../components/organisms/header/atoms/currentPath";
-import ThemeToggle from "../../../components/organisms/header/atoms/themeSwitch";
-import DropMenu from "../../../components/organisms/header/atoms/dropMenu";
-import Logo from "../../../components/atom/logo";
+import CommandPallet from "@/components/atoms/CommandPallet";
+import CurrentPath from "@/components/atoms/CurrentPath";
+import ThemeToggle from "@/components/atoms/ThemeSwitch";
+import DropMenu from "@/components/atoms/DropMenu";
+import Logo from "@/components/atoms/Logo";
 
 import { siteMetadata } from "../../../../site.config";
-import { navLinks } from "../../../utils/navLinks";
+import { navLinks } from "@/utils/navLinks";
 
 const Header = () => {
   return (

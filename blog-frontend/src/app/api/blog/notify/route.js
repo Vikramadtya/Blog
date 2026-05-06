@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { addSubscription, validateEmail } from "./routeService";
-import { errorResponse, logger, successResponse } from "../../lib/api-utils"; // Assuming this is your service function
+import { addSubscription, validateEmail } from "../../../../lib/server/blog";
+import { errorResponse, logger, successResponse } from "../../../../lib/server/api-utils";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

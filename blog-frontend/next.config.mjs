@@ -1,12 +1,13 @@
 import createMDX from "@next/mdx";
 import mdxConfig from "./mdx.config.mjs";
-import { siteMetadata } from "./site.config.js";
+import { siteMetadata } from "./site.config.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+  optimizeFonts: false,
+  pageExtensions: ["js", "jsx", "mdx"],
   images: {
     remotePatterns: [
       {

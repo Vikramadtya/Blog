@@ -1,5 +1,5 @@
 import React from "react";
-import Card from "../atom/card";
+import Card from "@/components/atoms/Card";
 
 const MarkDownContentList = ({ blogs, blogIdToMetadata }) => {
   return (

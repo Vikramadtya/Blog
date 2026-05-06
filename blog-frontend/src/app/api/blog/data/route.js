@@ -10,23 +10,18 @@
  */
 
 import {
-  getBlogs,
   getDynamicMetadataById,
   incrementMetadataField,
-} from "./routeService";
-import { errorResponse, logger, successResponse } from "../../lib/api-utils";
+} from "../../../../lib/server/blog";
+import { errorResponse, logger, successResponse } from "../../../../lib/server/api-utils";
+import { VALID_INCREMENT_FIELDS } from "../../../../lib/constants";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-/** Valid fields that can be incremented via POST. */
-const VALID_INCREMENT_FIELDS = ["likes", "views"];
-
 /**
- * Handles GET requests to fetch blog data.
- *
- * - `?id=<blogId>` → Returns live Firebase data (likes/views) for client components
- * - All other queries → Returns filesystem data via localDatastore
+ * Handles GET requests to fetch live blog metadata (likes/views) from Firebase.
+ * Used exclusively by client components at runtime.
  *
  * @param {Request} request - The incoming request object.
  * @returns {NextResponse}
@@ -34,42 +29,23 @@ const VALID_INCREMENT_FIELDS = ["likes", "views"];
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
-  const slug = searchParams.get("slug");
-  const type = searchParams.get("type");
-  const ids = searchParams.get("ids");
-  const tag = searchParams.get("tag");
 
-  logger.info(
-    `GET /api/blog/data — id=${id}, slug=${slug}, type=${type}, ids=${ids}, tag=${tag}`,
-  );
+  logger.info(`GET /api/blog/data — id=${id}`);
+
+  if (!id) {
+    return errorResponse("The 'id' parameter is required.", undefined, 400);
+  }
 
   try {
-    let data;
-
-    if (id) {
-      // Client components fetch dynamic metadata (likes/views) from Firebase
-      data = await getDynamicMetadataById(id);
-    } else {
-      // All other queries go through localDatastore
-      let filter;
-      if (tag) {
-        filter = { key: "tag", value: tag };
-      } else if (slug) {
-        filter = { key: "slug", value: slug };
-      } else if (type) {
-        filter = { key: "type", value: type };
-      } else if (ids) {
-        filter = { key: "id", value: ids.split(",") };
-      }
-
-      data = await getBlogs(filter);
-    }
-
-    logger.success("Successfully fetched blog data");
+    const data = await getDynamicMetadataById(id);
+    logger.success("Successfully fetched dynamic blog metadata");
     return successResponse(data);
   } catch (error) {
-    logger.error("Failed to fetch blog data:", error);
-    return errorResponse("An error occurred while fetching blog data.", error);
+    logger.error("Failed to fetch dynamic blog metadata:", error);
+    return errorResponse(
+      "An error occurred while fetching dynamic blog metadata.",
+      error,
+    );
   }
 }
 
