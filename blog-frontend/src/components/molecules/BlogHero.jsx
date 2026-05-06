@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import React from "react";
 
-import Tag from "../atoms/tag";
-import Icon from "../atoms/icon";
-import ViewCount from "../atoms/viewCount";
-import LikeCount from "../atoms/likeCount";
+import Tag from "../atoms/Tag";
+import Icon from "../atoms/Icon";
+import ViewCount from "../atoms/ViewCount";
+import LikeCount from "../atoms/LikeCount";
 
 const BlogHero = ({ blogId, title, tags, date, views, likes }) => {
   const tagsComponent = tags.map((tag) => (

@@ -3,13 +3,13 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./tooltip";
+} from "./Tooltip";
 
-import LikeButton from "./likeButton";
-import ShareButton from "./shareButton";
-import ShareBar from "./shareBar";
-import ScrollToComment from "./scrollToComment";
-import TableOfContent from "./tableOfContent";
+import LikeButton from "./LikeButton";
+import ShareButton from "./ShareButton";
+import ShareBar from "./ShareBar";
+import ScrollToComment from "./ScrollToComment";
+import TableOfContent from "./TableOfContent";
 import content from "../../../config/content.json";
 
 const StickyBar = ({ blogId, blogSlug, tableOfContent }) => {

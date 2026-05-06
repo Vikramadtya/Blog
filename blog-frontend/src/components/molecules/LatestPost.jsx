@@ -1,5 +1,5 @@
 import React from "react";
-import Tag from "../atoms/tag";
+import Tag from "../atoms/Tag";
 import Link from "next/link";
 import Image from "next/image";
 import content from "../../../config/content.json";

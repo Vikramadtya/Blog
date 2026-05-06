@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import Tag from "../atoms/tag";
+import Tag from "../atoms/Tag";
 import Image from "next/image";
 import content from "../../../config/content.json";
 

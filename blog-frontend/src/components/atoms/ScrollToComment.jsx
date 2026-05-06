@@ -1,8 +1,8 @@
 "use client";
 
-import Icon from "./icon";
+import Icon from "./Icon";
 import React from "react";
-import ShareButton from "./shareButton";
+import ShareButton from "./ShareButton";
 
 const ScrollToComment = React.forwardRef(({}, ref) => {
   return (

@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Typed from "typed.js";
-import Icon from "./icon";
+import Icon from "./Icon";
 
 const CurrentPath = () => {
   const pathname = usePathname();
