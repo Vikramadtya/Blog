@@ -2,6 +2,7 @@
  * Local filesystem data-access layer.
  * 
  * Provides a clean API for reading blog content and metadata with in-memory caching.
+ * Logic is designed to be "zero-maintenance" - associations are built dynamically.
  */
 
 import fs from "fs/promises";
@@ -34,24 +35,31 @@ class BlogService {
     this.cache.set(key, { data, timestamp: Date.now() });
   }
 
-  // ─── Validation & Normalization ────────────────────────────────────────────
+  // ─── Normalization & Validation ────────────────────────────────────────────
 
-  _validateMetadata(raw, id) {
-    const required = ["title", "createdAt", "slug", "type"];
-    const missing = required.filter(f => !raw[f]);
-    if (missing.length > 0) {
-      logger.warn(`Blog [${id}] is missing required fields: ${missing.join(", ")}`);
-    }
-  }
-
+  /**
+   * Cleans and fills missing metadata fields with defaults.
+   */
   _normalize(raw, id) {
-    this._validateMetadata(raw, id);
+    const now = new Date().toISOString();
     return {
-      ...raw,
       id,
-      description: raw.summary || raw.description || "",
-      preview: raw.demo?.preview ?? null,
-      source: raw.demo?.repository ?? null,
+      title: raw.title || "Untitled Post",
+      summary: raw.summary || raw.description || "No summary available.",
+      description: raw.description || raw.summary || "",
+      createdAt: raw.createdAt || now,
+      updatedAt: raw.updatedAt || raw.createdAt || now,
+      slug: raw.slug || id,
+      type: raw.type || "blog",
+      tags: Array.isArray(raw.tags) ? raw.tags : [],
+      previewImageSrc: raw.previewImageSrc || "/images/blog/placeholder.jpg",
+      likes: raw.likes || 0,
+      views: raw.views || 0,
+      blogNumber: raw.blogNumber || 0,
+      demo: {
+        preview: raw.demo?.preview || null,
+        repository: raw.demo?.repository || null,
+      },
     };
   }
 
@@ -63,6 +71,10 @@ class BlogService {
 
   // ─── Public API ────────────────────────────────────────────────────────────
 
+  /**
+   * Fetches the tag registry. Note: 'blogs' and 'count' fields are ignored 
+   * in favor of dynamic indexing.
+   */
   async getAllTags() {
     const key = "tags:all";
     const cached = this._getCached(key);
@@ -92,10 +104,14 @@ class BlogService {
       return normalized;
     } catch (err) {
       if (err.code === "ENOENT") return null;
-      throw new AppError(`Failed to read metadata for ${id}`, ErrorCode.FILESYSTEM, err);
+      logger.error(`Error reading metadata for blog [${id}]:`, err);
+      return null;
     }
   }
 
+  /**
+   * Core engine: Scans filesystem, builds indices, and handles tag associations.
+   */
   async getAllBlogs() {
     const key = "blogs:all";
     const cached = this._getCached(key);
@@ -111,21 +127,37 @@ class BlogService {
         .filter(Boolean)
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      // Rebuild Indices
+      // Build Dynamic Indices
       this.slugIndex.clear();
       this.tagIndex.clear();
-      const tags = await this.getAllTags();
+      const tagRegistry = await this.getAllTags();
 
-      blogs.forEach(b => {
-        if (b.slug) this.slugIndex.set(b.slug, b.id);
-      });
-      tags.forEach(t => {
-        if (t.id && Array.isArray(t.blogs)) this.tagIndex.set(t.id, t.blogs);
+      // Initialize tag index for all registry tags
+      tagRegistry.forEach(t => this.tagIndex.set(t.id, []));
+      
+      // Ensure "All" tag exists in index
+      const ALL_TAG_ID = "00000000-0000-0000-0000-000000000000";
+      if (!this.tagIndex.has(ALL_TAG_ID)) this.tagIndex.set(ALL_TAG_ID, []);
+
+      blogs.forEach(blog => {
+        // Slug index
+        if (blog.slug) this.slugIndex.set(blog.slug, blog.id);
+
+        // Dynamic Tag Mapping: Map tag names in metadata to registry IDs
+        blog.tags.forEach(tagName => {
+          const registeredTag = tagRegistry.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+          if (registeredTag) {
+            this.tagIndex.get(registeredTag.id).push(blog.id);
+          }
+        });
+
+        // Always add to "All" tag
+        this.tagIndex.get(ALL_TAG_ID).push(blog.id);
       });
 
       this.isWarmed = true;
       this._setCache(key, blogs);
-      logger.success(`Indexed ${blogs.length} blogs and ${tags.length} tags`);
+      logger.success(`[API BACKEND SUCCESS] Indexed ${blogs.length} blogs and ${tagRegistry.length} tags`);
       return blogs;
     } catch (err) {
       throw new AppError("Failed to list blog datastore", ErrorCode.FILESYSTEM, err);

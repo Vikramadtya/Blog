@@ -49,10 +49,9 @@ async function scaffold() {
     await fs.mkdir(folderPath, { recursive: true });
     await fs.writeFile(path.join(folderPath, "metadata.json"), JSON.stringify(metadata, null, 2));
     await fs.writeFile(path.join(folderPath, "blog.md"), blogContent);
-
     console.log(`\x1b[32mSUCCESS:\x1b[0m Created new ${TYPE} at \x1b[34m${folderPath}\x1b[0m`);
     console.log(`\x1b[33mNEXT STEPS:\x1b[0m
-1. Edit ${path.join(folderPath, "metadata.json")} to add tags.
+1. Edit ${path.join(folderPath, "metadata.json")} to add tags (by name).
 2. Write your content in ${path.join(folderPath, "blog.md")}.
 3. Re-run dev server or build.`);
   } catch (err) {
