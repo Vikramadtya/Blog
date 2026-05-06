@@ -6,10 +6,10 @@ import Tag from "../atoms/Tag";
 import Icon from "../atoms/Icon";
 import ViewCount from "../atoms/ViewCount";
 import LikeCount from "../atoms/LikeCount";
-import { useBlogMetrics } from "@/hooks/useBlogMetrics";
+import { useMetrics } from "@/components/providers/BlogMetricsProvider";
 
-const BlogHero = ({ blogId, title, tags, date, views, likes }) => {
-  const { likes: currentLikes, views: currentViews, hasLiked, toggleLike, isLiking } = useBlogMetrics(blogId, likes, views);
+const BlogHero = ({ title, tags, date }) => {
+  const { likes: currentLikes, views: currentViews, hasLiked, toggleLike, isLiking } = useMetrics();
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6">

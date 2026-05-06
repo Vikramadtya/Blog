@@ -113,20 +113,23 @@ export async function addSubscription(email) {
 export function getBlogToc(content) {
   if (!content) return [];
 
-  return content
-    .split(/\r?\n/)
-    .filter((line) => /^#{2,4}\s+.+/.test(line)) // Focus on H2-H4 for TOC
-    .map((heading) => {
-      const cleanHeading = heading.replace(/^#+\s+/, "").trim();
-      return {
-        heading: cleanHeading,
-        slug: cleanHeading
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "") // Remove special chars
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-"), // Collapse multiple hyphens
-      };
-    });
+  const headings = [];
+  const headingRegex = /^#{2,4}\s+(.+)$/gm;
+  let match;
+
+  while ((match = headingRegex.exec(content)) !== null) {
+    const heading = match[1].trim();
+    const slug = heading
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    
+    headings.push({ heading, slug });
+  }
+
+  return headings;
 }
 
 /**

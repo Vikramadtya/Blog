@@ -68,6 +68,7 @@ const nextConfig = {
     );
 
     fileLoaderRule.exclude = /\.svg$/i;
+    config.module.exprContextCritical = false;
 
     return config;
   },

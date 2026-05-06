@@ -1,3 +1,54 @@
+---
+author: bcf59225-6b0a-4a5b-8d13-ecfb3840147a
+blogNumber: 2
+createdAt: '2024-09-20 09:27:58.737884'
+demo:
+  live: false
+  preview: null
+  repository: null
+hash: 74dcc173c3362f252ae31658b3918975bc032d36c0087ff9aeb3ac4b8ac78864
+id: 98efed8c-5dcf-4a0e-b708-3b9b6e6f3599
+previewImageSrc: 'https://www.neuralcook.com/images/sorting-visualizer.webp'
+publish: true
+slug: sort-visualizer
+summary: >
+  An interactive web application showcasing the functionality of sorting
+  algorithms like Quick Sort, Merge Sort, and Bubble Sort. Built with Next.js
+  and deployed on Vercel, it provides a dynamic and intuitive visual learning
+  experience for algorithm enthusiasts.
+tags:
+  - deployed
+  - javascript
+  - sort algorithms
+title: Sort Visualizer
+type: blog
+updatedAt: '2025-08-06T18:21:35.535Z'
+version: 13
+toc:
+  - level: 1
+    title: Why I Built This Sorting Visualizer
+  - level: 1
+    title: What Makes My Tool Unique?
+  - level: 1
+    title: Who Is This For?
+readingTime: 2 min read
+wordCount: 316
+imageCount: 0
+links:
+  internal: []
+  external:
+    - 'https://viki-sort-visualizer.vercel.app/'
+code:
+  count: 0
+  languages: []
+excerpt: ''
+keywords:
+  - you
+  - i
+  - algorithms
+  - sorting
+  - your
+---
 As someone who's always been fascinated by the inner workings of algorithms, I know firsthand how challenging it can be to fully grasp sorting algorithms just by reading through lines of code. That’s why I created this <a href="https://viki-sort-visualizer.vercel.app/" >Sorting Visualizer</a> to make learning these essential concepts more engaging, intuitive, and, most importantly, fun.
 
 

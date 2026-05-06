@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "blog": "node scripts/blog-cli.js"
   },
   "dependencies": {
     "@giscus/react": "^3.0.0",

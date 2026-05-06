@@ -22,9 +22,9 @@ const TableOfContent = React.forwardRef(({ tableOfContent }, ref) => {
     <>
       <div ref={ref}>
         <DropdownMenu
-          onOpenChange={() => {
-            ThemeSound();
-            setMenuOpen(!menuOpen);
+          onOpenChange={(open) => {
+            if (open) ThemeSound();
+            setMenuOpen(open);
           }}
         >
           <DropdownMenuTrigger className="inline-flex items-center">
@@ -36,18 +36,16 @@ const TableOfContent = React.forwardRef(({ tableOfContent }, ref) => {
               return (
                 <DropdownMenuItem key={menuItem.slug}>
                   <div
+                    className="w-full cursor-pointer"
                     onClick={() => {
-                      console.log("menuItem", menuItem.slug);
-                      window.scrollTo({
-                        top: document.getElementById(menuItem.slug).offsetTop,
-                        behavior: "smooth",
-                      });
+                      const element = document.getElementById(menuItem.slug);
+                      if (element) {
+                        element.scrollIntoView({ behavior: "smooth" });
+                      }
                     }}
                   >
                     <div className="flex w-56 items-center justify-between">
-                      <div className="flex items-center justify-between">
-                        <span className="pl-2 pr-2 ">{menuItem.heading}</span>
-                      </div>
+                      <span className="pl-2 pr-2">{menuItem.heading}</span>
                     </div>
                   </div>
                 </DropdownMenuItem>

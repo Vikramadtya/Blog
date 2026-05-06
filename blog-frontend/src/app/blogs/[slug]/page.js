@@ -62,6 +62,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
+import { BlogMetricsProvider } from "@/components/providers/BlogMetricsProvider";
+
 // Main blog post page
 export default async function Post({ params }) {
   const { slug } = params;
@@ -126,9 +128,12 @@ export default async function Post({ params }) {
       },
     ],
   };
-
   return (
-    <>
+    <BlogMetricsProvider 
+      id={blogData.id} 
+      initialLikes={blogData.likes} 
+      initialViews={blogData.views}
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -142,12 +147,9 @@ export default async function Post({ params }) {
       <article className="relative mx-auto max-w-5xl px-6 py-20 md:px-12 lg:px-20">
         {/* Hero */}
         <BlogHero
-          blogId={blogData.id}
           title={blogData.title}
           tags={blogData.tags}
           date={blogData.createdAt}
-          views={blogData.views}
-          likes={blogData.likes}
         />
 
         <Separator className="my-16" />
@@ -171,7 +173,6 @@ export default async function Post({ params }) {
 
         {/* Sticky TOC / Like-Share bar */}
         <StickyBar
-          blogId={blogData.id}
           blogSlug={blogData.slug}
           tableOfContent={tableOfContent}
         />
@@ -193,6 +194,6 @@ export default async function Post({ params }) {
           {siteMetadata.features.giscus && <Comments />}
         </div>
       </article>
-    </>
+    </BlogMetricsProvider>
   );
 }

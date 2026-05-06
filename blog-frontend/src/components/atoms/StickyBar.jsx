@@ -12,15 +12,24 @@ import ShareBar from "./ShareBar";
 import ScrollToComment from "./ScrollToComment";
 import TableOfContent from "./TableOfContent";
 import content from "../../../config/content.json";
+import { useMetrics } from "@/components/providers/BlogMetricsProvider";
 
-const StickyBar = ({ blogId, blogSlug, tableOfContent }) => {
+const StickyBar = ({ blogSlug, tableOfContent }) => {
+  const { toggleLike, hasLiked, isLiking } = useMetrics();
+
   return (
     <div className="sticky bottom-10 z-30 hidden w-full items-center justify-center md:flex">
       <div className="bg-surface dark:bg-surfaceDark/70 flex items-center gap-4 rounded-full border border-primary/30 px-6 py-3 shadow-md backdrop-blur-md transition-all">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <LikeButton blogId={blogId} kind="heart" className="h-6 w-6" />
+              <LikeButton 
+                onLike={toggleLike} 
+                hasLiked={hasLiked} 
+                disabled={isLiking}
+                kind="heart" 
+                className="h-6 w-6" 
+              />
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs">{content.shared.like}</p>

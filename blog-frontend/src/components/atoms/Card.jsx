@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Tag from "@/components/atoms/Tag";
 import Link from "next/link";
@@ -5,6 +6,7 @@ import Image from "next/image";
 import dayjs from "dayjs";
 import Icon from "@/components/atoms/Icon";
 import { siteMetadata } from "../../../site.config.mjs";
+import { useBlogMetrics } from "@/hooks/useBlogMetrics";
 
 const Card = ({
   title,
@@ -12,11 +14,13 @@ const Card = ({
   tags,
   slug,
   date,
-  likes,
+  likes: initialLikes,
+  views: initialViews,
   blogNumber,
   id,
   previewImageSrc,
 }) => {
+  const { likes, views } = useBlogMetrics(id, initialLikes, initialViews, false);
   const sourceUrl = siteMetadata.siteRepo 
     ? `${siteMetadata.siteRepo}/blob/main/blogs/${id}/blog.md`
     : null;
@@ -40,9 +44,15 @@ const Card = ({
         {/* Blog Meta Header */}
         <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
           <span className="italic">#{blogNumber}</span>
-          <div className="flex items-center gap-1">
-            <Icon kind="heart" className="h-4 w-4 text-red-500" />
-            <span>{likes ?? 0}</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <Icon kind="heart" className="h-4 w-4 text-rose-500" />
+              <span>{likes ?? 0}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Icon kind="eye" className="h-4 w-4 text-indigo-500" />
+              <span>{views ?? 0}</span>
+            </div>
           </div>
         </div>
 

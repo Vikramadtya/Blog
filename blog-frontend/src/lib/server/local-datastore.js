@@ -1,12 +1,6 @@
-/**
- * Local filesystem data-access layer.
- * 
- * Provides a clean API for reading blog content and metadata with in-memory caching.
- * Logic is designed to be "zero-maintenance" - associations are built dynamically.
- */
-
 import fs from "fs/promises";
 import path from "path";
+import matter from "gray-matter";
 import { siteMetadata } from "../../../site.config.mjs";
 import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
@@ -43,8 +37,9 @@ function normalize(raw, id) {
     updatedAt: raw.updatedAt || raw.createdAt || now,
     slug: raw.slug || id,
     type: raw.type || "blog",
+    publish: raw.publish ?? true,
     tags: Array.isArray(raw.tags) ? raw.tags : [],
-    previewImageSrc: raw.previewImageSrc || "/images/blog/placeholder.jpg",
+    previewImageSrc: raw.previewImageSrc || null,
     likes: raw.likes || 0,
     views: raw.views || 0,
     blogNumber: raw.blogNumber || 0,
@@ -56,6 +51,18 @@ function normalize(raw, id) {
 }
 
 const resolve = (...segments) => path.join(root, ...segments);
+
+/**
+ * Checks if a path exists and is a file or directory.
+ */
+async function exists(p) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // ─── Public API ────────────────────────────────────────────────────────────
 
@@ -81,9 +88,12 @@ export async function getBlogMetadataById(id) {
   if (cached) return cached;
 
   try {
-    const content = await fs.readFile(resolve(id, "metadata.json"), "utf8");
-    const raw = JSON.parse(content);
-    const data = normalize(raw, id);
+    const filePath = resolve(`${id}.md`);
+    if (!(await exists(filePath))) return null;
+
+    const fileContent = await fs.readFile(filePath, "utf8");
+    const { data: rawMetadata } = matter(fileContent);
+    const data = normalize(rawMetadata, id);
     
     // Hydrate Tags
     const tagRegistry = await getAllTags();
@@ -94,7 +104,8 @@ export async function getBlogMetadataById(id) {
 
     setCache(key, data);
     return data;
-  } catch {
+  } catch (err) {
+    logger.error(`Error reading metadata for ${id}:`, err);
     return null;
   }
 }
@@ -106,17 +117,17 @@ export async function getAllBlogs() {
 
   try {
     const entries = await fs.readdir(root, { withFileTypes: true });
-    const ids = entries
-      .filter(e => e.isDirectory() && !e.name.startsWith("."))
-      .map(e => e.name);
+    
+    // Only look for .md files (excluding tags.json if it's there)
+    const uniqueIds = entries
+      .filter(e => e.name.endsWith(".md") && !e.name.startsWith("."))
+      .map(e => e.name.replace(".md", ""));
 
-    const blogs = (await Promise.all(ids.map(id => getBlogMetadataById(id))))
+    const blogs = (await Promise.all(uniqueIds.map(id => getBlogMetadataById(id))))
       .filter(Boolean)
-      // Hide drafts in production
       .filter(b => process.env.NODE_ENV === "development" || b.publish !== false)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    // Dynamic Indexing
     slugIndex.clear();
     tagIndex.clear();
     const tagRegistry = await getAllTags();
@@ -162,7 +173,10 @@ export async function getBlogsByType(type) {
 
 export async function getBlogContent(id) {
   try {
-    return await fs.readFile(resolve(id, "blog.md"), "utf8");
+    const filePath = resolve(`${id}.md`);
+    const fileContent = await fs.readFile(filePath, "utf8");
+    const { content } = matter(fileContent);
+    return content;
   } catch (err) {
     throw new AppError(`Content missing for ${id}`, ErrorCode.NOT_FOUND, err);
   }
