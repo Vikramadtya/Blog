@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { initializeFirestore, doc, getDoc } from "firebase/firestore";
 import { logger } from "@/lib/server/api-utils";
 
 // ─── Configuration ───────────────────────────────────────────────────────────
@@ -18,8 +18,14 @@ let app;
 let db;
 
 if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId) {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  if (!global._firebaseApp) {
+    global._firebaseApp = initializeApp(firebaseConfig);
+    global._firebaseDb = initializeFirestore(global._firebaseApp, {
+      experimentalForceLongPolling: true,
+    });
+  }
+  app = global._firebaseApp;
+  db = global._firebaseDb;
 } else {
   logger.warn("Firebase configuration missing. Firebase features will be disabled.");
 }
@@ -53,30 +59,68 @@ export function convertBlogData(data) {
     blogNumber: data.get("blogNumber"),
     previewImageSrc: data.get("previewImageSrc"),
     type: data.get("type"),
-    likes: data.get("likes"),
-    views: data.get("views"),
+    likes: data.get("likes") || 0,
+    views: data.get("views") || 0,
   };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
- * Fetches a single document by its document ID from Firestore.
+ * Fetches a single document by its document ID from Firestore using the REST API.
+ * This is much more stable in Node.js/Serverless environments than the gRPC-based SDK.
  */
 export async function getDocumentById(id, converter, collectionName, itemType) {
-  if (!id || !db) return null;
+  if (!id || !firebaseConfig.projectId) return null;
 
-  const docRef = doc(db, collectionName, id);
+  const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/${collectionName}/${id}?key=${firebaseConfig.apiKey}`;
 
   try {
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      logger.warn(`${itemType} with ID ${id} not found.`);
+    const response = await fetch(url);
+    
+    if (response.status === 404) {
+      logger.warn(`${itemType} with ID ${id} not found (REST).`);
       return null;
     }
-    return converter(docSnap);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Firestore REST error: ${errorData.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    // Firestore REST API returns fields in a specific format (e.g. { fields: { likes: { integerValue: "10" } } })
+    // We need a helper to normalize this or just pass the raw fields if they are simple.
+    // However, our converter expects a DocumentSnapshot-like object with .get().
+    
+    const mockSnap = {
+      get: (field) => {
+        const parts = field.split(".");
+        let current = data.fields;
+        for (const part of parts) {
+          if (!current || !current[part]) return undefined;
+          current = current[part];
+        }
+        // Unwrap Firestore REST types
+        if (current.integerValue) return parseInt(current.integerValue);
+        if (current.doubleValue) return parseFloat(current.doubleValue);
+        if (current.stringValue) return current.stringValue;
+        if (current.booleanValue) return current.booleanValue;
+        if (current.timestampValue) return current.timestampValue;
+        if (current.mapValue) return current.mapValue.fields; // Caution: nested fields might need recursive unwrapping
+        if (current.arrayValue) return current.arrayValue.values?.map(v => {
+          if (v.stringValue) return v.stringValue;
+          if (v.integerValue) return parseInt(v.integerValue);
+          return v;
+        });
+        return current;
+      }
+    };
+
+    return converter(mockSnap);
   } catch (err) {
-    logger.error(`Error fetching ${itemType} ${id}:`, err);
-    throw new Error(`Failed to fetch ${itemType} by ID.`);
+    logger.error(`Error fetching ${itemType} ${id} (REST):`, err);
+    return null;
   }
 }

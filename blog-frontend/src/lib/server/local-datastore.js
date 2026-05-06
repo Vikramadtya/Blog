@@ -10,6 +10,7 @@ import { CACHE_TTL_MS } from "@/lib/constants";
 const cache = new Map();
 const slugIndex = new Map();
 const tagIndex = new Map();
+const idToFilename = new Map(); // Maps UUID to filename (slug)
 let isWarmed = false;
 
 const root = path.join(process.cwd(), siteMetadata.localBlogDatastorePath);
@@ -88,7 +89,8 @@ export async function getBlogMetadataById(id) {
   if (cached) return cached;
 
   try {
-    const filePath = resolve(`${id}.md`);
+    const filename = idToFilename.get(id) || id;
+    const filePath = resolve(`${filename}.md`);
     if (!(await exists(filePath))) return null;
 
     const fileContent = await fs.readFile(filePath, "utf8");
@@ -130,6 +132,7 @@ export async function getAllBlogs() {
 
     slugIndex.clear();
     tagIndex.clear();
+    idToFilename.clear();
     const tagRegistry = await getAllTags();
     const ALL_TAG_ID = "00000000-0000-0000-0000-000000000000";
 
@@ -137,7 +140,10 @@ export async function getAllBlogs() {
     if (!tagIndex.has(ALL_TAG_ID)) tagIndex.set(ALL_TAG_ID, []);
 
     blogs.forEach(blog => {
-      if (blog.slug) slugIndex.set(blog.slug, blog.id);
+      if (blog.slug) {
+        slugIndex.set(blog.slug, blog.id);
+        idToFilename.set(blog.id, blog.slug);
+      }
       
       blog.tags.forEach(tag => {
         if (tagIndex.has(tag.id)) tagIndex.get(tag.id).push(blog.id);
@@ -172,8 +178,10 @@ export async function getBlogsByType(type) {
 }
 
 export async function getBlogContent(id) {
+  if (!isWarmed) await getAllBlogs();
   try {
-    const filePath = resolve(`${id}.md`);
+    const filename = idToFilename.get(id) || id;
+    const filePath = resolve(`${filename}.md`);
     const fileContent = await fs.readFile(filePath, "utf8");
     const { content } = matter(fileContent);
     return content;

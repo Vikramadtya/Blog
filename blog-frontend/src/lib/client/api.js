@@ -51,7 +51,7 @@ function unwrap(res, fallback = []) {
  * Fetches a blog's live metadata (likes, views) from Firestore.
  */
 export async function getBlogMetadataById(blogId) {
-  const url = new URL("/api/blog/data", siteMetadata.apiBaseUrl);
+  const url = new URL("/api/blog/data", window.location.origin);
   url.searchParams.set("id", blogId);
   return unwrap(await get(url.toString()), {});
 }
@@ -60,7 +60,8 @@ export async function getBlogMetadataById(blogId) {
  * Increments likes or views for a blog.
  */
 export async function incrementBlogLikesOrViewsById(id, type) {
-  return post(new URL("/api/blog/data", siteMetadata.apiBaseUrl).toString(), {
+  const url = new URL("/api/blog/data", window.location.origin);
+  return post(url.toString(), {
     id,
     field: type,
   });
@@ -70,5 +71,6 @@ export async function incrementBlogLikesOrViewsById(id, type) {
  * Submits an email for notification subscription.
  */
 export function notify(email) {
-  return post(new URL("/api/blog/notify", siteMetadata.apiBaseUrl).toString(), { email });
+  const url = new URL("/api/blog/notify", window.location.origin);
+  return post(url.toString(), { email });
 }
