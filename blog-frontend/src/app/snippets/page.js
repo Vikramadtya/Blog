@@ -1,10 +1,10 @@
 import React from "react";
 import { getBlogsByType } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
-import MarkdownContentList from "@/components/molecules/MarkdownContentList";
+import ContentGrid from "@/components/molecules/ContentGrid";
 
 import { siteMetadata } from "../../../site.config.mjs";
-import content from "../../../config/content.json";
+const { content } = siteMetadata;
 
 export async function generateMetadata() {
   return {
@@ -73,10 +73,10 @@ export default async function Snippets() {
 
         {/* Snippets Grid */}
         <section className="mx-auto w-full max-w-7xl">
-          <MarkdownContentList
-            blogs={snippets}
-            blogIdToMetadata={snippetIdToMetadata}
-          />
+          <ContentGrid
+          blogs={snippets}
+          blogIdToMetadata={snippetIdToMetadata}
+        />
         </section>
       </section>
     </main>

@@ -4,7 +4,7 @@ import { getAllTags, getTagToBlogMap } from "@/lib/server/blog";
 import TagBasedList from "@/components/molecules/TagBasedList";
 
 import { siteMetadata } from "../../../site.config.mjs";
-import content from "../../../config/content.json";
+const { content } = siteMetadata;
 
 export async function generateMetadata() {
   return {

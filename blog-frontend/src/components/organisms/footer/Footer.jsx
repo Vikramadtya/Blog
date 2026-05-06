@@ -1,8 +1,8 @@
 import Link from "next/link";
 import SocialIcon from "@/components/atoms/SocialIcon";
 import BuildWith from "@/components/atoms/BuildWith";
-import content from "../../../../config/content.json";
 import { siteMetadata } from "../../../../site.config.mjs";
+const { content } = siteMetadata;
 
 const Footer = () => {
   return (

@@ -1,10 +1,12 @@
 import site from "./config/site.json" with { type: "json" };
+import content from "./config/content.json" with { type: "json" };
 
 export const siteMetadata = {
   ...site,
+  content,
   // Site paths & identification
   siteRepo: site.siteRepo || "https://github.com/Vikramadtya/Blog",
-  localBlogDatastorePath: "./blog-datastore/blogs",
+  localBlogDatastorePath: site.localBlogDatastorePath || "./blog-datastore/blogs",
   
   // Feature Flags
   firebaseEnabled: !!(

@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "@/components/atoms/Card";
 
-const MarkdownContentList = ({ blogs, blogIdToMetadata }) => {
+const ContentGrid = ({ blogs, blogIdToMetadata }) => {
   return (
     <ul className="grid w-full grid-cols-1 items-start gap-6 pb-16 pt-16 md:grid-cols-2 xl:grid-cols-3">
       {blogs.map((blog) => (
@@ -24,4 +24,4 @@ const MarkdownContentList = ({ blogs, blogIdToMetadata }) => {
   );
 };
 
-export default MarkdownContentList;
+export default ContentGrid;

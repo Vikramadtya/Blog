@@ -10,6 +10,8 @@ import Logo from "@/components/atoms/Logo";
 import { siteMetadata } from "../../../../site.config.mjs";
 import { navLinks } from "@/utils/navLinks";
 
+const { content } = siteMetadata;
+
 const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-background/80 shadow-md backdrop-blur-md dark:border-zinc-800 dark:bg-background/80">

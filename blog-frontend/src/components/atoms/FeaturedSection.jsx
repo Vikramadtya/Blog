@@ -1,4 +1,4 @@
-import MarkdownContentList from "@/components/molecules/MarkdownContentList";
+import ContentGrid from "@/components/molecules/ContentGrid";
 import React from "react";
 
 const FeaturedSection = ({ title, blogs, blogIdToMetadata }) => (
@@ -6,7 +6,7 @@ const FeaturedSection = ({ title, blogs, blogIdToMetadata }) => (
     <h2 className="mb-6 text-2xl font-semibold tracking-wide text-gray-800 dark:text-gray-100 md:text-3xl">
       {title}
     </h2>
-    <MarkdownContentList blogs={blogs} blogIdToMetadata={blogIdToMetadata} />
+    <ContentGrid blogs={blogs} blogIdToMetadata={blogIdToMetadata} />
   </section>
 );
 

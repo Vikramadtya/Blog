@@ -1,10 +1,10 @@
 import React from "react";
-import MarkdownContentList from "@/components/molecules/MarkdownContentList";
+import ContentGrid from "@/components/molecules/ContentGrid";
 import { getBlogsByType } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
 
 import { siteMetadata } from "../../../site.config.mjs";
-import content from "../../../config/content.json";
+const { content } = siteMetadata;
 
 export async function generateMetadata() {
   return {
@@ -71,10 +71,10 @@ export default async function Blog() {
         </p>
         {/* Blog Grid */}
         <section className="mx-auto w-full max-w-7xl">
-          <MarkdownContentList
-            blogs={blogs}
-            blogIdToMetadata={blogIdToMetadata}
-          />
+          <ContentGrid
+          blogs={blogs}
+          blogIdToMetadata={blogIdToMetadata}
+        />
         </section>
       </section>
     </main>

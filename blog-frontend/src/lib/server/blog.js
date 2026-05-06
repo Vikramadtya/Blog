@@ -3,7 +3,7 @@
  * Handles filesystem reads, Firestore dynamic metadata, and content processing.
  */
 
-import * as datastore from "@/lib/server/datastore";
+import * as datastore from "@/lib/server/local-datastore";
 import * as firebase from "@/lib/server/firebase";
 import { db, COLLECTIONS, getDocumentById, convertBlogData } from "@/lib/server/firebase";
 import { doc, updateDoc, increment, collection, addDoc, Timestamp } from "firebase/firestore";
@@ -49,7 +49,7 @@ export {
   getBlogContent,
   getBlogMetadataById,
   getTagById,
-} from "./datastore";
+} from "./local-datastore";
 
 // ─── Dynamic Metadata (Firestore) ────────────────────────────────────────────
 

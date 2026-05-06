@@ -7,7 +7,7 @@ import { BLOG_TYPES } from "@/lib/constants";
 import FeaturedSection from "@/components/atoms/FeaturedSection";
 import { siteMetadata } from "../../../site.config.mjs";
 
-import content from "../../../config/content.json";
+const { content } = siteMetadata;
 
 export async function generateMetadata() {
   return {
