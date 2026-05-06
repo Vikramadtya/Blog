@@ -41,9 +41,9 @@ const Header = () => {
             ))}
           </nav>
 
-          <ThemeToggle />
+          {siteMetadata.features.themeToggle && <ThemeToggle />}
           <MobileNavMenu />
-          <CommandPalette />
+          {siteMetadata.features.search && <CommandPalette />}
         </div>
       </div>
     </header>

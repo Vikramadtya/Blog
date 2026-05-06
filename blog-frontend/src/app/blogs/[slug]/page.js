@@ -93,7 +93,7 @@ export default async function Post({ params }) {
       },
     },
     "description": blogData.description,
-    "keywords": blogData.tags.map((t) => t.name).join(", "),
+    "keywords": blogData.tags.map((t) => typeof t === "string" ? t : t.name).join(", "),
     "wordCount": content.split(/\s+/).length,
     "mainEntityOfPage": {
       "@type": "WebPage",
@@ -178,16 +178,18 @@ export default async function Post({ params }) {
         <Separator className="my-16" />
 
         {/* Share Bar */}
-        <ShareBar
-          className="mb-10"
-          shareUrl={`${siteMetadata.siteUrl}/blogs/${blogData.slug}`}
-          title={blogData.title}
-        />
+        {siteMetadata.features.socialShare && (
+          <ShareBar
+            className="mb-10"
+            shareUrl={`${siteMetadata.siteUrl}/blogs/${blogData.slug}`}
+            title={blogData.title}
+          />
+        )}
 
         {/* Fun Footer */}
         <div className="flex flex-col items-center space-y-6">
           <Doodle classData="h-20 w-20" />
-          <Comments />
+          {siteMetadata.features.giscus && <Comments />}
         </div>
       </article>
     </>

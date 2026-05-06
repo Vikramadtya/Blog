@@ -12,197 +12,155 @@ import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
 import { CACHE_TTL_MS } from "@/lib/constants";
 
-class BlogService {
-  constructor() {
-    this.root = path.join(process.cwd(), siteMetadata.localBlogDatastorePath);
-    this.cache = new Map();
-    this.slugIndex = new Map();
-    this.tagIndex = new Map();
-    this.isWarmed = false;
-  }
+// ─── Cache & State ───────────────────────────────────────────────────────────
+const cache = new Map();
+const slugIndex = new Map();
+const tagIndex = new Map();
+let isWarmed = false;
 
-  // ─── Cache Management ──────────────────────────────────────────────────────
+const root = path.join(process.cwd(), siteMetadata.localBlogDatastorePath);
 
-  _getCached(key) {
-    const entry = this.cache.get(key);
-    if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
-      return entry.data;
-    }
-    return null;
-  }
+function getCached(key) {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) return entry.data;
+  return null;
+}
 
-  _setCache(key, data) {
-    this.cache.set(key, { data, timestamp: Date.now() });
-  }
+function setCache(key, data) {
+  cache.set(key, { data, timestamp: Date.now() });
+}
 
-  // ─── Normalization & Validation ────────────────────────────────────────────
+// ─── Normalization ───────────────────────────────────────────────────────────
 
-  /**
-   * Cleans and fills missing metadata fields with defaults.
-   */
-  _normalize(raw, id) {
-    const now = new Date().toISOString();
-    return {
-      id,
-      title: raw.title || "Untitled Post",
-      summary: raw.summary || raw.description || "No summary available.",
-      description: raw.description || raw.summary || "",
-      createdAt: raw.createdAt || now,
-      updatedAt: raw.updatedAt || raw.createdAt || now,
-      slug: raw.slug || id,
-      type: raw.type || "blog",
-      tags: Array.isArray(raw.tags) ? raw.tags : [],
-      previewImageSrc: raw.previewImageSrc || "/images/blog/placeholder.jpg",
-      likes: raw.likes || 0,
-      views: raw.views || 0,
-      blogNumber: raw.blogNumber || 0,
-      demo: {
-        preview: raw.demo?.preview || null,
-        repository: raw.demo?.repository || null,
-      },
-    };
-  }
+function normalize(raw, id) {
+  const now = new Date().toISOString();
+  return {
+    id,
+    title: raw.title || "Untitled Post",
+    summary: raw.summary || raw.description || "",
+    description: raw.description || raw.summary || "",
+    createdAt: raw.createdAt || now,
+    updatedAt: raw.updatedAt || raw.createdAt || now,
+    slug: raw.slug || id,
+    type: raw.type || "blog",
+    tags: Array.isArray(raw.tags) ? raw.tags : [],
+    previewImageSrc: raw.previewImageSrc || "/images/blog/placeholder.jpg",
+    likes: raw.likes || 0,
+    views: raw.views || 0,
+    blogNumber: raw.blogNumber || 0,
+    demo: {
+      preview: raw.demo?.preview || null,
+      repository: raw.demo?.repository || null,
+    },
+  };
+}
 
-  // ─── Path Helpers ──────────────────────────────────────────────────────────
+const resolve = (...segments) => path.join(root, ...segments);
 
-  _resolve(...segments) {
-    return path.join(this.root, ...segments);
-  }
+// ─── Public API ────────────────────────────────────────────────────────────
 
-  // ─── Public API ────────────────────────────────────────────────────────────
+export async function getAllTags() {
+  const key = "tags:all";
+  const cached = getCached(key);
+  if (cached) return cached;
 
-  /**
-   * Fetches the tag registry. Note: 'blogs' and 'count' fields are ignored 
-   * in favor of dynamic indexing.
-   */
-  async getAllTags() {
-    const key = "tags:all";
-    const cached = this._getCached(key);
-    if (cached) return cached;
-
-    try {
-      const content = await fs.readFile(this._resolve("tags.json"), "utf8");
-      const tags = JSON.parse(content);
-      this._setCache(key, tags);
-      return tags;
-    } catch (error) {
-      logger.warn(`Tags registry not found at ${this.root}/tags.json`);
-      return [];
-    }
-  }
-
-  async getBlogMetadataById(id) {
-    if (!id) return null;
-    const key = `blog:${id}`;
-    const cached = this._getCached(key);
-    if (cached) return cached;
-
-    try {
-      const content = await fs.readFile(this._resolve(id, "metadata.json"), "utf8");
-      const normalized = this._normalize(JSON.parse(content), id);
-      this._setCache(key, normalized);
-      return normalized;
-    } catch (err) {
-      if (err.code === "ENOENT") return null;
-      logger.error(`Error reading metadata for blog [${id}]:`, err);
-      return null;
-    }
-  }
-
-  /**
-   * Core engine: Scans filesystem, builds indices, and handles tag associations.
-   */
-  async getAllBlogs() {
-    const key = "blogs:all";
-    const cached = this._getCached(key);
-    if (cached && this.isWarmed) return cached;
-
-    try {
-      const entries = await fs.readdir(this.root, { withFileTypes: true });
-      const ids = entries
-        .filter(e => e.isDirectory() && !e.name.startsWith("."))
-        .map(e => e.name);
-
-      const blogs = (await Promise.all(ids.map(id => this.getBlogMetadataById(id))))
-        .filter(Boolean)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      // Build Dynamic Indices
-      this.slugIndex.clear();
-      this.tagIndex.clear();
-      const tagRegistry = await this.getAllTags();
-
-      // Initialize tag index for all registry tags
-      tagRegistry.forEach(t => this.tagIndex.set(t.id, []));
-      
-      // Ensure "All" tag exists in index
-      const ALL_TAG_ID = "00000000-0000-0000-0000-000000000000";
-      if (!this.tagIndex.has(ALL_TAG_ID)) this.tagIndex.set(ALL_TAG_ID, []);
-
-      blogs.forEach(blog => {
-        // Slug index
-        if (blog.slug) this.slugIndex.set(blog.slug, blog.id);
-
-        // Dynamic Tag Mapping: Map tag names in metadata to registry IDs
-        blog.tags.forEach(tagName => {
-          const registeredTag = tagRegistry.find(t => t.name.toLowerCase() === tagName.toLowerCase());
-          if (registeredTag) {
-            this.tagIndex.get(registeredTag.id).push(blog.id);
-          }
-        });
-
-        // Always add to "All" tag
-        this.tagIndex.get(ALL_TAG_ID).push(blog.id);
-      });
-
-      this.isWarmed = true;
-      this._setCache(key, blogs);
-      logger.success(`[API BACKEND SUCCESS] Indexed ${blogs.length} blogs and ${tagRegistry.length} tags`);
-      return blogs;
-    } catch (err) {
-      throw new AppError("Failed to list blog datastore", ErrorCode.FILESYSTEM, err);
-    }
-  }
-
-  async getBlogBySlug(slug) {
-    if (!this.isWarmed) await this.getAllBlogs();
-    const id = this.slugIndex.get(slug);
-    return id ? this.getBlogMetadataById(id) : null;
-  }
-
-  async getBlogsByTagId(tagId) {
-    if (!this.isWarmed) await this.getAllBlogs();
-    const ids = this.tagIndex.get(tagId) || [];
-    return (await Promise.all(ids.map(id => this.getBlogMetadataById(id)))).filter(Boolean);
-  }
-
-  async getBlogsByType(type) {
-    const all = await this.getAllBlogs();
-    return type ? all.filter(b => b.type === type) : all;
-  }
-
-  async getBlogContent(id) {
-    try {
-      return await fs.readFile(this._resolve(id, "blog.md"), "utf8");
-    } catch (err) {
-      throw new AppError(`Content missing for ${id}`, ErrorCode.NOT_FOUND, err);
-    }
-  }
-
-  async getTagById(id) {
-    const tags = await this.getAllTags();
-    return tags.find(t => t.id === id) || null;
+  try {
+    const content = await fs.readFile(resolve("tags.json"), "utf8");
+    const tags = JSON.parse(content);
+    setCache(key, tags);
+    return tags;
+  } catch (error) {
+    return [];
   }
 }
 
-// Export singleton instance
-const service = new BlogService();
+export async function getBlogMetadataById(id) {
+  if (!id) return null;
+  const key = `blog:${id}`;
+  const cached = getCached(key);
+  if (cached) return cached;
 
-export const getAllTags = () => service.getAllTags();
-export const getAllBlogs = () => service.getAllBlogs();
-export const getBlogMetadataById = (id) => service.getBlogMetadataById(id);
-export const getBlogBySlug = (slug) => service.getBlogBySlug(slug);
-export const getBlogsByTagId = (tagId) => service.getBlogsByTagId(tagId);
-export const getBlogsByType = (type) => service.getBlogsByType(type);
-export const getBlogContent = (id) => service.getBlogContent(id);
-export const getTagById = (id) => service.getTagById(id);
+  try {
+    const content = await fs.readFile(resolve(id, "metadata.json"), "utf8");
+    const data = normalize(JSON.parse(content), id);
+    setCache(key, data);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+export async function getAllBlogs() {
+  const key = "blogs:all";
+  const cached = getCached(key);
+  if (cached && isWarmed) return cached;
+
+  try {
+    const entries = await fs.readdir(root, { withFileTypes: true });
+    const ids = entries
+      .filter(e => e.isDirectory() && !e.name.startsWith("."))
+      .map(e => e.name);
+
+    const blogs = (await Promise.all(ids.map(id => getBlogMetadataById(id))))
+      .filter(Boolean)
+      // Hide drafts in production
+      .filter(b => process.env.NODE_ENV === "development" || b.publish !== false)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Dynamic Indexing
+    slugIndex.clear();
+    tagIndex.clear();
+    const tagRegistry = await getAllTags();
+    const ALL_TAG_ID = "00000000-0000-0000-0000-000000000000";
+
+    tagRegistry.forEach(t => tagIndex.set(t.id, []));
+    if (!tagIndex.has(ALL_TAG_ID)) tagIndex.set(ALL_TAG_ID, []);
+
+    blogs.forEach(blog => {
+      if (blog.slug) slugIndex.set(blog.slug, blog.id);
+      
+      blog.tags.forEach(tagName => {
+        const tag = tagRegistry.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+        if (tag) tagIndex.get(tag.id).push(blog.id);
+      });
+      tagIndex.get(ALL_TAG_ID).push(blog.id);
+    });
+
+    isWarmed = true;
+    setCache(key, blogs);
+    logger.success(`[Datastore] Synchronized ${blogs.length} posts`);
+    return blogs;
+  } catch (err) {
+    throw new AppError("Failed to sync blog datastore", ErrorCode.FILESYSTEM, err);
+  }
+}
+
+export async function getBlogBySlug(slug) {
+  if (!isWarmed) await getAllBlogs();
+  const id = slugIndex.get(slug);
+  return id ? getBlogMetadataById(id) : null;
+}
+
+export async function getBlogsByTagId(tagId) {
+  if (!isWarmed) await getAllBlogs();
+  const ids = tagIndex.get(tagId) || [];
+  return (await Promise.all(ids.map(id => getBlogMetadataById(id)))).filter(Boolean);
+}
+
+export async function getBlogsByType(type) {
+  const all = await getAllBlogs();
+  return type ? all.filter(b => b.type === type) : all;
+}
+
+export async function getBlogContent(id) {
+  try {
+    return await fs.readFile(resolve(id, "blog.md"), "utf8");
+  } catch (err) {
+    throw new AppError(`Content missing for ${id}`, ErrorCode.NOT_FOUND, err);
+  }
+}
+
+export async function getTagById(id) {
+  const tags = await getAllTags();
+  return tags.find(t => t.id === id) || null;
+}

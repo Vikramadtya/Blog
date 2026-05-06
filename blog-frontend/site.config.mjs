@@ -36,6 +36,17 @@ export const siteMetadata = {
     loading: site.giscus?.loading || "lazy",
   },
 
+  // Feature Flags & Modular Components
+  features: {
+    newsletter: site.features?.newsletter ?? true,
+    search: site.features?.search ?? true,
+    socialShare: site.features?.socialShare ?? true,
+    themeToggle: site.features?.themeToggle ?? true,
+    readingTime: site.features?.readingTime ?? true,
+    giscus: site.features?.giscus ?? true,
+    firebase: site.features?.firebase ?? true,
+  },
+
   // Analytics configuration
   analytics: {
     enabled: !!site.analytics?.umamiWebsiteId,

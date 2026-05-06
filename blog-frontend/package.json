@@ -8,8 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write .",
-    "post:new": "node scripts/new-post.js"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@giscus/react": "^3.0.0",

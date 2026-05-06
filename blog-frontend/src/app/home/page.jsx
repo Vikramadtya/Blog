@@ -106,10 +106,11 @@ export default async function Home() {
             />
           </section>
 
-          {/* Subscribe */}
-          <section className="mt-24 border-t pt-12">
-            <Subscribe />
-          </section>
+          {siteMetadata.features.newsletter && (
+            <section className="mt-24 border-t pt-12">
+              <Subscribe />
+            </section>
+          )}
         </div>
       </main>
     </>

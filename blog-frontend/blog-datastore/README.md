@@ -16,13 +16,14 @@ blog-datastore/
 
 ## Adding a New Post
 
-The easiest way to add a post is using the built-in CLI:
+The official way to manage content is using the **Blog CLI** located in the `blog-backend` directory.
 
 ```bash
-npm run post:new "My Amazing Post Title"
+cd ../blog-backend
+npm run start create
 ```
 
-This will create a new folder with a generated slug and placeholder files.
+This CLI provides advanced features like image processing, SEO analysis, and cloud synchronization.
 
 ## Metadata Schema (`metadata.json`)
 
