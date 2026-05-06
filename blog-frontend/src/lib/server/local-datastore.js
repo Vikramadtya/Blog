@@ -93,7 +93,7 @@ export async function getBlogMetadataById(id) {
 
     const fileContent = await fs.readFile(filePath, "utf8");
     const { data: rawMetadata } = matter(fileContent);
-    const data = normalize(rawMetadata, id);
+    const data = normalize(rawMetadata, rawMetadata.id || id);
     
     // Hydrate Tags
     const tagRegistry = await getAllTags();

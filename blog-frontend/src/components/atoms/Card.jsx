@@ -8,18 +8,24 @@ import Icon from "@/components/atoms/Icon";
 import { siteMetadata } from "../../../site.config.mjs";
 import { useBlogMetrics } from "@/hooks/useBlogMetrics";
 
-const Card = ({
-  title,
-  description,
-  tags,
-  slug,
-  date,
-  likes: initialLikes,
-  views: initialViews,
-  blogNumber,
-  id,
-  previewImageSrc,
-}) => {
+const Card = (props) => {
+  const blog = props.blog || props;
+  const {
+    title,
+    description,
+    tags,
+    slug,
+    date,
+    createdAt,
+    likes: initialLikes,
+    views: initialViews,
+    blogNumber,
+    id,
+    previewImageSrc,
+    readingTime,
+  } = blog;
+
+  const displayDate = date || createdAt;
   const { likes, views } = useBlogMetrics(id, initialLikes, initialViews, false);
   const sourceUrl = siteMetadata.siteRepo 
     ? `${siteMetadata.siteRepo}/blob/main/blogs/${id}/blog.md`
@@ -84,7 +90,13 @@ const Card = ({
           ) : (
             <span />
           )}
-          <span>{dayjs(date).format("MMMM D, YYYY")}</span>
+          {readingTime && (
+            <div className="flex items-center gap-1">
+              <Icon kind="clock" className="h-3 w-3" />
+              <span className="text-xs">{readingTime}</span>
+            </div>
+          )}
+          <span>{dayjs(displayDate).format("MMM D, YYYY")}</span>
         </div>
       </div>
     </div>

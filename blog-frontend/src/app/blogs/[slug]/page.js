@@ -9,6 +9,7 @@ import Doodle from "@/components/atoms/Doodle";
 import StickyBar from "@/components/atoms/StickyBar";
 import ScrollProgressBar from "@/components/atoms/ScrollPercentageBar";
 import ShareBar from "@/components/atoms/ShareBar";
+import RelatedPosts from "@/components/molecules/RelatedPosts";
 
 import { getMDXComponents } from "@/components/atoms/MdxComponents";
 import { prettyCodeOptions } from "@/utils/markdownConstants";
@@ -70,7 +71,10 @@ export default async function Post({ params }) {
 
   const blogData = await getBlogBySlug(slug);
   if (!blogData) return null;
-  const content = await getBlogContent(blogData.id);
+  const [content, allBlogsData] = await Promise.all([
+    getBlogContent(blogData.id),
+    getAllBlogs()
+  ]);
   const tableOfContent = getBlogToc(content);
 
   const jsonLd = {
@@ -150,6 +154,7 @@ export default async function Post({ params }) {
           title={blogData.title}
           tags={blogData.tags}
           date={blogData.createdAt}
+          readingTime={blogData.readingTime}
         />
 
         <Separator className="my-16" />
@@ -175,6 +180,13 @@ export default async function Post({ params }) {
         <StickyBar
           blogSlug={blogData.slug}
           tableOfContent={tableOfContent}
+        />
+
+        {/* Related Posts */}
+        <RelatedPosts 
+          currentSlug={blogData.slug} 
+          currentTags={blogData.tags} 
+          allBlogs={allBlogsData} 
         />
 
         <Separator className="my-16" />

@@ -5,6 +5,7 @@ import Subscribe from "@/components/atoms/Subscribe";
 import { getBlogsByType, getAllBlogs } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
 import FeaturedSection from "@/components/atoms/FeaturedSection";
+import Search from "@/components/molecules/Search";
 import { siteMetadata } from "../../../site.config.mjs";
 
 const { content } = siteMetadata;
@@ -86,6 +87,7 @@ export default async function Home() {
               tags={firstLatestBlog.tags}
               slug={firstLatestBlog.slug}
               previewImageSrc={firstLatestBlog.previewImageSrc}
+              readingTime={firstLatestBlog.readingTime}
             />
           )}
 

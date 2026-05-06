@@ -31,10 +31,10 @@ const TableOfContent = React.forwardRef(({ tableOfContent }, ref) => {
             <Icon kind="tableOfContent" className={"h-6 w-6"} />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="mb-5 mt-5" data-side="top">
-            {tableOfContent.map((menuItem) => {
+          <DropdownMenuContent className="mb-5 mt-5 max-h-[70vh] overflow-y-auto" data-side="top">
+            {tableOfContent.map((menuItem, idx) => {
               return (
-                <DropdownMenuItem key={menuItem.slug}>
+                <DropdownMenuItem key={`${menuItem.slug}-${idx}`}>
                   <div
                     className="w-full cursor-pointer"
                     onClick={() => {
@@ -44,8 +44,13 @@ const TableOfContent = React.forwardRef(({ tableOfContent }, ref) => {
                       }
                     }}
                   >
-                    <div className="flex w-56 items-center justify-between">
-                      <span className="pl-2 pr-2">{menuItem.heading}</span>
+                    <div 
+                      className="flex w-64 items-center justify-between py-1"
+                      style={{ paddingLeft: `${(menuItem.level - 1) * 12}px` }}
+                    >
+                      <span className={`pr-2 ${menuItem.level === 1 ? "font-bold" : "text-sm text-neutral-500"}`}>
+                        {menuItem.heading}
+                      </span>
                     </div>
                   </div>
                 </DropdownMenuItem>

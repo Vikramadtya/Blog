@@ -114,19 +114,22 @@ export function getBlogToc(content) {
   if (!content) return [];
 
   const headings = [];
-  const headingRegex = /^#{2,4}\s+(.+)$/gm;
+  const headingRegex = /^(#{1,4})\s+(.+)$/gm;
   let match;
 
   while ((match = headingRegex.exec(content)) !== null) {
-    const heading = match[1].trim();
+    const level = match[1].length;
+    const heading = match[2].trim();
+    
+    // Improved slugifier to match rehype-slug / github-slugger
     const slug = heading
       .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-")
-      .replace(/[^\w-]/g, "")
-      .replace(/-+/g, "-")
-      .replace(/^-+|-+$/g, "");
+      .replace(/-+/g, "-");
     
-    headings.push({ heading, slug });
+    headings.push({ heading, slug, level });
   }
 
   return headings;

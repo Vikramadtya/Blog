@@ -17,6 +17,7 @@ const ContentGrid = ({ blogs, blogIdToMetadata }) => {
             id={blog.id}
             blogNumber={blog.blogNumber}
             previewImageSrc={blog.previewImageSrc}
+            readingTime={blog.readingTime}
           />
         </li>
       ))}

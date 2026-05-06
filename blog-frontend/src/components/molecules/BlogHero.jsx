@@ -8,7 +8,7 @@ import ViewCount from "../atoms/ViewCount";
 import LikeCount from "../atoms/LikeCount";
 import { useMetrics } from "@/components/providers/BlogMetricsProvider";
 
-const BlogHero = ({ title, tags, date }) => {
+const BlogHero = ({ title, tags, date, readingTime }) => {
   const { likes: currentLikes, views: currentViews, hasLiked, toggleLike, isLiking } = useMetrics();
 
   return (
@@ -24,11 +24,18 @@ const BlogHero = ({ title, tags, date }) => {
         ))}
       </div>
 
-      <div className="flex items-center space-x-6 text-sm font-medium text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-muted-foreground">
         <div className="flex items-center space-x-2">
           <Icon kind="calendar" className="h-5 w-5" />
           <span>{dayjs(date).format("MMMM D, YYYY")}</span>
         </div>
+
+        {readingTime && (
+          <div className="flex items-center space-x-2">
+            <Icon kind="clock" className="h-5 w-5" />
+            <span>{readingTime}</span>
+          </div>
+        )}
 
         <div className="flex items-center space-x-4">
           <ViewCount views={currentViews} />

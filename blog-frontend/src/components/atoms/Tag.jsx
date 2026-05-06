@@ -9,7 +9,7 @@ const Tag = ({ text, color, id }) => {
 
   return (
     <Link
-      href={id ? `/tags#${id}` : `/tags`}
+      href={`/search?tag=${text}`}
       className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors duration-150 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-offset-2`}
       style={{
         backgroundColor: background,

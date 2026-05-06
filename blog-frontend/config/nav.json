@@ -1,5 +1,6 @@
 {
   "main": [
+    { "key": 0, "href": "/search", "title": "Search", "shortcut": "⌘+S" },
     { "key": 1, "href": "/blogs", "title": "All Posts", "shortcut": "⌘+B" },
     { "key": 2, "href": "/tags", "title": "Tags", "shortcut": "⌘+T" },
     { "key": 3, "href": "/notes", "title": "Notes", "shortcut": "⌘+K" },
@@ -7,10 +8,10 @@
   ],
   "dropdown": [
     { "key": 1, "href": "/", "title": "Home", "icon": "home", "shortcut": "⌘+H" },
-    { "key": 2, "href": "/blogs", "title": "All Posts", "icon": "all", "shortcut": "⌘+B" },
-    { "key": 3, "href": "/tags", "title": "Tags", "icon": "tag", "shortcut": "⌘+T" },
-    { "key": 4, "href": "/notes", "title": "Notes", "icon": "book", "shortcut": "⌘+K" },
-    { "key": 5, "href": "", "title": "", "icon": "", "shortcut": "" },
+    { "key": 2, "href": "/search", "title": "Search", "icon": "search", "shortcut": "⌘+S" },
+    { "key": 3, "href": "/blogs", "title": "All Posts", "icon": "all", "shortcut": "⌘+B" },
+    { "key": 4, "href": "/tags", "title": "Tags", "icon": "tag", "shortcut": "⌘+T" },
+    { "key": 5, "href": "/notes", "title": "Notes", "icon": "book", "shortcut": "⌘+K" },
     { "key": 6, "href": "PORTFOLIO_LINK", "title": "Author", "icon": "me", "shortcut": "⌘+A" }
   ]
 }

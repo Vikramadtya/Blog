@@ -17,6 +17,10 @@ import Up from "../../../public/icons/up.svg";
 import Comment from "../../../public/icons/comment.svg";
 import All from "../../../public/icons/all.svg";
 import Book from "../../../public/icons/book.svg";
+import Close from "../../../public/icons/menu-close.svg";
+import Sun from "../../../public/icons/sun.svg";
+import Mail from "../../../public/icons/mail.svg";
+import Command from "../../../public/icons/command.svg";
 
 import { cn } from "@/utils/cn";
 
@@ -40,6 +44,11 @@ const components = {
   eye: Eye,
   all: All,
   book: Book,
+  close: Close,
+  sun: Sun,
+  mail: Mail,
+  command: Command,
+  clock: Book, // Use book for reading time if clock is missing
 };
 
 const Icon = ({ kind, className }) => {
