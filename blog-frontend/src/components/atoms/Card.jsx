@@ -23,14 +23,17 @@ const Card = ({
   return (
     <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900">
       {previewImageSrc && (
-        <Image
-          src={previewImageSrc}
-          alt={title}
-          width={400}
-          height={250}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="aspect-video w-full object-cover"
-        />
+        <div className="relative aspect-video w-full overflow-hidden">
+          <Image
+            src={previewImageSrc}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 hover:scale-105"
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+          />
+        </div>
       )}
 
       <div className="flex flex-col justify-between p-5">

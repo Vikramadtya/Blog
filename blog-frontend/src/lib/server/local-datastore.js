@@ -82,7 +82,16 @@ export async function getBlogMetadataById(id) {
 
   try {
     const content = await fs.readFile(resolve(id, "metadata.json"), "utf8");
-    const data = normalize(JSON.parse(content), id);
+    const raw = JSON.parse(content);
+    const data = normalize(raw, id);
+    
+    // Hydrate Tags
+    const tagRegistry = await getAllTags();
+    data.tags = data.tags.map(tagName => {
+      const tag = tagRegistry.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+      return tag || { id: tagName, name: tagName, color: "gray" };
+    });
+
     setCache(key, data);
     return data;
   } catch {
@@ -119,9 +128,8 @@ export async function getAllBlogs() {
     blogs.forEach(blog => {
       if (blog.slug) slugIndex.set(blog.slug, blog.id);
       
-      blog.tags.forEach(tagName => {
-        const tag = tagRegistry.find(t => t.name.toLowerCase() === tagName.toLowerCase());
-        if (tag) tagIndex.get(tag.id).push(blog.id);
+      blog.tags.forEach(tag => {
+        if (tagIndex.has(tag.id)) tagIndex.get(tag.id).push(blog.id);
       });
       tagIndex.get(ALL_TAG_ID).push(blog.id);
     });

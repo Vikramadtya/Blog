@@ -33,7 +33,7 @@ function syncTagsWithFilesystem() {
 
   const blogDirs = fs
     .readdirSync(PATH_TO_BLOGS, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory() && isValidUuid(dirent.name))
+    .filter((dirent) => dirent.isDirectory() && !dirent.name.startsWith("."))
     .map((dirent) => dirent.name);
 
   const tagsInUse = new Map();

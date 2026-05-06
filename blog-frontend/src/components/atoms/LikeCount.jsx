@@ -1,22 +1,29 @@
 "use client";
-import { useEffect, useState } from "react";
 import Icon from "@/components/atoms/Icon";
-import { getBlogMetadataById } from "@/lib/client/api";
+import { cn } from "@/lib/utils";
 
-const LikeCount = ({ id, likes }) => {
-  const [currentLikes, setCurrentLikes] = useState(likes);
-
-  useEffect(() => {
-    getBlogMetadataById(id).then((data) => {
-      setCurrentLikes(data?.likes ?? likes);
-    });
-  }, [id, likes]);
-
+const LikeCount = ({ likes, hasLiked, onLike, disabled }) => {
   return (
-    <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-200">
-      <Icon kind="heart" className="h-5 w-5 text-rose-500" />
-      <span className="text-sm font-medium">{currentLikes}</span>
-    </div>
+    <button
+      onClick={onLike}
+      disabled={disabled || hasLiked}
+      className={cn(
+        "group flex items-center gap-1.5 transition-all active:scale-95 disabled:opacity-80",
+        hasLiked ? "cursor-default" : "cursor-pointer hover:opacity-80"
+      )}
+      title={hasLiked ? "You liked this!" : "Like this post"}
+    >
+      <Icon 
+        kind="heart" 
+        className={cn(
+          "h-5 w-5 transition-colors", 
+          hasLiked ? "fill-rose-500 text-rose-500" : "text-rose-500 group-hover:fill-rose-200"
+        )} 
+      />
+      <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+        {likes}
+      </span>
+    </button>
   );
 };
 

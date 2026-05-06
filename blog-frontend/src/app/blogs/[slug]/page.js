@@ -1,5 +1,5 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
-import rehypePrettyCode from "rehype-pretty-code";
+import { rehypePrettyCode } from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 
 import { Separator } from "@/components/atoms/Separator";
@@ -67,6 +67,7 @@ export default async function Post({ params }) {
   const { slug } = params;
 
   const blogData = await getBlogBySlug(slug);
+  if (!blogData) return null;
   const content = await getBlogContent(blogData.id);
   const tableOfContent = getBlogToc(content);
 

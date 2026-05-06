@@ -159,7 +159,8 @@ export async function createBlog() {
     draftMetadata.blogNumber = nextBlogNumber; // Update metadata with the real number.
 
     // --- 5. Write to Filesystem ---
-    blogDir = path.join(PATH_TO_BLOGS, blogId);
+    const folderName = answers.slug || blogId;
+    blogDir = path.join(PATH_TO_BLOGS, folderName);
     if (!fs.existsSync(blogDir)) {
       fs.mkdirSync(blogDir, { recursive: true });
     }

@@ -51,7 +51,8 @@ export async function uploadBlog(blogId, options) {
   if (options.all) {
     const blogs = fs.readdirSync(PATH_TO_BLOGS);
     for (const blog of blogs) {
-      if (isUuid(blog) && isDirectory(path.join(PATH_TO_BLOGS, blog))) {
+      const blogPath = path.join(PATH_TO_BLOGS, blog);
+      if (isDirectory(blogPath) && !blog.startsWith('.')) {
         await uploadSingleBlog(blog, options, authorMap, tagMap);
       }
     }
