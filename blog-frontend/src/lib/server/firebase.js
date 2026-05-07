@@ -124,3 +124,46 @@ export async function getDocumentById(id, converter, collectionName, itemType) {
     return null;
   }
 }
+
+/**
+ * Increments a numeric field in a Firestore document using the REST API.
+ */
+export async function incrementFieldREST(id, field, collectionName) {
+  if (!id || !firebaseConfig.projectId) return null;
+
+  const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents:commit?key=${firebaseConfig.apiKey}`;
+
+  const body = {
+    writes: [
+      {
+        transform: {
+          document: `projects/${firebaseConfig.projectId}/databases/(default)/documents/${collectionName}/${id}`,
+          fieldTransforms: [
+            {
+              fieldPath: field,
+              increment: { integerValue: 1 }
+            }
+          ]
+        }
+      }
+    ]
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Firestore REST Increment error: ${errorData.error?.message || response.statusText}`);
+    }
+
+    return true;
+  } catch (err) {
+    logger.error(`Error incrementing ${field} for ${id} (REST):`, err);
+    throw err;
+  }
+}

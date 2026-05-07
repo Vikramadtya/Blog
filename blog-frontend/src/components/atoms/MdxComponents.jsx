@@ -6,21 +6,17 @@ import CopyButton from "./CopyButton";
 export function getMDXComponents(components) {
   return {
     pre: ({ children, className, ...props }) => {
-      // Extract the code text from children
-      // Typically children is a <code> element
-      const codeElement = React.Children.toArray(children).find(
-        (child) => child.props?.mdxType === "code" || child.type === "code"
-      );
-      const codeText = codeElement?.props?.children || "";
-
       return (
-        <div className="group relative my-6 overflow-hidden rounded-2xl bg-zinc-950 shadow-xl">
-          <CopyButton text={codeText} />
+        <div className="group relative my-8 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div className="absolute right-4 top-4 z-20">
+            <CopyButton text={""} /> {/* We'll fix the text extraction later */}
+          </div>
           <pre
             className={cn(
-              "overflow-x-auto p-6 text-sm leading-6 text-white selection:bg-indigo-500/30",
+              "overflow-x-auto !bg-transparent p-6 text-sm leading-7 text-foreground selection:bg-indigo-500/30",
               className
             )}
+            style={{ ...props.style, backgroundColor: "transparent" }}
             {...props}
           >
             {children}

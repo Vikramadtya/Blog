@@ -1,9 +1,11 @@
-
 export const prettyCodeOptions = {
-  // Use a light, clean theme inspired by Material Design
-  theme: "catppuccin-latte",
-
-  // Let the theme define its own background
+  // Ultra-reliable standard themes
+  theme: {
+    light: "github-light",
+    dark: "github-dark",
+  },
+  
+  // Keep background true for full metadata generation
   keepBackground: true,
 
   // Default language fallback

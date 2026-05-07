@@ -5,7 +5,7 @@
 
 import * as datastore from "@/lib/server/local-datastore";
 import * as firebase from "@/lib/server/firebase";
-import { db, COLLECTIONS, getDocumentById, convertBlogData } from "@/lib/server/firebase";
+import { db, COLLECTIONS, getDocumentById, convertBlogData, incrementFieldREST } from "@/lib/server/firebase";
 import { doc, updateDoc, increment, collection, addDoc, Timestamp } from "firebase/firestore";
 import { siteMetadata } from "../../../site.config.mjs";
 import { AppError, ErrorCode } from "@/lib/server/errors";
@@ -55,8 +55,7 @@ export {
 
 export async function incrementMetadataField(id, field) {
   if (!siteMetadata.firebaseEnabled) return null;
-  const metadataRef = doc(db, COLLECTIONS.BLOG_METADATA, id);
-  await updateDoc(metadataRef, { [field]: increment(1) });
+  await incrementFieldREST(id, field, COLLECTIONS.BLOG_METADATA);
   return getDynamicMetadataById(id);
 }
 
