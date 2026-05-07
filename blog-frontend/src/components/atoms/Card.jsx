@@ -28,7 +28,7 @@ const Card = (props) => {
   const displayDate = date || createdAt;
   const { likes, views } = useBlogMetrics(id, initialLikes, initialViews, false);
   const sourceUrl = siteMetadata.siteRepo 
-    ? `${siteMetadata.siteRepo}/blob/main/blogs/${id}/blog.md`
+    ? `${siteMetadata.siteRepo}/blob/main/blog-frontend/blog-datastore/blogs/${slug}.md`
     : null;
   return (
     <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900">
