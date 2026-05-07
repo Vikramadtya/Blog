@@ -21,6 +21,13 @@ import Close from "../../../public/icons/menu-close.svg";
 import Sun from "../../../public/icons/sun.svg";
 import Mail from "../../../public/icons/mail.svg";
 import Command from "../../../public/icons/command.svg";
+import RSS from "../../../public/icons/rss.svg";
+import Github from "../../../public/icons/github.svg";
+import Instagram from "../../../public/icons/instagram.svg";
+import Facebook from "../../../public/icons/facebook.svg";
+import LinkedIn from "../../../public/icons/linkedin.svg";
+import Twitter from "../../../public/icons/twitter.svg";
+import Youtube from "../../../public/icons/youtube.svg";
 
 import { cn } from "@/utils/cn";
 
@@ -49,6 +56,13 @@ const components = {
   mail: Mail,
   command: Command,
   clock: Book, // Use book for reading time if clock is missing
+  rss: RSS,
+  github: Github,
+  instagram: Instagram,
+  facebook: Facebook,
+  linkedin: LinkedIn,
+  twitter: Twitter,
+  youtube: Youtube,
 };
 
 const Icon = ({ kind, className }) => {

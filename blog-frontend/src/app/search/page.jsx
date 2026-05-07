@@ -7,6 +7,9 @@ export async function generateMetadata() {
   return {
     title: `Search Blogs | ${siteMetadata.title}`,
     description: "Search across all blog posts, snippets, and topics.",
+    alternates: {
+      canonical: `${siteMetadata.siteUrl}/search`,
+    },
   };
 }
 

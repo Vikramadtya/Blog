@@ -94,8 +94,14 @@ export async function getBlogMetadataById(id) {
     if (!(await exists(filePath))) return null;
 
     const fileContent = await fs.readFile(filePath, "utf8");
-    const { data: rawMetadata } = matter(fileContent);
+    const { data: rawMetadata, content: rawContent } = matter(fileContent);
     const data = normalize(rawMetadata, rawMetadata.id || id);
+    
+    // Calculate reading time if not present
+    if (!data.readingTime) {
+      const { calculateReadingTime } = await import("@/utils/readingTime");
+      data.readingTime = calculateReadingTime(rawContent);
+    }
     
     // Hydrate Tags
     const tagRegistry = await getAllTags();

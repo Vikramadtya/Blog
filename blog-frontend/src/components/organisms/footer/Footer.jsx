@@ -16,6 +16,34 @@ const Footer = () => {
               size={20}
             />
           )}
+          {siteMetadata.twitter && (
+            <SocialIcon
+              kind="twitter"
+              href={siteMetadata.twitter}
+              size={20}
+            />
+          )}
+          {siteMetadata.facebook && (
+            <SocialIcon
+              kind="facebook"
+              href={siteMetadata.facebook}
+              size={20}
+            />
+          )}
+          {siteMetadata.youtube && (
+            <SocialIcon
+              kind="youtube"
+              href={siteMetadata.youtube}
+              size={20}
+            />
+          )}
+          {siteMetadata.linkedin && (
+            <SocialIcon
+              kind="linkedin"
+              href={siteMetadata.linkedin}
+              size={20}
+            />
+          )}
           {siteMetadata.email && (
             <SocialIcon
               kind="mail"

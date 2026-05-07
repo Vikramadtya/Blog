@@ -1,7 +1,33 @@
+import React from "react";
 import { cn } from "@/lib/utils";
+
+import CopyButton from "./CopyButton";
 
 export function getMDXComponents(components) {
   return {
+    pre: ({ children, className, ...props }) => {
+      // Extract the code text from children
+      // Typically children is a <code> element
+      const codeElement = React.Children.toArray(children).find(
+        (child) => child.props?.mdxType === "code" || child.type === "code"
+      );
+      const codeText = codeElement?.props?.children || "";
+
+      return (
+        <div className="group relative my-6 overflow-hidden rounded-2xl bg-zinc-950 shadow-xl">
+          <CopyButton text={codeText} />
+          <pre
+            className={cn(
+              "overflow-x-auto p-6 text-sm leading-6 text-white selection:bg-indigo-500/30",
+              className
+            )}
+            {...props}
+          >
+            {children}
+          </pre>
+        </div>
+      );
+    },
     h1: ({ id, className, children }) => (
       <h1
         id={id}

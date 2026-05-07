@@ -10,6 +10,7 @@ import StickyBar from "@/components/atoms/StickyBar";
 import ScrollProgressBar from "@/components/atoms/ScrollPercentageBar";
 import ShareBar from "@/components/atoms/ShareBar";
 import RelatedPosts from "@/components/molecules/RelatedPosts";
+import AuthorBio from "@/components/atoms/AuthorBio";
 
 import { getMDXComponents } from "@/components/atoms/MdxComponents";
 import { prettyCodeOptions } from "@/utils/markdownConstants";
@@ -175,6 +176,8 @@ export default async function Post({ params }) {
             components={getMDXComponents()}
           />
         </section>
+
+        <AuthorBio />
 
         {/* Sticky TOC / Like-Share bar */}
         <StickyBar

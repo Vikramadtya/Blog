@@ -62,6 +62,8 @@ export const metadata = {
   },
 };
 
+import BackToTop from "@/components/atoms/BackToTop";
+
 export default function RootLayout({ children }) {
   return (
     <html lang={siteMetadata.language || "en"} suppressHydrationWarning>
@@ -76,6 +78,7 @@ export default function RootLayout({ children }) {
             <Header />
             <main className="mb-auto">{children}</main>
             <Footer />
+            <BackToTop />
           </ThemeProvider>
         </div>
       </body>

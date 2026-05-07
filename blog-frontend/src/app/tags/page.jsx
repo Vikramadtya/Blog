@@ -8,6 +8,9 @@ export async function generateMetadata() {
   return {
     title: `Explore Tags | ${siteMetadata.title}`,
     description: "Browse all topics and categories covered in our blog.",
+    alternates: {
+      canonical: `${siteMetadata.siteUrl}/tags`,
+    },
   };
 }
 
