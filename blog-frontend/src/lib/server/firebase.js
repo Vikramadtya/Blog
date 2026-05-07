@@ -1,5 +1,3 @@
-import { initializeApp } from "firebase/app";
-import { initializeFirestore, doc, getDoc } from "firebase/firestore";
 import { logger } from "@/lib/server/api-utils";
 
 // ─── Configuration ───────────────────────────────────────────────────────────
@@ -14,23 +12,12 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_CONFIG_APP_ID,
 };
 
-let app;
-let db;
-
-if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId) {
-  if (!global._firebaseApp) {
-    global._firebaseApp = initializeApp(firebaseConfig);
-    global._firebaseDb = initializeFirestore(global._firebaseApp, {
-      experimentalForceLongPolling: true,
-    });
-  }
-  app = global._firebaseApp;
-  db = global._firebaseDb;
-} else {
+// No longer using the heavy SDK to save bundle size
+if (!(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId)) {
   logger.warn("Firebase configuration missing. Firebase features will be disabled.");
 }
 
-export { db };
+
 
 export const COLLECTIONS = {
   BLOG_METADATA: "blogs-metadata",
@@ -164,6 +151,45 @@ export async function incrementFieldREST(id, field, collectionName) {
     return true;
   } catch (err) {
     logger.error(`Error incrementing ${field} for ${id} (REST):`, err);
+    throw err;
+  }
+}
+
+/**
+ * Creates a new document in Firestore using the REST API.
+ */
+export async function createDocumentREST(data, collectionName) {
+  if (!firebaseConfig.projectId) return null;
+
+  const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/${collectionName}?key=${firebaseConfig.apiKey}`;
+
+  // Firestore REST API expects fields in a specific format
+  const formattedFields = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === "string") formattedFields[key] = { stringValue: value };
+    else if (typeof value === "number") formattedFields[key] = { integerValue: value.toString() };
+    else if (typeof value === "boolean") formattedFields[key] = { booleanValue: value };
+    else if (value instanceof Date) {
+        formattedFields[key] = { timestampValue: value.toISOString() };
+    }
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields: formattedFields }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Firestore REST Create error: ${errorData.error?.message || response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result.name.split("/").pop();
+  } catch (err) {
+    logger.error(`Error creating document in ${collectionName} (REST):`, err);
     throw err;
   }
 }

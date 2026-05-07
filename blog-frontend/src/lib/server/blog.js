@@ -4,9 +4,7 @@
  */
 
 import * as datastore from "@/lib/server/local-datastore";
-import * as firebase from "@/lib/server/firebase";
-import { db, COLLECTIONS, getDocumentById, convertBlogData, incrementFieldREST } from "@/lib/server/firebase";
-import { doc, updateDoc, increment, collection, addDoc, Timestamp } from "firebase/firestore";
+import { COLLECTIONS, getDocumentById, convertBlogData, incrementFieldREST, createDocumentREST } from "@/lib/server/firebase";
 import { siteMetadata } from "../../../site.config.mjs";
 import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
@@ -91,14 +89,13 @@ export async function addSubscription(email) {
     return "disabled";
   }
   try {
-    const ref = collection(db, COLLECTIONS.SUBSCRIPTIONS);
-    const newDoc = await addDoc(ref, {
+    const docId = await createDocumentREST({
       email,
-      subscribedAt: Timestamp.now(),
-    });
+      subscribedAt: new Date()
+    }, COLLECTIONS.SUBSCRIPTIONS);
 
     await sendSlackNotification(`🎉 New Subscription: ${email}`);
-    return newDoc.id;
+    return docId;
   } catch (error) {
     throw new AppError("Failed to save subscription", ErrorCode.FIREBASE, error);
   }
@@ -113,22 +110,27 @@ export function getBlogToc(content) {
   if (!content) return [];
 
   const headings = [];
+  // Support H1-H4, handle optional spaces and common MDX artifacts
   const headingRegex = /^(#{1,4})\s+(.+)$/gm;
   let match;
 
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
-    const heading = match[2].trim();
+    const headingText = match[2].trim();
     
-    // Improved slugifier to match rehype-slug / github-slugger
-    const slug = heading
+    // Improved slugifier to match github-slugger/rehype-slug
+    // 1. Lowercase
+    // 2. Remove all non-word characters (except spaces and hyphens)
+    // 3. Replace spaces with hyphens
+    // 4. Collapse multiple hyphens
+    const slug = headingText
       .toLowerCase()
-      .trim()
       .replace(/[^\w\s-]/g, "")
+      .trim()
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
     
-    headings.push({ heading, slug, level });
+    headings.push({ heading: headingText, slug, level });
   }
 
   return headings;

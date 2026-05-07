@@ -1,5 +1,3 @@
-import createMDX from "@next/mdx";
-import mdxConfig from "./mdx.config.mjs";
 import { siteMetadata } from "./site.config.mjs";
 
 /** @type {import('next').NextConfig} */
@@ -72,8 +70,7 @@ const nextConfig = {
 
     return config;
   },
+  serverExternalPackages: ["shiki", "gray-matter"],
 };
 
-const withMDX = createMDX(mdxConfig);
-
-export default withMDX(nextConfig);
+export default nextConfig;
