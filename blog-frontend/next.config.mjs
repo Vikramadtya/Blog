@@ -70,6 +70,14 @@ const nextConfig = {
 
     return config;
   },
+  output: "standalone",
+  experimental: {
+    serverComponentsExternalPackages: [
+      "shiki",
+      "rehype-pretty-code",
+      "gray-matter",
+    ],
+  },
   outputFileTracingExcludes: {
     "*": [
       "node_modules/@swc/core-linux-x64-gnu",
@@ -78,7 +86,6 @@ const nextConfig = {
       "public/images/**/*",
     ],
   },
-  serverExternalPackages: ["shiki", "gray-matter"],
 };
 
 export default nextConfig;
