@@ -70,6 +70,14 @@ const nextConfig = {
 
     return config;
   },
+  outputFileTracingExcludes: {
+    "*": [
+      "node_modules/@swc/core-linux-x64-gnu",
+      "node_modules/@swc/core-linux-x64-musl",
+      ".next/cache/**/*",
+      "public/images/**/*",
+    ],
+  },
   serverExternalPackages: ["shiki", "gray-matter"],
 };
 
