@@ -77,14 +77,14 @@ const nextConfig = {
       "rehype-pretty-code",
       "gray-matter",
     ],
-  },
-  outputFileTracingExcludes: {
-    "*": [
-      "node_modules/@swc/core-linux-x64-gnu",
-      "node_modules/@swc/core-linux-x64-musl",
-      ".next/cache/**/*",
-      "public/images/**/*",
-    ],
+    outputFileTracingExcludes: {
+      "*": [
+        "node_modules/@swc/core-linux-x64-gnu",
+        "node_modules/@swc/core-linux-x64-musl",
+        ".next/cache/**/*",
+        "public/images/**/*",
+      ],
+    },
   },
 };
 
