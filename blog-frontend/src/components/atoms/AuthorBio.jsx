@@ -16,21 +16,41 @@ export default function AuthorBio() {
             className="object-cover"
           />
         </div>
-        
+
         <div className="flex-1 text-center md:text-left">
           <div className="mb-2 flex flex-col items-center justify-between gap-2 md:flex-row">
             <h3 className="text-2xl font-bold">{siteMetadata.author}</h3>
             <div className="flex gap-3">
-              {siteMetadata.twitter && <SocialIcon kind="twitter" href={siteMetadata.twitter} size={18} />}
-              {siteMetadata.github && <SocialIcon kind="github" href={siteMetadata.github} size={18} />}
-              {siteMetadata.linkedin && <SocialIcon kind="linkedin" href={siteMetadata.linkedin} size={18} />}
+              {siteMetadata.twitter && (
+                <SocialIcon
+                  kind="twitter"
+                  href={siteMetadata.twitter}
+                  size={18}
+                />
+              )}
+              {siteMetadata.github && (
+                <SocialIcon
+                  kind="github"
+                  href={siteMetadata.github}
+                  size={18}
+                />
+              )}
+              {siteMetadata.linkedin && (
+                <SocialIcon
+                  kind="linkedin"
+                  href={siteMetadata.linkedin}
+                  size={18}
+                />
+              )}
             </div>
           </div>
-          
+
           <p className="mb-6 text-lg text-muted-foreground">
-            {siteMetadata.designation} at {siteMetadata.company}. I build high-performance web applications and write about the intersection of software engineering and human creativity.
+            {siteMetadata.designation} at {siteMetadata.company}. I build
+            high-performance web applications and write about the intersection
+            of software engineering and human creativity.
           </p>
-          
+
           <Link
             href={siteMetadata.portfolioLink}
             className="text-sm font-bold text-indigo-600 hover:text-indigo-500 hover:underline"

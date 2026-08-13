@@ -27,15 +27,15 @@ This CLI provides advanced features like image processing, SEO analysis, and clo
 
 ## Metadata Schema (`metadata.json`)
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | `string` | Yes | Display title of the post |
-| `createdAt` | `string` | Yes | ISO date string for sorting |
-| `slug` | `string` | Yes | URL-safe identifier |
-| `type` | `string` | Yes | `blog` or `snippet` |
-| `summary` | `string` | No | Short excerpt shown on cards |
-| `tags` | `array` | No | List of tag objects `{ id, name }` |
-| `previewImageSrc` | `string` | No | Path to cover image |
+| Field             | Type     | Required | Description                        |
+| :---------------- | :------- | :------- | :--------------------------------- |
+| `title`           | `string` | Yes      | Display title of the post          |
+| `createdAt`       | `string` | Yes      | ISO date string for sorting        |
+| `slug`            | `string` | Yes      | URL-safe identifier                |
+| `type`            | `string` | Yes      | `blog` or `snippet`                |
+| `summary`         | `string` | No       | Short excerpt shown on cards       |
+| `tags`            | `array`  | No       | List of tag objects `{ id, name }` |
+| `previewImageSrc` | `string` | No       | Path to cover image                |
 
 ## Tag Management
 

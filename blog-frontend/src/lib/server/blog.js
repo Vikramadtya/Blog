@@ -4,7 +4,13 @@
  */
 
 import * as datastore from "@/lib/server/local-datastore";
-import { COLLECTIONS, getDocumentById, convertBlogData, incrementFieldREST, createDocumentREST } from "@/lib/server/firebase";
+import {
+  COLLECTIONS,
+  getDocumentById,
+  convertBlogData,
+  incrementFieldREST,
+  createDocumentREST,
+} from "@/lib/server/firebase";
 import { siteMetadata } from "../../../site.config.mjs";
 import { AppError, ErrorCode } from "@/lib/server/errors";
 import { logger } from "@/lib/server/api-utils";
@@ -85,19 +91,28 @@ export async function getDynamicMetadataById(id) {
 export async function addSubscription(email) {
   if (!siteMetadata.firebaseEnabled) {
     logger.info(`Subscription received (Firebase disabled): ${email}`);
-    await sendSlackNotification(`🎉 New Subscription (Firebase disabled): ${email}`);
+    await sendSlackNotification(
+      `🎉 New Subscription (Firebase disabled): ${email}`,
+    );
     return "disabled";
   }
   try {
-    const docId = await createDocumentREST({
-      email,
-      subscribedAt: new Date()
-    }, COLLECTIONS.SUBSCRIPTIONS);
+    const docId = await createDocumentREST(
+      {
+        email,
+        subscribedAt: new Date(),
+      },
+      COLLECTIONS.SUBSCRIPTIONS,
+    );
 
     await sendSlackNotification(`🎉 New Subscription: ${email}`);
     return docId;
   } catch (error) {
-    throw new AppError("Failed to save subscription", ErrorCode.FIREBASE, error);
+    throw new AppError(
+      "Failed to save subscription",
+      ErrorCode.FIREBASE,
+      error,
+    );
   }
 }
 
@@ -117,7 +132,7 @@ export function getBlogToc(content) {
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
     const headingText = match[2].trim();
-    
+
     // Improved slugifier to match github-slugger/rehype-slug
     // 1. Lowercase
     // 2. Remove all non-word characters (except spaces and hyphens)
@@ -129,7 +144,7 @@ export function getBlogToc(content) {
       .trim()
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
-    
+
     headings.push({ heading: headingText, slug, level });
   }
 

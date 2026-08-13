@@ -16,7 +16,7 @@ export async function GET() {
       <pubDate>${new Date(blog.createdAt).toUTCString()}</pubDate>
       <description><![CDATA[${blog.summary}]]></description>
       <author>${siteMetadata.email} (${siteMetadata.author})</author>
-      ${blog.tags ? blog.tags.map(t => `<category>${t.name}</category>`).join("") : ""}
+      ${blog.tags ? blog.tags.map((t) => `<category>${t.name}</category>`).join("") : ""}
     </item>`;
     })
     .join("");

@@ -5,7 +5,12 @@ import { useBlogMetrics } from "@/hooks/useBlogMetrics";
 
 const MetricsContext = createContext(null);
 
-export const BlogMetricsProvider = ({ id, initialLikes, initialViews, children }) => {
+export const BlogMetricsProvider = ({
+  id,
+  initialLikes,
+  initialViews,
+  children,
+}) => {
   const metrics = useBlogMetrics(id, initialLikes, initialViews);
 
   return (

@@ -13,7 +13,11 @@ import {
   getDynamicMetadataById,
   incrementMetadataField,
 } from "../../../../lib/server/blog";
-import { errorResponse, logger, successResponse } from "../../../../lib/server/api-utils";
+import {
+  errorResponse,
+  logger,
+  successResponse,
+} from "../../../../lib/server/api-utils";
 import { VALID_INCREMENT_FIELDS } from "../../../../lib/constants";
 
 export const dynamic = "force-dynamic";

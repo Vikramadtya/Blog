@@ -6,8 +6,9 @@ export const siteMetadata = {
   content,
   // Site paths & identification
   siteRepo: site.siteRepo || "https://github.com/Vikramadtya/Blog",
-  localBlogDatastorePath: site.localBlogDatastorePath || "./blog-datastore/blogs",
-  
+  localBlogDatastorePath:
+    site.localBlogDatastorePath || "./blog-datastore/blogs",
+
   // Feature Flags
   firebaseEnabled: !!(
     process.env.FIREBASE_CONFIG_API_KEY &&

@@ -15,9 +15,13 @@ const SearchContent = ({ blogs }) => {
     const lowerQuery = query.toLowerCase();
     return (blogs || []).filter((blog) => {
       const titleMatch = blog.title?.toLowerCase().includes(lowerQuery);
-      const summaryMatch = (blog.summary || blog.description)?.toLowerCase().includes(lowerQuery);
-      const tagsMatch = blog.tags?.some((tag) => 
-        (typeof tag === "string" ? tag : tag.name)?.toLowerCase().includes(lowerQuery)
+      const summaryMatch = (blog.summary || blog.description)
+        ?.toLowerCase()
+        .includes(lowerQuery);
+      const tagsMatch = blog.tags?.some((tag) =>
+        (typeof tag === "string" ? tag : tag.name)
+          ?.toLowerCase()
+          .includes(lowerQuery),
       );
       return titleMatch || summaryMatch || tagsMatch;
     });
@@ -49,7 +53,10 @@ const SearchContent = ({ blogs }) => {
       {filteredBlogs.length > 0 ? (
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
           {filteredBlogs.map((blog) => (
-            <div key={blog.id} className="transition-all hover:scale-[1.03] active:scale-100">
+            <div
+              key={blog.id}
+              className="transition-all hover:scale-[1.03] active:scale-100"
+            >
               <Card blog={blog} />
             </div>
           ))}
@@ -76,7 +83,13 @@ const SearchContent = ({ blogs }) => {
 };
 
 const Search = ({ blogs }) => (
-  <Suspense fallback={<div className="py-20 text-center text-muted-foreground">Initializing search...</div>}>
+  <Suspense
+    fallback={
+      <div className="py-20 text-center text-muted-foreground">
+        Initializing search...
+      </div>
+    }
+  >
     <SearchContent blogs={blogs} />
   </Suspense>
 );

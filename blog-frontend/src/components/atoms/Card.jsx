@@ -26,8 +26,13 @@ const Card = (props) => {
   } = blog;
 
   const displayDate = date || createdAt;
-  const { likes, views } = useBlogMetrics(id, initialLikes, initialViews, false);
-  const sourceUrl = siteMetadata.siteRepo 
+  const { likes, views } = useBlogMetrics(
+    id,
+    initialLikes,
+    initialViews,
+    false,
+  );
+  const sourceUrl = siteMetadata.siteRepo
     ? `${siteMetadata.siteRepo}/blob/main/blog-frontend/blog-datastore/blogs/${slug}.md`
     : null;
   return (

@@ -13,7 +13,13 @@ export const metadata = {
     template: `%s | ${siteMetadata.title}`,
   },
   description: siteMetadata.description,
-  keywords: siteMetadata.keywords || ["Next.js", "Tailwind CSS", "Blog", "Neural Cook", "Software Engineering"],
+  keywords: siteMetadata.keywords || [
+    "Next.js",
+    "Tailwind CSS",
+    "Blog",
+    "Neural Cook",
+    "Software Engineering",
+  ],
   authors: [{ name: siteMetadata.author, url: siteMetadata.portfolioLink }],
   creator: siteMetadata.author,
   openGraph: {

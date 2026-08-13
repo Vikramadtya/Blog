@@ -14,7 +14,7 @@ export function getMDXComponents(components) {
           <pre
             className={cn(
               "overflow-x-auto !bg-transparent p-6 text-sm leading-7 text-foreground selection:bg-indigo-500/30",
-              className
+              className,
             )}
             style={{ ...props.style, backgroundColor: "transparent" }}
             {...props}
@@ -29,7 +29,7 @@ export function getMDXComponents(components) {
         id={id}
         className={cn(
           "scroll-m-20 pb-6 pt-16 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl",
-          className
+          className,
         )}
       >
         {children}
@@ -40,28 +40,42 @@ export function getMDXComponents(components) {
         id={id}
         className={cn(
           "mt-12 scroll-m-20 border-b border-gray-200 pb-2 text-2xl font-semibold tracking-tight text-gray-800 dark:border-gray-700 dark:text-white md:text-3xl",
-          className
+          className,
         )}
       >
         {children}
       </h2>
     ),
     p: ({ className, children }) => (
-      <p className={cn("mt-4 text-base leading-7 text-gray-700 dark:text-gray-300", className)}>
+      <p
+        className={cn(
+          "mt-4 text-base leading-7 text-gray-700 dark:text-gray-300",
+          className,
+        )}
+      >
         {children}
       </p>
     ),
     ul: ({ className, children }) => (
-      <ul className={cn("ml-6 list-disc space-y-2 text-base text-gray-700 marker:text-indigo-600 dark:text-gray-300", className)}>
+      <ul
+        className={cn(
+          "ml-6 list-disc space-y-2 text-base text-gray-700 marker:text-indigo-600 dark:text-gray-300",
+          className,
+        )}
+      >
         {children}
       </ul>
     ),
     li: ({ className, children }) => (
-      <li className={cn("mt-4 text-base leading-7 text-gray-700 dark:text-gray-300", className)}>
+      <li
+        className={cn(
+          "mt-4 text-base leading-7 text-gray-700 dark:text-gray-300",
+          className,
+        )}
+      >
         {children}
       </li>
     ),
     ...components,
   };
 }
-

@@ -7,6 +7,7 @@ import { BLOG_TYPES } from "@/lib/constants";
 import FeaturedSection from "@/components/atoms/FeaturedSection";
 import Search from "@/components/molecules/Search";
 import { siteMetadata } from "../../../site.config.mjs";
+import HeroSection from "@/components/organisms/HeroSection";
 
 const { content } = siteMetadata;
 
@@ -37,15 +38,15 @@ export default async function Home() {
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": siteMetadata.title,
-    "url": siteMetadata.siteUrl,
-    "description": siteMetadata.description,
-    "publisher": {
+    name: siteMetadata.title,
+    url: siteMetadata.siteUrl,
+    description: siteMetadata.description,
+    publisher: {
       "@type": "Organization",
-      "name": siteMetadata.author,
-      "logo": {
+      name: siteMetadata.author,
+      logo: {
         "@type": "ImageObject",
-        "url": `${siteMetadata.siteUrl}/logo.png`,
+        url: `${siteMetadata.siteUrl}/logo.png`,
       },
     },
   };
@@ -53,12 +54,12 @@ export default async function Home() {
   const breadcrumbsJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
+    itemListElement: [
       {
         "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": `${siteMetadata.siteUrl}/home`,
+        position: 1,
+        name: "Home",
+        item: `${siteMetadata.siteUrl}/home`,
       },
     ],
   };
@@ -79,17 +80,8 @@ export default async function Home() {
       {/* Page Content */}
       <main className="relative z-10 flex min-h-screen flex-col">
         <div className="container mx-auto px-6 pt-24 md:px-10 lg:px-16 xl:px-24">
-          {/* Hero Post */}
-          {firstLatestBlog && (
-            <LatestPost
-              title={firstLatestBlog.title}
-              description={firstLatestBlog.description}
-              tags={firstLatestBlog.tags}
-              slug={firstLatestBlog.slug}
-              previewImageSrc={firstLatestBlog.previewImageSrc}
-              readingTime={firstLatestBlog.readingTime}
-            />
-          )}
+          {/* Hero Section */}
+          <HeroSection />
 
           {/* Featured Sections */}
           <section className="mt-20 border-t pt-10">
@@ -110,7 +102,7 @@ export default async function Home() {
 
           {siteMetadata.features.newsletter && (
             <section className="mt-24 border-t pt-12">
-              <Subscribe />
+              {/*<Subscribe />*/}
             </section>
           )}
         </div>

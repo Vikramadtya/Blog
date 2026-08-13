@@ -23,12 +23,12 @@ const StickyBar = ({ blogSlug, tableOfContent }) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <LikeButton 
-                onLike={toggleLike} 
-                hasLiked={hasLiked} 
+              <LikeButton
+                onLike={toggleLike}
+                hasLiked={hasLiked}
                 disabled={isLiking}
-                kind="heart" 
-                className="h-6 w-6" 
+                kind="heart"
+                className="h-6 w-6"
               />
             </TooltipTrigger>
             <TooltipContent>

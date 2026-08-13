@@ -9,7 +9,13 @@ import LikeCount from "../atoms/LikeCount";
 import { useMetrics } from "@/components/providers/BlogMetricsProvider";
 
 const BlogHero = ({ title, tags, date, readingTime }) => {
-  const { likes: currentLikes, views: currentViews, hasLiked, toggleLike, isLiking } = useMetrics();
+  const {
+    likes: currentLikes,
+    views: currentViews,
+    hasLiked,
+    toggleLike,
+    isLiking,
+  } = useMetrics();
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
@@ -39,11 +45,11 @@ const BlogHero = ({ title, tags, date, readingTime }) => {
 
         <div className="flex items-center space-x-4">
           <ViewCount views={currentViews} />
-          <LikeCount 
-            likes={currentLikes} 
-            hasLiked={hasLiked} 
-            onLike={toggleLike} 
-            disabled={isLiking} 
+          <LikeCount
+            likes={currentLikes}
+            hasLiked={hasLiked}
+            onLike={toggleLike}
+            disabled={isLiking}
           />
         </div>
       </div>

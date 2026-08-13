@@ -24,11 +24,18 @@ export default async function SearchPage() {
             Search <span className="text-indigo-500">Everything</span>
           </h1>
           <p className="mx-auto max-w-xl text-lg text-muted-foreground">
-            Find the technical deep dives, snippets, and chronicles you&apos;re looking for.
+            Find the technical deep dives, snippets, and chronicles you&apos;re
+            looking for.
           </p>
         </div>
 
-        <Suspense fallback={<div className="text-center py-20 text-muted-foreground">Loading Search...</div>}>
+        <Suspense
+          fallback={
+            <div className="py-20 text-center text-muted-foreground">
+              Loading Search...
+            </div>
+          }
+        >
           <Search blogs={blogs} />
         </Suspense>
       </div>

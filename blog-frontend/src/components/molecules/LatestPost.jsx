@@ -4,7 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import content from "../../../config/content.json";
 
-const LatestPost = ({ title, description, tags, slug, previewImageSrc, readingTime }) => {
+const LatestPost = ({
+  title,
+  description,
+  tags,
+  slug,
+  previewImageSrc,
+  readingTime,
+}) => {
   return (
     <section className="animate-fade-in-up w-full">
       <div className="flex flex-col-reverse items-start gap-12 md:flex-row md:items-center">
@@ -15,7 +22,9 @@ const LatestPost = ({ title, description, tags, slug, previewImageSrc, readingTi
               {content.home.latestLabel}
             </h2>
             {readingTime && (
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">• {readingTime}</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                • {readingTime}
+              </span>
             )}
             <div className="flex-grow border-t border-gray-300 dark:border-gray-700" />
           </div>

@@ -96,17 +96,19 @@ export async function getBlogMetadataById(id) {
     const fileContent = await fs.readFile(filePath, "utf8");
     const { data: rawMetadata, content: rawContent } = matter(fileContent);
     const data = normalize(rawMetadata, rawMetadata.id || id);
-    
+
     // Calculate reading time if not present
     if (!data.readingTime) {
       const { calculateReadingTime } = await import("@/utils/readingTime");
       data.readingTime = calculateReadingTime(rawContent);
     }
-    
+
     // Hydrate Tags
     const tagRegistry = await getAllTags();
-    data.tags = data.tags.map(tagName => {
-      const tag = tagRegistry.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+    data.tags = data.tags.map((tagName) => {
+      const tag = tagRegistry.find(
+        (t) => t.name.toLowerCase() === tagName.toLowerCase(),
+      );
       return tag || { id: tagName, name: tagName, color: "gray" };
     });
 
@@ -125,15 +127,19 @@ export async function getAllBlogs() {
 
   try {
     const entries = await fs.readdir(root, { withFileTypes: true });
-    
+
     // Only look for .md files (excluding tags.json if it's there)
     const uniqueIds = entries
-      .filter(e => e.name.endsWith(".md") && !e.name.startsWith("."))
-      .map(e => e.name.replace(".md", ""));
+      .filter((e) => e.name.endsWith(".md") && !e.name.startsWith("."))
+      .map((e) => e.name.replace(".md", ""));
 
-    const blogs = (await Promise.all(uniqueIds.map(id => getBlogMetadataById(id))))
+    const blogs = (
+      await Promise.all(uniqueIds.map((id) => getBlogMetadataById(id)))
+    )
       .filter(Boolean)
-      .filter(b => process.env.NODE_ENV === "development" || b.publish !== false)
+      .filter(
+        (b) => process.env.NODE_ENV === "development" || b.publish !== false,
+      )
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     slugIndex.clear();
@@ -142,16 +148,16 @@ export async function getAllBlogs() {
     const tagRegistry = await getAllTags();
     const ALL_TAG_ID = "00000000-0000-0000-0000-000000000000";
 
-    tagRegistry.forEach(t => tagIndex.set(t.id, []));
+    tagRegistry.forEach((t) => tagIndex.set(t.id, []));
     if (!tagIndex.has(ALL_TAG_ID)) tagIndex.set(ALL_TAG_ID, []);
 
-    blogs.forEach(blog => {
+    blogs.forEach((blog) => {
       if (blog.slug) {
         slugIndex.set(blog.slug, blog.id);
         idToFilename.set(blog.id, blog.slug);
       }
-      
-      blog.tags.forEach(tag => {
+
+      blog.tags.forEach((tag) => {
         if (tagIndex.has(tag.id)) tagIndex.get(tag.id).push(blog.id);
       });
       tagIndex.get(ALL_TAG_ID).push(blog.id);
@@ -162,7 +168,11 @@ export async function getAllBlogs() {
     logger.success(`[Datastore] Synchronized ${blogs.length} posts`);
     return blogs;
   } catch (err) {
-    throw new AppError("Failed to sync blog datastore", ErrorCode.FILESYSTEM, err);
+    throw new AppError(
+      "Failed to sync blog datastore",
+      ErrorCode.FILESYSTEM,
+      err,
+    );
   }
 }
 
@@ -175,12 +185,14 @@ export async function getBlogBySlug(slug) {
 export async function getBlogsByTagId(tagId) {
   if (!isWarmed) await getAllBlogs();
   const ids = tagIndex.get(tagId) || [];
-  return (await Promise.all(ids.map(id => getBlogMetadataById(id)))).filter(Boolean);
+  return (await Promise.all(ids.map((id) => getBlogMetadataById(id)))).filter(
+    Boolean,
+  );
 }
 
 export async function getBlogsByType(type) {
   const all = await getAllBlogs();
-  return type ? all.filter(b => b.type === type) : all;
+  return type ? all.filter((b) => b.type === type) : all;
 }
 
 export async function getBlogContent(id) {
@@ -198,5 +210,5 @@ export async function getBlogContent(id) {
 
 export async function getTagById(id) {
   const tags = await getAllTags();
-  return tags.find(t => t.id === id) || null;
+  return tags.find((t) => t.id === id) || null;
 }

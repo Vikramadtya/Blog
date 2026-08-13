@@ -1,5 +1,9 @@
 import { addSubscription, validateEmail } from "../../../../lib/server/blog";
-import { errorResponse, logger, successResponse } from "../../../../lib/server/api-utils";
+import {
+  errorResponse,
+  logger,
+  successResponse,
+} from "../../../../lib/server/api-utils";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

@@ -14,11 +14,7 @@ import AuthorBio from "@/components/atoms/AuthorBio";
 
 import { getMDXComponents } from "@/components/atoms/MdxComponents";
 import { prettyCodeOptions } from "@/utils/markdownConstants";
-import {
-  getBlogBySlug,
-  getAllBlogs,
-  getBlogContent,
-} from "@/lib/server/blog";
+import { getBlogBySlug, getAllBlogs, getBlogContent } from "@/lib/server/blog";
 import { BLOG_TYPES } from "@/lib/constants";
 import { getBlogToc } from "@/lib/server/blog";
 import { siteMetadata } from "../../../../site.config.mjs";
@@ -35,7 +31,9 @@ export async function generateMetadata({ params }) {
   if (!blogData) return {};
 
   const publishedAt = new Date(blogData.createdAt).toISOString();
-  const modifiedAt = new Date(blogData.updatedAt || blogData.createdAt).toISOString();
+  const modifiedAt = new Date(
+    blogData.updatedAt || blogData.createdAt,
+  ).toISOString();
 
   return {
     title: blogData.title,
@@ -74,36 +72,38 @@ export default async function Post({ params }) {
   if (!blogData) return null;
   const [content, allBlogsData] = await Promise.all([
     getBlogContent(blogData.id),
-    getAllBlogs()
+    getAllBlogs(),
   ]);
   const tableOfContent = getBlogToc(content);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": blogData.title,
-    "image": blogData.previewImageSrc || siteMetadata.socialBanner,
-    "datePublished": blogData.createdAt,
-    "dateModified": blogData.updatedAt || blogData.createdAt,
-    "author": [
+    headline: blogData.title,
+    image: blogData.previewImageSrc || siteMetadata.socialBanner,
+    datePublished: blogData.createdAt,
+    dateModified: blogData.updatedAt || blogData.createdAt,
+    author: [
       {
         "@type": "Person",
-        "name": siteMetadata.author,
-        "url": siteMetadata.portfolioLink,
+        name: siteMetadata.author,
+        url: siteMetadata.portfolioLink,
       },
     ],
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": siteMetadata.title,
-      "logo": {
+      name: siteMetadata.title,
+      logo: {
         "@type": "ImageObject",
-        "url": `${siteMetadata.siteUrl}/logo.png`,
+        url: `${siteMetadata.siteUrl}/logo.png`,
       },
     },
-    "description": blogData.description,
-    "keywords": blogData.tags.map((t) => typeof t === "string" ? t : t.name).join(", "),
-    "wordCount": content.split(/\s+/).length,
-    "mainEntityOfPage": {
+    description: blogData.description,
+    keywords: blogData.tags
+      .map((t) => (typeof t === "string" ? t : t.name))
+      .join(", "),
+    wordCount: content.split(/\s+/).length,
+    mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
     },
@@ -112,31 +112,31 @@ export default async function Post({ params }) {
   const breadcrumbsJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
+    itemListElement: [
       {
         "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": siteMetadata.siteUrl,
+        position: 1,
+        name: "Home",
+        item: siteMetadata.siteUrl,
       },
       {
         "@type": "ListItem",
-        "position": 2,
-        "name": "Blogs",
-        "item": `${siteMetadata.siteUrl}/blogs`,
+        position: 2,
+        name: "Blogs",
+        item: `${siteMetadata.siteUrl}/blogs`,
       },
       {
         "@type": "ListItem",
-        "position": 3,
-        "name": blogData.title,
-        "item": `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
+        position: 3,
+        name: blogData.title,
+        item: `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
       },
     ],
   };
   return (
-    <BlogMetricsProvider 
-      id={blogData.id} 
-      initialLikes={blogData.likes} 
+    <BlogMetricsProvider
+      id={blogData.id}
+      initialLikes={blogData.likes}
       initialViews={blogData.views}
     >
       <script
@@ -180,16 +180,13 @@ export default async function Post({ params }) {
         <AuthorBio />
 
         {/* Sticky TOC / Like-Share bar */}
-        <StickyBar
-          blogSlug={blogData.slug}
-          tableOfContent={tableOfContent}
-        />
+        <StickyBar blogSlug={blogData.slug} tableOfContent={tableOfContent} />
 
         {/* Related Posts */}
-        <RelatedPosts 
-          currentSlug={blogData.slug} 
-          currentTags={blogData.tags} 
-          allBlogs={allBlogsData} 
+        <RelatedPosts
+          currentSlug={blogData.slug}
+          currentTags={blogData.tags}
+          allBlogs={allBlogsData}
         />
 
         <Separator className="my-16" />

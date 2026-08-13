@@ -26,11 +26,13 @@ const Subscribe = () => {
       <div className="relative overflow-hidden rounded-3xl bg-indigo-600 p-10 shadow-2xl transition-all dark:bg-indigo-900 sm:p-16">
         <div className="relative z-10">
           <h2 className="text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            {status === "success" ? "You're on the list!" : content.subscribe.title}
+            {status === "success"
+              ? "You're on the list!"
+              : content.subscribe.title}
           </h2>
 
           <p className="mt-4 text-center text-lg text-indigo-100">
-            {status === "success" 
+            {status === "success"
               ? "Thanks for subscribing! I'll keep you posted with the latest deep dives."
               : content.subscribe.description}
           </p>
@@ -77,7 +79,7 @@ const Subscribe = () => {
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl" />
       </div>
     </div>

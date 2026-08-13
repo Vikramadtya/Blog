@@ -29,6 +29,5 @@ export const METADATA_TYPE = Object.freeze({
 export const VALID_INCREMENT_FIELDS = ["likes", "views"];
 
 /** Cache TTL for local datastore. */
-export const CACHE_TTL_MS = process.env.NODE_ENV === "production" 
-  ? 5 * 60 * 1000 
-  : 10 * 1000;
+export const CACHE_TTL_MS =
+  process.env.NODE_ENV === "production" ? 5 * 60 * 1000 : 10 * 1000;

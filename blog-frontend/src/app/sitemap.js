@@ -10,12 +10,14 @@ export default async function sitemap() {
     priority: 0.8,
   }));
 
-  const routes = ["", "/blogs", "/tags", "/snippets", "/notes"].map((route) => ({
-    url: `${siteMetadata.siteUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: "daily",
-    priority: 1.0,
-  }));
+  const routes = ["", "/blogs", "/tags", "/snippets", "/notes"].map(
+    (route) => ({
+      url: `${siteMetadata.siteUrl}${route}`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 1.0,
+    }),
+  );
 
   return [...routes, ...blogUrls];
 }

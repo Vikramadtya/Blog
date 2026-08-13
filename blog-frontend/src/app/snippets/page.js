@@ -27,26 +27,26 @@ export default async function Snippets() {
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": content.snippets.title,
-    "description": content.snippets.description,
-    "url": `${siteMetadata.siteUrl}/snippets`,
+    name: content.snippets.title,
+    description: content.snippets.description,
+    url: `${siteMetadata.siteUrl}/snippets`,
   };
 
   const breadcrumbsJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
+    itemListElement: [
       {
         "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": `${siteMetadata.siteUrl}/home`,
+        position: 1,
+        name: "Home",
+        item: `${siteMetadata.siteUrl}/home`,
       },
       {
         "@type": "ListItem",
-        "position": 2,
-        "name": "Snippets",
-        "item": `${siteMetadata.siteUrl}/snippets`,
+        position: 2,
+        name: "Snippets",
+        item: `${siteMetadata.siteUrl}/snippets`,
       },
     ],
   };
@@ -62,24 +62,24 @@ export default async function Snippets() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
       />
       <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">
-      {/* Header Section */}
-      <section className="mx-auto mb-12 w-full max-w-5xl">
-        <h1 className="text-4xl font-bold tracking-tight text-primary dark:text-white sm:text-5xl md:text-6xl">
-          {content.snippets.title}
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-          {content.snippets.description}
-        </p>
+        {/* Header Section */}
+        <section className="mx-auto mb-12 w-full max-w-5xl">
+          <h1 className="text-4xl font-bold tracking-tight text-primary dark:text-white sm:text-5xl md:text-6xl">
+            {content.snippets.title}
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+            {content.snippets.description}
+          </p>
 
-        {/* Snippets Grid */}
-        <section className="mx-auto w-full max-w-7xl">
-          <ContentGrid
-          blogs={snippets}
-          blogIdToMetadata={snippetIdToMetadata}
-        />
+          {/* Snippets Grid */}
+          <section className="mx-auto w-full max-w-7xl">
+            <ContentGrid
+              blogs={snippets}
+              blogIdToMetadata={snippetIdToMetadata}
+            />
+          </section>
         </section>
-      </section>
-    </main>
+      </main>
     </>
   );
 }

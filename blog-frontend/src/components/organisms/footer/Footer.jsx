@@ -17,11 +17,7 @@ const Footer = () => {
             />
           )}
           {siteMetadata.twitter && (
-            <SocialIcon
-              kind="twitter"
-              href={siteMetadata.twitter}
-              size={20}
-            />
+            <SocialIcon kind="twitter" href={siteMetadata.twitter} size={20} />
           )}
           {siteMetadata.facebook && (
             <SocialIcon
@@ -31,11 +27,7 @@ const Footer = () => {
             />
           )}
           {siteMetadata.youtube && (
-            <SocialIcon
-              kind="youtube"
-              href={siteMetadata.youtube}
-              size={20}
-            />
+            <SocialIcon kind="youtube" href={siteMetadata.youtube} size={20} />
           )}
           {siteMetadata.linkedin && (
             <SocialIcon
@@ -62,7 +54,8 @@ const Footer = () => {
           <Link href="/">{siteMetadata.title}</Link>
         </div>
         <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-          {content.footer.buildWithText}{` `}
+          {content.footer.buildWithText}
+          {` `}
           {siteMetadata.author}
         </div>
       </div>

@@ -55,7 +55,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 
   html {
@@ -77,5 +79,5 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/40 transition-colors;
+  @apply rounded-full bg-muted-foreground/20 transition-colors hover:bg-muted-foreground/40;
 }

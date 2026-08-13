@@ -16,12 +16,14 @@ const LikeButton = React.forwardRef(
           className,
         )}
       >
-        <Icon 
-          kind={kind} 
+        <Icon
+          kind={kind}
           className={cn(
             className,
-            hasLiked ? "fill-rose-500 text-rose-500" : "text-gray-500 hover:text-rose-400"
-          )} 
+            hasLiked
+              ? "fill-rose-500 text-rose-500"
+              : "text-gray-500 hover:text-rose-400",
+          )}
         />
       </button>
     );

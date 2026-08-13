@@ -13,15 +13,16 @@ export default function Error({ error, reset }) {
     <main className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
       <div className="text-center">
         <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-red-500/10 text-red-500">
-           <Icon kind="close" className="h-12 w-12" />
+          <Icon kind="close" className="h-12 w-12" />
         </div>
         <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-6xl">
           Something went <span className="text-red-500">wrong</span>
         </h1>
         <p className="mx-auto mb-10 max-w-lg text-lg text-muted-foreground">
-          An unexpected error occurred. We&apos;ve been notified and are looking into it.
+          An unexpected error occurred. We&apos;ve been notified and are looking
+          into it.
         </p>
-        
+
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <button
             onClick={() => reset()}

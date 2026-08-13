@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getBlogMetadataById, incrementBlogLikesOrViewsById } from "@/lib/client/api";
+import {
+  getBlogMetadataById,
+  incrementBlogLikesOrViewsById,
+} from "@/lib/client/api";
 import { METADATA_TYPE } from "@/lib/constants";
 
 // Storage Helpers with SSR safety
@@ -9,17 +12,21 @@ const safeStorage = {
   getItem: (key, type = "local") => {
     try {
       if (typeof window === "undefined") return null;
-      const storage = type === "local" ? window.localStorage : window.sessionStorage;
+      const storage =
+        type === "local" ? window.localStorage : window.sessionStorage;
       return storage.getItem(key);
-    } catch (e) { return null; }
+    } catch (e) {
+      return null;
+    }
   },
   setItem: (key, value, type = "local") => {
     try {
       if (typeof window === "undefined") return;
-      const storage = type === "local" ? window.localStorage : window.sessionStorage;
+      const storage =
+        type === "local" ? window.localStorage : window.sessionStorage;
       storage.setItem(key, value);
     } catch (e) {}
-  }
+  },
 };
 
 /**
@@ -28,8 +35,16 @@ const safeStorage = {
  * @param {number} initialLikes - The initial like count from static build.
  * @param {number} initialViews - The initial view count from static build.
  */
-export function useBlogMetrics(id, initialLikes = 0, initialViews = 0, autoIncrementViews = true) {
-  const [metrics, setMetrics] = useState({ likes: initialLikes, views: initialViews });
+export function useBlogMetrics(
+  id,
+  initialLikes = 0,
+  initialViews = 0,
+  autoIncrementViews = true,
+) {
+  const [metrics, setMetrics] = useState({
+    likes: initialLikes,
+    views: initialViews,
+  });
   const [hasLiked, setHasLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const initialized = useRef(null);
@@ -59,13 +74,22 @@ export function useBlogMetrics(id, initialLikes = 0, initialViews = 0, autoIncre
 
         // Increment views once per session
         if (autoIncrementViews && initialized.current !== id) {
-          const sessionViews = JSON.parse(safeStorage.getItem("viewed_posts", "session") || "[]");
+          const sessionViews = JSON.parse(
+            safeStorage.getItem("viewed_posts", "session") || "[]",
+          );
           if (!sessionViews.includes(id)) {
-            const response = await incrementBlogLikesOrViewsById(id, METADATA_TYPE.views.type);
+            const response = await incrementBlogLikesOrViewsById(
+              id,
+              METADATA_TYPE.views.type,
+            );
             if (response?.success) {
-              setMetrics(prev => ({ ...prev, views: response.data.views }));
+              setMetrics((prev) => ({ ...prev, views: response.data.views }));
               sessionViews.push(id);
-              safeStorage.setItem("viewed_posts", JSON.stringify(sessionViews), "session");
+              safeStorage.setItem(
+                "viewed_posts",
+                JSON.stringify(sessionViews),
+                "session",
+              );
             }
           }
           initialized.current = id;
@@ -83,15 +107,20 @@ export function useBlogMetrics(id, initialLikes = 0, initialViews = 0, autoIncre
     if (!id || hasLiked || isLiking) return;
 
     setIsLiking(true);
-    setMetrics(prev => ({ ...prev, likes: prev.likes + 1 }));
+    setMetrics((prev) => ({ ...prev, likes: prev.likes + 1 }));
     setHasLiked(true);
 
     try {
-      const response = await incrementBlogLikesOrViewsById(id, METADATA_TYPE.likes.type);
-      
+      const response = await incrementBlogLikesOrViewsById(
+        id,
+        METADATA_TYPE.likes.type,
+      );
+
       if (response?.success) {
-        setMetrics(prev => ({ ...prev, likes: response.data.likes }));
-        const likedPosts = JSON.parse(safeStorage.getItem("liked_posts") || "[]");
+        setMetrics((prev) => ({ ...prev, likes: response.data.likes }));
+        const likedPosts = JSON.parse(
+          safeStorage.getItem("liked_posts") || "[]",
+        );
         if (!likedPosts.includes(id)) {
           likedPosts.push(id);
           safeStorage.setItem("liked_posts", JSON.stringify(likedPosts));
@@ -101,7 +130,7 @@ export function useBlogMetrics(id, initialLikes = 0, initialViews = 0, autoIncre
       }
     } catch (err) {
       console.error("[useBlogMetrics] Like failed:", err);
-      setMetrics(prev => ({ ...prev, likes: prev.likes - 1 }));
+      setMetrics((prev) => ({ ...prev, likes: prev.likes - 1 }));
       setHasLiked(false);
     } finally {
       setIsLiking(false);

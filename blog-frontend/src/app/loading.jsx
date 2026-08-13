@@ -7,10 +7,10 @@ export default function Loading() {
         {/* Hero Skeleton */}
         <div className="mb-8 h-12 w-3/4 rounded-2xl bg-muted" />
         <div className="mb-12 h-6 w-1/2 rounded-xl bg-muted/60" />
-        
+
         {/* Image Skeleton */}
         <div className="aspect-[2/1] w-full rounded-3xl bg-muted" />
-        
+
         {/* Content Skeleton */}
         <div className="mt-16 space-y-6">
           <div className="h-4 w-full rounded bg-muted/40" />

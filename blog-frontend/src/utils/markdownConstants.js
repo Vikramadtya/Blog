@@ -4,7 +4,7 @@ export const prettyCodeOptions = {
     light: "github-light",
     dark: "github-dark",
   },
-  
+
   // Keep background true for full metadata generation
   keepBackground: true,
 

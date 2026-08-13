@@ -13,11 +13,13 @@ const firebaseConfig = {
 };
 
 // No longer using the heavy SDK to save bundle size
-if (!(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId)) {
-  logger.warn("Firebase configuration missing. Firebase features will be disabled.");
+if (
+  !(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId)
+) {
+  logger.warn(
+    "Firebase configuration missing. Firebase features will be disabled.",
+  );
 }
-
-
 
 export const COLLECTIONS = {
   BLOG_METADATA: "blogs-metadata",
@@ -64,7 +66,7 @@ export async function getDocumentById(id, converter, collectionName, itemType) {
 
   try {
     const response = await fetch(url);
-    
+
     if (response.status === 404) {
       logger.warn(`${itemType} with ID ${id} not found (REST).`);
       return null;
@@ -72,15 +74,17 @@ export async function getDocumentById(id, converter, collectionName, itemType) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Firestore REST error: ${errorData.error?.message || response.statusText}`);
+      throw new Error(
+        `Firestore REST error: ${errorData.error?.message || response.statusText}`,
+      );
     }
 
     const data = await response.json();
-    
+
     // Firestore REST API returns fields in a specific format (e.g. { fields: { likes: { integerValue: "10" } } })
     // We need a helper to normalize this or just pass the raw fields if they are simple.
     // However, our converter expects a DocumentSnapshot-like object with .get().
-    
+
     const mockSnap = {
       get: (field) => {
         const parts = field.split(".");
@@ -96,13 +100,14 @@ export async function getDocumentById(id, converter, collectionName, itemType) {
         if (current.booleanValue) return current.booleanValue;
         if (current.timestampValue) return current.timestampValue;
         if (current.mapValue) return current.mapValue.fields; // Caution: nested fields might need recursive unwrapping
-        if (current.arrayValue) return current.arrayValue.values?.map(v => {
-          if (v.stringValue) return v.stringValue;
-          if (v.integerValue) return parseInt(v.integerValue);
-          return v;
-        });
+        if (current.arrayValue)
+          return current.arrayValue.values?.map((v) => {
+            if (v.stringValue) return v.stringValue;
+            if (v.integerValue) return parseInt(v.integerValue);
+            return v;
+          });
         return current;
-      }
+      },
     };
 
     return converter(mockSnap);
@@ -128,24 +133,26 @@ export async function incrementFieldREST(id, field, collectionName) {
           fieldTransforms: [
             {
               fieldPath: field,
-              increment: { integerValue: 1 }
-            }
-          ]
-        }
-      }
-    ]
+              increment: { integerValue: 1 },
+            },
+          ],
+        },
+      },
+    ],
   };
 
   try {
     const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Firestore REST Increment error: ${errorData.error?.message || response.statusText}`);
+      throw new Error(
+        `Firestore REST Increment error: ${errorData.error?.message || response.statusText}`,
+      );
     }
 
     return true;
@@ -166,11 +173,14 @@ export async function createDocumentREST(data, collectionName) {
   // Firestore REST API expects fields in a specific format
   const formattedFields = {};
   for (const [key, value] of Object.entries(data)) {
-    if (typeof value === "string") formattedFields[key] = { stringValue: value };
-    else if (typeof value === "number") formattedFields[key] = { integerValue: value.toString() };
-    else if (typeof value === "boolean") formattedFields[key] = { booleanValue: value };
+    if (typeof value === "string")
+      formattedFields[key] = { stringValue: value };
+    else if (typeof value === "number")
+      formattedFields[key] = { integerValue: value.toString() };
+    else if (typeof value === "boolean")
+      formattedFields[key] = { booleanValue: value };
     else if (value instanceof Date) {
-        formattedFields[key] = { timestampValue: value.toISOString() };
+      formattedFields[key] = { timestampValue: value.toISOString() };
     }
   }
 
@@ -183,7 +193,9 @@ export async function createDocumentREST(data, collectionName) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Firestore REST Create error: ${errorData.error?.message || response.statusText}`);
+      throw new Error(
+        `Firestore REST Create error: ${errorData.error?.message || response.statusText}`,
+      );
     }
 
     const result = await response.json();

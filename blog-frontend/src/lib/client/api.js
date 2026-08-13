@@ -16,10 +16,18 @@ async function fetcher(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
-    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     const text = await response.text();
-    try { return JSON.parse(text); } catch { return text; }
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
   } finally {
     clearTimeout(timeoutId);
   }
@@ -28,7 +36,11 @@ async function fetcher(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
 async function get(url) {
   let lastError;
   for (let i = 0; i <= MAX_GET_RETRIES; i++) {
-    try { return await fetcher(url); } catch (e) { lastError = e; }
+    try {
+      return await fetcher(url);
+    } catch (e) {
+      lastError = e;
+    }
   }
   throw lastError;
 }
