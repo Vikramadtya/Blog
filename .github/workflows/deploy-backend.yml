@@ -47,7 +47,5 @@ jobs:
             DISCORD_WEBHOOK_URL
             DISCORD_SUBSCRIBE_WEBHOOK_URL
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          ALLOWED_ORIGIN: ${{ secrets.ALLOWED_ORIGIN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           DISCORD_SUBSCRIBE_WEBHOOK_URL: ${{ secrets.DISCORD_SUBSCRIBE_WEBHOOK_URL }}
