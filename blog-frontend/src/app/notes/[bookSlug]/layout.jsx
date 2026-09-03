@@ -1,5 +1,5 @@
 import React from "react";
-import { getNotesTree } from "@/core";
+import { noteService } from "@/core";
 import NotesSidebar from "@/presentation/note/NotesSidebar";
 import notesConfig from "../../../../config/notes.json";
 

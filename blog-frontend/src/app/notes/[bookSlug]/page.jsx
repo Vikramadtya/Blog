@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getNotesTree,  } from "@/core";
+import { noteService } from "@/core";
 
 export default async function BookIndexPage({ params }) {
   const { bookSlug } = params;
