@@ -1,13 +1,17 @@
 import React from "react";
-import LatestPost from "@/components/molecules/LatestPost";
-import BackGroundParticle from "@/components/atoms/BackgroundParticle";
-import Subscribe from "@/components/atoms/Subscribe";
-import { getBlogsByType, getAllBlogs } from "@/lib/server/blog";
+import LatestPost from "@/presentation/blog/LatestPost";
+import dynamic from "next/dynamic";
+
+const BackGroundParticle = dynamic(
+  () => import("@/presentation/ui/BackgroundParticle"),
+  { ssr: false },
+);
+import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
-import FeaturedSection from "@/components/atoms/FeaturedSection";
-import Search from "@/components/molecules/Search";
+import FeaturedSection from "@/presentation/blog/FeaturedSection";
+import Search from "@/presentation/blog/Search";
 import { siteMetadata } from "../../../site.config.mjs";
-import HeroSection from "@/components/organisms/HeroSection";
+import HeroSection from "@/presentation/blog/HeroSection";
 
 const { content } = siteMetadata;
 
@@ -23,9 +27,9 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const [latestBlog, snippets, blogs] = await Promise.all([
-    getBlogsByType(BLOG_TYPES.blog.type),
-    getBlogsByType(BLOG_TYPES.snippet.type),
-    getAllBlogs(),
+    blogService.getPublishedBlogs().then(blogs => blogs.map(b => JSON.parse(JSON.stringify(b)))),
+    blogService.getPublishedSnippets().then(blogs => blogs.map(b => JSON.parse(JSON.stringify(b)))),
+    blogService.getAllPosts().then(blogs => blogs.map(b => JSON.parse(JSON.stringify(b)))),
   ]);
 
   const blogIdToMetadata = blogs.reduce((acc, data) => {
@@ -100,11 +104,6 @@ export default async function Home() {
             />
           </section>
 
-          {siteMetadata.features.newsletter && (
-            <section className="mt-24 border-t pt-12">
-              {/*<Subscribe />*/}
-            </section>
-          )}
         </div>
       </main>
     </>

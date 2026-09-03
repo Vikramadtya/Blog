@@ -99,7 +99,14 @@ export function useBlogMetrics(
       }
     };
 
-    fetchMetrics();
+    // Debounce the initial fetch and view increment by 1 second.
+    // This prevents view spamming if a user clicks through posts rapidly,
+    // and correctly handles React Strict Mode double-mounting.
+    const timeoutId = setTimeout(() => {
+      fetchMetrics();
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
   }, [id, initialLikes, initialViews, autoIncrementViews]); // Added missing dependencies
 
   // Handle Like action

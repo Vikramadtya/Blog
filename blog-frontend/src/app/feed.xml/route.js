@@ -1,8 +1,8 @@
-import { getAllBlogs } from "@/lib/server/blog";
+import { blogService, noteService } from "@/core";
 import { siteMetadata } from "../../../site.config.mjs";
 
 export async function GET() {
-  const blogs = await getAllBlogs();
+  const blogs = await blogService.getAllPosts();
   const now = new Date().toUTCString();
 
   const items = blogs

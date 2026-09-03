@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
-import { getAllBlogs } from "@/lib/server/blog";
-import Search from "@/components/molecules/Search";
+import { blogService, noteService } from "@/core";
+import Search from "@/presentation/blog/Search";
 import { siteMetadata } from "../../../site.config.mjs";
 
 export async function generateMetadata() {
@@ -14,7 +14,7 @@ export async function generateMetadata() {
 }
 
 export default async function SearchPage() {
-  const blogs = await getAllBlogs();
+  const blogs = (await blogService.getAllPosts()).map(b => JSON.parse(JSON.stringify(b)));
 
   return (
     <main className="relative z-10 flex min-h-screen flex-col">

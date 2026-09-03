@@ -1,39 +1,41 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { rehypePrettyCode } from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
-import { Separator } from "@/components/atoms/Separator";
-import BlogHero from "@/components/molecules/BlogHero";
-import Comments from "@/components/atoms/Comment";
-import Doodle from "@/components/atoms/Doodle";
-import StickyBar from "@/components/atoms/StickyBar";
-import ScrollProgressBar from "@/components/atoms/ScrollPercentageBar";
-import ShareBar from "@/components/atoms/ShareBar";
-import RelatedPosts from "@/components/molecules/RelatedPosts";
-import AuthorBio from "@/components/atoms/AuthorBio";
+import { Separator } from "@/presentation/ui/Separator";
+import BlogHero from "@/presentation/blog/BlogHero";
+import CommentsSection from "@/presentation/blog/CommentsSection";
+import Doodle from "@/presentation/ui/Doodle";
+import StickyBar from "@/presentation/layout/StickyBar";
+import ScrollProgressBar from "@/presentation/ui/ScrollPercentageBar";
+import ShareBar from "@/presentation/blog/ShareBar";
+import RelatedPosts from "@/presentation/blog/RelatedPosts";
+import AuthorBio from "@/presentation/blog/AuthorBio";
+import NewsletterForm from "@/presentation/blog/NewsletterForm";
 
-import { getMDXComponents } from "@/components/atoms/MdxComponents";
-import { prettyCodeOptions } from "@/utils/markdownConstants";
-import { getBlogBySlug, getAllBlogs, getBlogContent } from "@/lib/server/blog";
+import { getMDXComponents } from "@/presentation/ui/MdxComponents";
+import { prettyCodeOptions } from "@/lib/markdownConstants";
+import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
-import { getBlogToc } from "@/lib/server/blog";
 import { siteMetadata } from "../../../../site.config.mjs";
+import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
 
 // Static params for SSG
 export async function generateStaticParams() {
-  const blogs = await getAllBlogs();
+  const blogs = await blogService.getAllPosts();
   return blogs.map((blog) => ({ slug: blog.slug }));
 }
 
 // SEO metadata generation
 export async function generateMetadata({ params }) {
-  const blogData = await getBlogBySlug(params.slug);
+  const blogData = await blogService.getPostBySlug(params.slug);
   if (!blogData) return {};
 
-  const publishedAt = new Date(blogData.createdAt).toISOString();
-  const modifiedAt = new Date(
-    blogData.updatedAt || blogData.createdAt,
-  ).toISOString();
+  // Use dynamic OG if preview is missing
+  const ogImageUrl = blogData.previewImageSrc 
+    ? `${siteMetadata.siteUrl}${blogData.previewImageSrc}`
+    : `${siteMetadata.siteUrl}/api/og?title=${encodeURIComponent(blogData.title)}&readingTime=${encodeURIComponent(blogData.readingTime)}`;
 
   return {
     title: blogData.title,
@@ -45,16 +47,16 @@ export async function generateMetadata({ params }) {
       siteName: siteMetadata.title,
       locale: siteMetadata.locale,
       type: "article",
-      publishedTime: publishedAt,
-      modifiedTime: modifiedAt,
-      images: [blogData.previewImageSrc || siteMetadata.socialBanner],
+      publishedTime: new Date(blogData.createdAt).toISOString(),
+      modifiedTime: new Date(blogData.updatedAt || blogData.createdAt).toISOString(),
+      images: [{ url: ogImageUrl }],
       authors: [siteMetadata.author],
     },
     twitter: {
       card: "summary_large_image",
       title: blogData.title,
       description: blogData.description,
-      images: [blogData.previewImageSrc || siteMetadata.socialBanner],
+      images: [ogImageUrl],
     },
     alternates: {
       canonical: `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
@@ -62,19 +64,25 @@ export async function generateMetadata({ params }) {
   };
 }
 
-import { BlogMetricsProvider } from "@/components/providers/BlogMetricsProvider";
+import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvider";
 
 // Main blog post page
 export default async function Post({ params }) {
   const { slug } = params;
 
-  const blogData = await getBlogBySlug(slug);
+  const blogData = await blogService.getPostBySlug(slug);
   if (!blogData) return null;
+  
+  const parentSeriesSlug = blogData.series || blogData.slug;
+  const seriesChildren = await (await blogService.getAllPosts()).filter(p => p.series === parentSeriesSlug).sort((a,b) => a.seriesOrder - b.seriesOrder);
+  const isSeries = seriesChildren.length > 0;
+  const seriesParentData = isSeries ? await blogService.getPostBySlug(parentSeriesSlug) : null;
+
   const [content, allBlogsData] = await Promise.all([
-    getBlogContent(blogData.id),
-    getAllBlogs(),
+    blogData.content,
+    blogService.getAllPosts(),
   ]);
-  const tableOfContent = getBlogToc(content);
+  const tableOfContent = null /* TOC is now handled differently or we can extract it on the client */;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -149,7 +157,20 @@ export default async function Post({ params }) {
       />
       <ScrollProgressBar />
 
-      <article className="relative mx-auto max-w-5xl px-6 py-20 md:px-12 lg:px-20">
+      <article className="relative mx-auto max-w-5xl px-6 py-12 md:px-12 lg:px-20">
+        {/* Cover Image */}
+        {blogData.previewImageSrc && (
+          <div className="mb-12 w-full overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+<img 
+              src={blogData.previewImageSrc} 
+              alt={blogData.title}
+              className="w-full object-cover"
+              style={{ maxHeight: '500px' }}
+            />
+          </div>
+        )}
+
         {/* Hero */}
         <BlogHero
           title={blogData.title}
@@ -160,8 +181,16 @@ export default async function Post({ params }) {
 
         <Separator className="my-16" />
 
+        {isSeries && (
+          <SeriesNavigation 
+            parent={seriesParentData} 
+            seriesParts={seriesChildren} 
+            currentSlug={slug} 
+          />
+        )}
+
         {/* Blog Content */}
-        <section className="prose prose-sm prose-neutral dark:prose-invert md:prose-base lg:prose-lg">
+        <section className="mx-auto w-full max-w-[65ch] prose prose-sm prose-neutral dark:prose-invert md:prose-base lg:prose-lg">
           <MDXRemote
             source={content}
             options={{
@@ -169,6 +198,15 @@ export default async function Post({ params }) {
                 remarkPlugins: [],
                 rehypePlugins: [
                   rehypeSlug,
+                  [
+                    rehypeAutolinkHeadings,
+                    {
+                      properties: {
+                        className: ["anchor"],
+                        ariaLabel: "Link to section",
+                      },
+                    },
+                  ],
                   [rehypePrettyCode, prettyCodeOptions],
                 ],
               },
@@ -180,7 +218,7 @@ export default async function Post({ params }) {
         <AuthorBio />
 
         {/* Sticky TOC / Like-Share bar */}
-        <StickyBar blogSlug={blogData.slug} tableOfContent={tableOfContent} />
+        <StickyBar blogSlug={blogData.slug} title={blogData.title} tableOfContent={tableOfContent} />
 
         {/* Related Posts */}
         <RelatedPosts
@@ -190,6 +228,8 @@ export default async function Post({ params }) {
         />
 
         <Separator className="my-16" />
+
+        <NewsletterForm />
 
         {/* Share Bar */}
         {siteMetadata.features.socialShare && (
@@ -201,9 +241,11 @@ export default async function Post({ params }) {
         )}
 
         {/* Fun Footer */}
-        <div className="flex flex-col items-center space-y-6">
-          <Doodle classData="h-20 w-20" />
-          {siteMetadata.features.giscus && <Comments />}
+        <div className="flex flex-col space-y-6">
+          <div className="flex justify-center">
+            <Doodle classData="h-20 w-20" />
+          </div>
+          <CommentsSection blogId={blogData.slug} />
         </div>
       </article>
     </BlogMetricsProvider>
