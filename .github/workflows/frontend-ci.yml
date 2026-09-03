@@ -1,0 +1,40 @@
+name: Frontend CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'blog-frontend/**'
+  pull_request:
+    paths:
+      - 'blog-frontend/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./blog-frontend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './blog-frontend/package-lock.json'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Next.js App
+        # This acts as a CI check to ensure the project compiles successfully.
+        # Note: Actual production deployments are handled automatically by Vercel's GitHub integration.
+        run: npm run build
+        env:
+          # Use placeholder for CI build, or inject secrets if your build requires them
+          NEXT_PUBLIC_MICROSERVICE_URL: "http://localhost:8787"
