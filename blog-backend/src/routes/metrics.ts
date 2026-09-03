@@ -51,7 +51,7 @@ metrics.post('/:blogId/views', zValidator('param', paramSchema), async (c) => {
       .values({ id: blogId, views: 1, likes: 0 })
       .onConflictDoUpdate({
         target: blogMetrics.id,
-        set: { views: sql`views + 1` }
+        set: { views: sql`${blogMetrics.views} + 1` }
       })
       .returning();
 
@@ -76,7 +76,7 @@ metrics.post('/:blogId/likes', zValidator('param', paramSchema), async (c) => {
       .values({ id: blogId, views: 0, likes: 1 })
       .onConflictDoUpdate({
         target: blogMetrics.id,
-        set: { likes: sql`likes + 1` }
+        set: { likes: sql`${blogMetrics.likes} + 1` }
       })
       .returning();
 

@@ -6,7 +6,7 @@ import { sql } from "drizzle-orm";
 const app = new Hono<{ Bindings: Env }>();
 
 app.get("/", async (c) => {
-  const db = getDb(c.env);
+  const db = getDb(c.env.DATABASE_URL);
 
   try {
     // Total Views and Likes

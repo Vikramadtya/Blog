@@ -15,7 +15,7 @@ const commentSchema = z.object({
 
 // Get comments for a blog
 app.get("/:blogId", async (c) => {
-  const db = getDb(c.env);
+  const db = getDb(c.env.DATABASE_URL);
   const blogId = c.req.param("blogId");
 
   try {
@@ -36,7 +36,7 @@ app.post(
   "/:blogId",
   zValidator("json", commentSchema),
   async (c) => {
-    const db = getDb(c.env);
+    const db = getDb(c.env.DATABASE_URL);
     const blogId = c.req.param("blogId");
     const body = c.req.valid("json");
 
@@ -60,7 +60,7 @@ app.post(
 
 // Delete a comment (for moderation)
 app.delete("/:id", async (c) => {
-  const db = getDb(c.env);
+  const db = getDb(c.env.DATABASE_URL);
   const id = c.req.param("id");
 
   try {
