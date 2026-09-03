@@ -41,9 +41,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'blog-backend'
           command: deploy --minify src/index.ts
-          secrets: |
-            DISCORD_WEBHOOK_URL
-            DISCORD_SUBSCRIBE_WEBHOOK_URL
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          DISCORD_SUBSCRIBE_WEBHOOK_URL: ${{ secrets.DISCORD_SUBSCRIBE_WEBHOOK_URL }}
+          # Optional: only if they are defined in GitHub Secrets. But we let Cloudflare Dashboard hold the real truth.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
