@@ -40,4 +40,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'blog-backend'
-          command: deploy --minify src/index.ts
+          command: deploy --minify src/index.ts --config wrangler.toml
