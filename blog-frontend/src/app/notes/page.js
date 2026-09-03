@@ -38,8 +38,8 @@ export default function Notes() {
                 </p>
                 <Link
                   href={book.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={book.link.startsWith("http") ? "_blank" : undefined}
+                  rel={book.link.startsWith("http") ? "noopener noreferrer" : undefined}
                   className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                 >
                   {content.shared.readLabel}

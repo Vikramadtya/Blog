@@ -1,6 +1,6 @@
 import React from "react";
-import ContentGrid from "@/components/molecules/ContentGrid";
-import { getBlogsByType } from "@/lib/server/blog";
+import ContentGrid from "@/presentation/ui/ContentGrid";
+import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
 
 import { siteMetadata } from "../../../site.config.mjs";
@@ -17,7 +17,7 @@ export async function generateMetadata() {
 }
 
 export default async function Blog() {
-  const blogs = await getBlogsByType(BLOG_TYPES.blog.type);
+  const blogs = await blogService.getPublishedBlogs();
   const blogIdToMetadata = blogs.reduce((acc, data) => {
     acc[data.id] = data;
     return acc;

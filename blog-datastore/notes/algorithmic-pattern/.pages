@@ -1,0 +1,16 @@
+title: Algorithmic Patterns
+icon: fontawesome/solid/laptop-code
+nav:
+  - index.md
+  - sort
+  - search
+  - arrays
+  - linked-list
+  - stack
+  - queue
+  - heap
+  - tree
+  - graph
+  - partitioning
+  - numerical-algorithms
+  - miscellaneous

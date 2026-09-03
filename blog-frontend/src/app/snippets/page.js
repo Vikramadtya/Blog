@@ -1,7 +1,7 @@
 import React from "react";
-import { getBlogsByType } from "@/lib/server/blog";
+import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
-import ContentGrid from "@/components/molecules/ContentGrid";
+import ContentGrid from "@/presentation/ui/ContentGrid";
 
 import { siteMetadata } from "../../../site.config.mjs";
 const { content } = siteMetadata;
@@ -17,7 +17,7 @@ export async function generateMetadata() {
 }
 
 export default async function Snippets() {
-  const snippets = await getBlogsByType(BLOG_TYPES.snippet.type);
+  const snippets = await blogService.getPublishedSnippets();
 
   const snippetIdToMetadata = snippets.reduce((acc, data) => {
     acc[data.id] = data;

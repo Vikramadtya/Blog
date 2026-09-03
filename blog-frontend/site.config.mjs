@@ -5,16 +5,15 @@ export const siteMetadata = {
   ...site,
   content,
   // Site paths & identification
+  siteUrl:
+    process.env.NEXT_PUBLIC_SITE_URL || site.siteUrl || "http://localhost:3000",
+  apiBaseUrl:
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    site.apiBaseUrl ||
+    "http://localhost:3000",
   siteRepo: site.siteRepo || "https://github.com/Vikramadtya/Blog",
   localBlogDatastorePath:
     site.localBlogDatastorePath || "./blog-datastore/blogs",
-
-  // Feature Flags
-  firebaseEnabled: !!(
-    process.env.FIREBASE_CONFIG_API_KEY &&
-    process.env.FIREBASE_CONFIG_PROJECT_ID &&
-    process.env.FIREBASE_CONFIG_APP_ID
-  ),
 
   // Display settings
   postDateTemplate: {
@@ -45,7 +44,6 @@ export const siteMetadata = {
     themeToggle: site.features?.themeToggle ?? true,
     readingTime: site.features?.readingTime ?? true,
     giscus: site.features?.giscus ?? true,
-    firebase: site.features?.firebase ?? true,
   },
 
   // Analytics configuration

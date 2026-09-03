@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import Link from "next/link";
-import Icon from "@/components/atoms/Icon";
+import Icon from "@/presentation/ui/Icon";
 
 export default function Error({ error, reset }) {
   useEffect(() => {

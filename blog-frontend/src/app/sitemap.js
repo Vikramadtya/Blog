@@ -1,8 +1,8 @@
-import { getAllBlogs } from "@/lib/server/blog";
+import { blogService, noteService } from "@/core";
 import { siteMetadata } from "../../site.config.mjs";
 
 export default async function sitemap() {
-  const blogs = await getAllBlogs();
+  const blogs = await blogService.getAllPosts();
   const blogUrls = blogs.map((blog) => ({
     url: `${siteMetadata.siteUrl}/blogs/${blog.slug}`,
     lastModified: new Date(blog.updatedAt || blog.createdAt),

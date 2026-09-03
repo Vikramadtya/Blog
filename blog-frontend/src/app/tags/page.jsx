@@ -1,7 +1,7 @@
 import React from "react";
-import { getAllTags } from "@/lib/server/blog";
+import { blogService } from "@/core";
 import Link from "next/link";
-import Icon from "@/components/atoms/Icon";
+import Icon from "@/presentation/ui/Icon";
 import { siteMetadata } from "../../../site.config.mjs";
 
 export async function generateMetadata() {
@@ -15,7 +15,7 @@ export async function generateMetadata() {
 }
 
 export default async function TagsPage() {
-  const tags = await getAllTags();
+  const tags = await blogService.getAllTags();
 
   // Sort tags by count
   const sortedTags = [...tags].sort((a, b) => b.count - a.count);

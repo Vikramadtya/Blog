@@ -4,12 +4,6 @@
     { "key": 1, "href": "/blogs", "title": "All Posts", "shortcut": "⌘+B" },
     { "key": 2, "href": "/tags", "title": "Tags", "shortcut": "⌘+T" },
     { "key": 3, "href": "/notes", "title": "Notes", "shortcut": "⌘+K" },
-    {
-      "key": 4,
-      "href": "/newsletter",
-      "title": "Newsletter",
-      "shortcut": "⌘+N"
-    },
     { "key": 5, "href": "PORTFOLIO_LINK", "title": "Author", "shortcut": "⌘+A" }
   ],
   "dropdown": [
@@ -47,13 +41,6 @@
       "title": "Notes",
       "icon": "book",
       "shortcut": "⌘+K"
-    },
-    {
-      "key": 6,
-      "href": "/newsletter",
-      "title": "Newsletter",
-      "icon": "mail",
-      "shortcut": "⌘+N"
     },
     {
       "key": 7,

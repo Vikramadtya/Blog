@@ -67,6 +67,41 @@
   ::selection {
     @apply bg-indigo-500/30 text-indigo-900 dark:text-indigo-100;
   }
+
+  .prose h2 {
+    @apply mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
+  }
+}
+
+/* Code Highlighting */
+span[data-highlighted-line] {
+  background-color: rgba(255, 100, 0, 0.1);
+  border-left: 3px solid #f97316;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: calc(1rem - 3px);
+  padding-right: 1rem;
+}
+
+/* rehype-pretty-code dual theme support (CSS variables) */
+pre[data-theme*=" "],
+code[data-theme*=" "] {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+pre[data-theme*=" "] span {
+  color: var(--shiki-light);
+}
+
+html.dark pre[data-theme*=" "],
+html.dark code[data-theme*=" "] {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+html.dark pre[data-theme*=" "] span {
+  color: var(--shiki-dark);
 }
 
 /* Custom Scrollbar */

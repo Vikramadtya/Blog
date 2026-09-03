@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: blog-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: blog_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - blog_db_data:/var/lib/postgresql/data
+
+volumes:
+  blog_db_data:

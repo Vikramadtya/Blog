@@ -20,8 +20,14 @@ async function fetcher(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
       ...options,
       signal: controller.signal,
     });
-    if (!response.ok)
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    if (!response.ok) {
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        if (errorBody.error) errorMessage = errorBody.error;
+      } catch {}
+      throw new Error(errorMessage);
+    }
     const text = await response.text();
     try {
       return JSON.parse(text);
@@ -57,32 +63,73 @@ function unwrap(res, fallback = []) {
   return res?.success ? res.data : fallback;
 }
 
+const MICROSERVICE_URL =
+  process.env.NEXT_PUBLIC_MICROSERVICE_URL || "http://localhost:8787";
+
 // ─── Domain API ──────────────────────────────────────────────────────────────
 
 /**
- * Fetches a blog's live metadata (likes, views) from Firestore.
+ * Fetches a blog's live metadata (likes, views) from the microservice.
  */
 export async function getBlogMetadataById(blogId) {
-  const url = new URL("/api/blog/data", window.location.origin);
-  url.searchParams.set("id", blogId);
-  return unwrap(await get(url.toString()), {});
+  const url = `${MICROSERVICE_URL}/metrics/${blogId}`;
+  return (await get(url)) || {};
 }
 
 /**
- * Increments likes or views for a blog.
+ * Increments likes or views for a blog via the microservice.
  */
 export async function incrementBlogLikesOrViewsById(id, type) {
-  const url = new URL("/api/blog/data", window.location.origin);
-  return post(url.toString(), {
-    id,
-    field: type,
-  });
+  const url = `${MICROSERVICE_URL}/metrics/${id}/${type}`;
+  const data = await post(url, {});
+  return { success: true, data }; // Wrap for backwards compatibility with the hook
 }
 
 /**
- * Submits an email for notification subscription.
+ * Submits an email for notification subscription via the microservice.
  */
-export function notify(email) {
-  const url = new URL("/api/blog/notify", window.location.origin);
-  return post(url.toString(), { email });
+export async function notify(email) {
+  const url = `${MICROSERVICE_URL}/subscribe`;
+  return await post(url, { email });
+}
+
+/**
+ * Submits a contact/support request via the microservice.
+ */
+export async function contactSupport(email, message) {
+  const url = `${MICROSERVICE_URL}/contact`;
+  return await post(url, { email, message });
+}
+
+export async function fetchSubscribers() {
+  const url = `${MICROSERVICE_URL}/subscribe`;
+  const res = await get(url);
+  return unwrap(res, []);
+}
+
+export async function fetchContacts() {
+  const url = `${MICROSERVICE_URL}/contact`;
+  const res = await get(url);
+  return unwrap(res, []);
+}
+
+export async function fetchAnalytics() {
+  const url = `${MICROSERVICE_URL}/analytics`;
+  return await get(url);
+}
+
+export async function fetchComments(blogId) {
+  const url = `${MICROSERVICE_URL}/comments/${blogId}`;
+  const res = await get(url);
+  return res.comments || [];
+}
+
+export async function postComment(blogId, data) {
+  const url = `${MICROSERVICE_URL}/comments/${blogId}`;
+  return await post(url, data);
+}
+
+export async function deleteComment(id) {
+  const url = `${MICROSERVICE_URL}/comments/${id}`;
+  return fetcher(url, { method: "DELETE" });
 }

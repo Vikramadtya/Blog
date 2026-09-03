@@ -1,10 +1,12 @@
 import "./globals.css";
-import Header from "@/components/organisms/header/Header";
-import ThemeProvider from "@/components/utils/ThemeProvider";
-import Footer from "@/components/organisms/footer/Footer";
+import Header from "@/presentation/layout/header/Header";
+import ThemeProvider from "@/presentation/providers/ThemeProvider";
+import Footer from "@/presentation/layout/footer/Footer";
 import { siteMetadata } from "../../site.config.mjs";
 
-const inter = { className: "font-sans" }; // Fallback for offline build
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
@@ -68,7 +70,7 @@ export const metadata = {
   },
 };
 
-import BackToTop from "@/components/atoms/BackToTop";
+import BackToTop from "@/presentation/ui/BackToTop";
 
 export default function RootLayout({ children }) {
   return (
