@@ -1,114 +1,102 @@
-# Blog
-Welcome to a powerful, professional-grade CLI to manage your blog posts and a sleek, modern frontend to display them.
+# Monorepo Personal Blog & Notes Platform
+
+Welcome to the source code for a modern, high-performance personal blog and technical notes platform. This repository is structured as a monorepo, separating the frontend application, the backend microservice, and the markdown datastore.
 
 ---
 
-## Features
+## Architecture Overview
 
-- **Interactive Blog Creation**: Quickly scaffold new blog posts with an interactive command-line prompt.
-- **Centralized Author & Tag Management**: Store all authors and tags in central JSON files for consistency and easy syncing.
-- **Automated Content Generation**: Automatically calculates **reading time** and generates a **Table of Contents**.
-- **Robust Schema Validation**: Enforces a consistent metadata structure for all blog posts using **Joi**.
-- **Advanced Processing**: Intelligently updates image paths and tracks file changes using SHA-256 hashes.
-- **Cloud Image Uploads**: Uploads local images to **Firebase Storage** and automatically replaces paths in your markdown.
-- **Professional UX**: Includes a stylish banner, spinners for long tasks, and formatted tables for lists.
-- **Comprehensive Syncing**: A single `sync` command keeps your local registry and tags perfectly aligned with your filesystem.
-- **Full Deployment Workflow**: Dedicated commands to `migrate` helper data and `upload` blog posts to Firebase.
-- **Developer Friendly**: Includes support for code linting with **ESLint** and formatting with **Prettier**.
+This project is divided into three primary workspaces:
+
+### 1. `blog-frontend` (Next.js - Domain-Driven Design)
+A sleek, modern frontend built with **Next.js (App Router)** and **Tailwind CSS**.
+- **Architecture:** We employ a strict **Domain-Driven Design (DDD)** layered architecture. Core business logic (Entities, Use Cases, Repositories) lives in `src/core/`, completely decoupled from the Next.js `src/presentation/` layer.
+- **Static Generation:** Blog posts and notes are written in Markdown/MDX and generated statically at build time for maximum speed and SEO.
+- **Dynamic Metrics:** Views, likes, and newsletter subscriptions are fetched dynamically from the microservice.
+- **Design System:** Features a bespoke design with a customized hero section, elegant typography, and a dark/light mode toggle.
+
+### 2. `blog-backend` (Hono Microservice)
+An ultra-fast, serverless microservice built with **Hono** and **Cloudflare Workers**.
+- **Performance:** Runs natively on the edge with near-zero cold starts.
+- **Database:** Connects to a Postgres database (e.g., Neon or Supabase) using **Drizzle ORM**.
+- **Responsibilities:** 
+  - Atomically tracks page views and likes (`/metrics/:blogId`).
+  - Handles newsletter signups securely (`/subscribe`).
+
+### 3. `blog-datastore` (Local Markdown Database)
+All technical notes, blog posts, and snippets are stored as local Markdown files.
+- **Centralized:** Instead of scattered repositories, all content is unified here.
+- **Version Controlled:** Treat your content like code.
 
 ---
 
-## Project Structure
+## Getting Started
 
+### Prerequisites
+- Node.js (v18 or higher)
+- A Postgres database connection string (e.g., from Neon.tech)
+
+### 1. Setup the Backend
+Navigate to the backend directory and configure your database:
+```bash
+cd blog-backend
+npm install
 ```
-.
-├── .env
-├── .eslintrc.cjs
-├── .gitignore
-├── .prettierrc
-├── README.md
-├── package.json
-├── logger.js
-├── config.js
-├── index.js
-├── commands
-│   ├── add-asset.js
-│   ├── create.js
-│   ├── delete.js
-│   ├── list.js
-│   ├── migrate.js
-│   ├── process.js
-│   ├── publish.js
-│   ├── stats.js
-│   └── sync.js
-├── utils
-│   └── helpers.js
-└── schemas
-└── blog.schema.js
+Start a local PostgreSQL database using Docker (from the root of the project):
+```bash
+cd ..
+docker-compose up -d
+cd blog-backend
+```
+Create a `.dev.vars` file in `blog-backend` by copying the example:
+```bash
+cp .env.example .dev.vars
+```
+*(The `.env.example` defaults to the local Docker database string!)*
+
+Sync the database schema and start the local development server:
+```bash
+npm run db:push
+npm run dev
+# The backend will run on http://localhost:8787
+```
+
+### 2. Setup the Frontend
+Open a new terminal window and navigate to the frontend directory:
+```bash
+cd blog-frontend
+npm install
+```
+Create a `.env.local` file in `blog-frontend` and point it to your local microservice:
+```env
+NEXT_PUBLIC_MICROSERVICE_URL="http://localhost:8787"
+```
+Start the Next.js development server:
+```bash
+npm run dev
+# The frontend will run on http://localhost:3000
 ```
 
 ---
 
-## Setup and Installation
+## Writing Content
 
-### One-Time Setup
+To create a new blog post or technical note, we have built a custom frictionless local interface:
+1. Ensure the frontend development server is running (`npm run dev` in `blog-frontend`).
+2. Navigate to `http://localhost:3000/admin` in your browser.
+3. Access the **Blog Editor** or **Note Editor**.
+4. You can draft, preview, and save Markdown directly from the browser. The files are securely saved back to the `blog-datastore/` directory locally.
 
-1.  **Install Node.js**: Make sure you have Node.js (**version 16.x or higher**) installed.
-2.  **Clone the Repository**:
-    ```bash
-    git clone <your-repo-url>
-    cd blog-cli
-    ```
-3.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
-4.  **Set Up Environment Variables**: Create a `.env` file in the project's root directory. You must provide the full, absolute path to the folder where your blogs will be stored, along with your Firebase credentials.
+*(Note: This admin interface is strictly locked down to local development for security and will not function in production).*
 
-    ```env
-    # Path to your local blog files (MUST be a valid, full path)
-    PATH_TO_BLOGS="/Users/your_username/Documents/MyBlogs"
+## Deployment & CI/CD
 
-    # Firebase Service Account Credentials
-    PROJECT_ID="your-firebase-project-id"
-    PRIVATE_KEY_ID="your-firebase-private-key-id"
-    PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-    CLIENT_EMAIL="firebase-adminsdk-....@your-project-id.iam.gserviceaccount.com"
-    CLIENT_ID="your-client-id"
-    CLIENT_X509_CERT_URL="your-cert-url"
+For full setup instructions, please see the [Deployment Guide](deployment.md).
 
-    # Firebase Storage Bucket Name
-    STORAGE_BUCKET="your-project-id.appspot.com"
-    ```
-5.  **Make the CLI Globally Executable** (Recommended):
-    ```bash
-    npm link
-    ```
+### Automated Deployments (GitHub Actions)
+This monorepo is fully configured for CI/CD via GitHub Actions (`.github/workflows/`):
 
----
-
-## Usage Guide
-
-### Core Commands
-
-* **`blog-cli create`** (alias: `c`): Starts an interactive prompt to create a new blog post.
-* **`blog-cli list`** (alias: `ls`): Displays a formatted table of all your local blog posts.
-* **`blog-cli delete <blog-id>`** (alias: `rm`): Safely deletes a blog post.
-* **`blog-cli add-asset <blog-id> <path-to-file>`**: Copies an asset into the specified blog's directory and prints the markdown snippet.
-
-### Deployment & Processing
-
-* **`blog-cli process [blog-id] [options]`** (alias: `p`): Prepares a blog post for publication.
-    * `--all`: Process all blog posts.
-    * `--upload-images`: Uploads local images to Firebase Storage.
-* **`blog-cli publish <blog-id>`**: Sets `"publish": true` and runs `process` and `upload`.
-* **`blog-cli migrate`**: Syncs your central helper files with Firestore.
-* **`blog-cli upload [blog-id] [options]`** (alias: `up`): Uploads metadata to Firestore.
-    * `--all`: Upload all changed blog posts.
-    * `--dry-run`: Shows which posts would be uploaded without making changes.
-
-### Utility & Sync Commands
-
-* **`blog-cli sync`**: A two-way synchronization command for your local files and central JSON files.
-* **`blog-cli preview <blog-id>`**: Starts a local, hot-reloading web server for previewing your `blog.md`.
-* **`blog-cli stats`**: Displays view and like counts from Firestore.
+1. **Backend (Cloudflare Workers)**: Pushes to `main` in the `blog-backend/` directory will automatically deploy to Cloudflare. 
+   - *Requirement*: You must add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to your GitHub Repository Secrets.
+2. **Frontend (Vercel)**: Pushes to `main` will automatically trigger a build check in GitHub Actions. 
+   - *Requirement*: Production deployments for the frontend are handled natively by linking this GitHub repository directly in your Vercel Dashboard.
