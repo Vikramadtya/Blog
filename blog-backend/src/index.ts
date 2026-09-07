@@ -32,6 +32,7 @@ app.use('*', async (c, next) => {
 });
 
 // Route Handlers
+app.get('/health', (c) => c.json({ status: 'ok' }));
 app.route('/metrics', metricsRouter);
 app.route('/subscribe', subscribeRouter);
 app.route('/contact', contactRouter);

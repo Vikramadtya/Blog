@@ -71,6 +71,7 @@ export const metadata = {
 };
 
 import BackToTop from "@/presentation/ui/BackToTop";
+import BackendHealthCheck from "@/presentation/components/BackendHealthCheck";
 
 export default function RootLayout({ children }) {
   return (
@@ -87,6 +88,7 @@ export default function RootLayout({ children }) {
             <main className="mb-auto">{children}</main>
             <Footer />
             <BackToTop />
+            <BackendHealthCheck />
           </ThemeProvider>
         </div>
       </body>
