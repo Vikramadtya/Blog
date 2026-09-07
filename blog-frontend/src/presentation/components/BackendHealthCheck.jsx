@@ -24,6 +24,10 @@ export default function BackendHealthCheck() {
           if (isWaiting) {
             toast.success("Backend server is ready!", { id: TOAST_ID });
             isWaiting = false;
+            // Dismiss it after 3 seconds
+            setTimeout(() => {
+              toast.dismiss(TOAST_ID);
+            }, 3000);
           }
           clearInterval(pollInterval);
         } else {
@@ -33,15 +37,10 @@ export default function BackendHealthCheck() {
         // Still waiting
         if (!isWaiting) {
           isWaiting = true;
-          // Add a small delay so it doesn't flash if the backend is actually fast/up
-          setTimeout(() => {
-            if (isWaiting && isChecking.current) {
-              toast.loading("Waiting for backend server to start, give it a min...", { 
-                duration: Infinity,
-                id: TOAST_ID 
-              });
-            }
-          }, 1000);
+          toast.loading("Waiting for backend server to start, give it a min...", { 
+            duration: Infinity,
+            id: TOAST_ID 
+          });
         }
       }
     };
@@ -59,5 +58,25 @@ export default function BackendHealthCheck() {
     };
   }, []);
 
-  return <Toaster position="bottom-right" />;
+  return (
+    <Toaster 
+      position="top-center" 
+      toastOptions={{
+        style: {
+          background: '#334155',
+          color: '#fff',
+          borderRadius: '9999px',
+          padding: '12px 24px',
+          fontWeight: '500',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+        },
+        success: {
+          iconTheme: {
+            primary: '#4ade80',
+            secondary: '#334155',
+          },
+        },
+      }} 
+    />
+  );
 }
