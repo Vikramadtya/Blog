@@ -35,9 +35,7 @@ export class MarkdownNoteRepository {
         return true;
       });
 
-      entries.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-
-      const tree = [];
+      const nodes = [];
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         const slug = this._toSlug(entry.name);
@@ -46,24 +44,69 @@ export class MarkdownNoteRepository {
         if (entry.isDirectory()) {
           const children = await walk(fullPath, nodePath);
           if (children.length > 0) {
-            tree.push({
+            // For directories, we can try to extract `sno` from the directory name if it has a prefix like `1. ` or `01-`
+            const match = entry.name.match(/^([0-9]+)[\.\-]/);
+            const sno = match ? parseInt(match[1], 10) : 999999;
+
+            nodes.push({
               type: "directory",
               title: entry.name.replace(/^[0-9.-]+\s*/, ""), 
               slug,
               path: nodePath,
               children,
+              sno,
+              originalName: entry.name
             });
           }
         } else {
-          tree.push({
+          let title = entry.name.replace(/\.md$/, "").replace(/^[0-9.-]+\s*/, "");
+          let sno = 999999;
+          
+          try {
+             const content = await fs.readFile(fullPath, 'utf-8');
+             const parsed = matter(content);
+             
+             // Extract title or name
+             if (parsed.data.title) title = parsed.data.title;
+             else if (parsed.data.name) title = parsed.data.name;
+             
+             // Check various possible frontmatter keys for sorting
+             if (parsed.data['s.no'] !== undefined) sno = Number(parsed.data['s.no']);
+             else if (parsed.data.sno !== undefined) sno = Number(parsed.data.sno);
+             else if (parsed.data.order !== undefined) sno = Number(parsed.data.order);
+             else if (parsed.data.id !== undefined) sno = Number(parsed.data.id);
+             else {
+               // Fallback: try to extract from filename
+               const match = entry.name.match(/^([0-9]+)[\.\-]/);
+               if (match) sno = parseInt(match[1], 10);
+             }
+          } catch (e) {
+             // Fallback: try to extract from filename
+             const match = entry.name.match(/^([0-9]+)[\.\-]/);
+             if (match) sno = parseInt(match[1], 10);
+          }
+
+          nodes.push({
             type: "file",
-            title: entry.name.replace(/\.md$/, "").replace(/^[0-9.-]+\s*/, ""),
+            title,
             slug,
             path: nodePath,
+            sno,
+            originalName: entry.name
           });
         }
       }
-      return tree;
+
+      // Sort nodes based on sno first, then alphabetically by original name
+      nodes.sort((a, b) => {
+        if (a.sno !== b.sno) {
+          return a.sno - b.sno;
+        }
+        return a.originalName.localeCompare(b.originalName, undefined, { numeric: true });
+      });
+
+      // Cleanup internal fields
+      return nodes.map(({ originalName, ...rest }) => rest);
     };
 
     return walk(bookDir);
@@ -150,7 +193,7 @@ export class MarkdownNoteRepository {
     const content = await fs.readFile(resolvedFilePath, "utf-8");
     const { data, content: markdownContent } = matter(content);
     
-    let title = data.title;
+    let title = data.title || data.name;
     let finalContent = markdownContent;
 
     if (!title) {
