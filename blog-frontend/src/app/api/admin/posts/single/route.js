@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 
-const BLOGS_DIR = path.join(process.cwd(), "blog-datastore/blogs");
+const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);

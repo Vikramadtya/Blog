@@ -13,7 +13,7 @@ export const siteMetadata = {
     "http://localhost:3000",
   siteRepo: site.siteRepo || "https://github.com/Vikramadtya/Blog",
   localBlogDatastorePath:
-    site.localBlogDatastorePath || "./blog-datastore/blogs",
+    site.localBlogDatastorePath || "../blog-datastore/blogs",
 
   // Display settings
   postDateTemplate: {

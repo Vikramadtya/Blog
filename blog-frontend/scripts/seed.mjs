@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const BLOG_DIR = path.join(process.cwd(), "blog-datastore", "blogs");
+const BLOG_DIR = path.join(process.cwd(), "..", "blog-datastore", "blogs");
 
 function generateSeedSql() {
   console.log("Generating SQL seed script from local Markdown files...");

@@ -24,7 +24,7 @@ export async function POST(req) {
       );
     }
 
-    const BLOGS_DIR = path.join(process.cwd(), "blog-datastore/blogs");
+    const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
     const filePath = path.join(BLOGS_DIR, `${slug}.md`);
 
     // Check if it already exists

@@ -9,7 +9,7 @@ export async function POST() {
     return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
   }
 
-  const BLOGS_DIR = path.join(process.cwd(), "blog-datastore/blogs");
+  const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
   const TAGS_FILE = path.join(BLOGS_DIR, "tags.json");
 
   try {
