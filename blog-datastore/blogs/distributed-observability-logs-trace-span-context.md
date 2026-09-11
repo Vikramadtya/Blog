@@ -30,8 +30,7 @@ flowchart LR
     User["User / Client"]
     Gateway["API Gateway"]
     Order["Order Service"]
-    Pa![context-propagation-example.svg](/uploads/1789120639813-68103152-context-propagation-example.svg)
-yment["Payment Service"]
+    Payment["Payment Service"]
     Inventory["Inventory Service"]
     DB["Database"]
     PG["Payment Gateway"]
