@@ -3,7 +3,7 @@ id: ea87ad8b-6f27-4332-9b91-0ca97d28c739
 title: 'Distributed Observability : Logs, Trace, Span, Context'
 slug: distributed-observability-logs-trace-span-context
 createdAt: '2026-09-10T18:50:38.931Z'
-updatedAt: '2026-09-11T05:49:32.704Z'
+updatedAt: '2026-09-11T09:15:20.159Z'
 tags:
   - Logs
   - Trace
