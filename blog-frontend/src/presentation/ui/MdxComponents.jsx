@@ -1,16 +1,31 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import CopyButton from '@/presentation/ui/CopyButton';
+import Mermaid from '@/presentation/components/Mermaid';
 
 export function getMDXComponents(components) {
   return {
     pre: ({ children, className, ...props }) => {
+      const isMermaid = 
+        props["data-language"] === "mermaid" || 
+        children?.props?.["data-language"] === "mermaid" ||
+        className?.includes("language-mermaid");
+
       const extractText = (node) => {
         if (typeof node === "string" || typeof node === "number") return String(node);
         if (!node) return "";
         if (Array.isArray(node)) return node.map(extractText).join("");
-        if (node.props && node.props.children) return extractText(node.props.children);
-        return "";
+        
+        let text = "";
+        if (node.props && node.props.children) {
+          text = extractText(node.props.children);
+        }
+        
+        // rehype-pretty-code wraps each line in a span with data-line
+        if (node.props && "data-line" in node.props) {
+          text += "\n";
+        }
+        return text;
       };
 
       let rawText = "";
@@ -18,6 +33,10 @@ export function getMDXComponents(components) {
         rawText = extractText(children);
       } catch (e) {
         console.warn("Failed to extract text for CopyButton");
+      }
+
+      if (isMermaid) {
+        return <Mermaid chart={rawText} />;
       }
 
       return (
