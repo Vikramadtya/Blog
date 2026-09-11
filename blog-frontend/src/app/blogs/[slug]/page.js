@@ -2,6 +2,10 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { rehypePrettyCode } from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 import { Separator } from "@/presentation/ui/Separator";
 import BlogHero from "@/presentation/blog/BlogHero";
@@ -198,8 +202,9 @@ export default async function Post({ params, searchParams }) {
             source={content}
             options={{
               mdxOptions: {
-                remarkPlugins: [],
+                remarkPlugins: [remarkGfm, remarkMath],
                 rehypePlugins: [
+                  rehypeKatex,
                   rehypeSlug,
                   [
                     rehypeAutolinkHeadings,
