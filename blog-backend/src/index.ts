@@ -8,11 +8,15 @@ import contactRouter from './routes/contact';
 import commentsRouter from './routes/comments';
 import analyticsRouter from './routes/analytics';
 
+import { instrument } from '@microlabs/otel-cf-workers';
+
 export type Bindings = {
   DATABASE_URL: string;
   DISCORD_WEBHOOK_URL: string;
   DISCORD_SUBSCRIBE_WEBHOOK_URL: string;
   ALLOWED_ORIGIN: string;
+  OTEL_EXPORTER_OTLP_ENDPOINT?: string;
+  OTEL_EXPORTER_OTLP_HEADERS?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -26,7 +30,7 @@ app.use('*', async (c, next) => {
   const corsMiddleware = cors({
     origin: allowedOrigin,
     allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type'],
+    allowHeaders: ['Content-Type', 'traceparent', 'tracestate'],
   });
   return corsMiddleware(c, next);
 });
@@ -39,4 +43,31 @@ app.route('/contact', contactRouter);
 app.route('/comments', commentsRouter);
 app.route('/analytics', analyticsRouter);
 
-export default app;
+export default {
+  fetch: (request: Request, env: Bindings, ctx: ExecutionContext) => {
+    // Only instrument if OTLP endpoint is provided
+    if (env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+      return instrument(
+        request,
+        env,
+        ctx,
+        {
+          config: (env) => {
+            return {
+              exporter: {
+                url: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+                headers: env.OTEL_EXPORTER_OTLP_HEADERS 
+                  ? { Authorization: env.OTEL_EXPORTER_OTLP_HEADERS } 
+                  : undefined,
+              },
+              service: { name: 'blog-microservice' },
+            };
+          },
+        },
+        (req, env, ctx) => app.fetch(req, env, ctx)
+      );
+    }
+    // Fallback to uninstrumented execution if missing configuration
+    return app.fetch(request, env, ctx);
+  }
+};
