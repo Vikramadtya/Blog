@@ -22,6 +22,7 @@ export default function EditPostPage({ params }) {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [hasUnsavedDraft, setHasUnsavedDraft] = useState(false);
   const [savedDraftContent, setSavedDraftContent] = useState("");
 
@@ -195,7 +196,33 @@ export default function EditPostPage({ params }) {
     setIsUploading(false);
   };
 
-  const handleDrop = (e) => {
+  const handleCoverUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    
+    setIsUploadingCover(true);
+    const formDataBody = new FormData();
+    formDataBody.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/upload-image", {
+        method: "POST",
+        body: formDataBody
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setFormData(prev => ({ ...prev, previewImageSrc: data.url }));
+      } else {
+        alert("Upload failed: " + data.error);
+      }
+    } catch (err) {
+      alert("Upload failed: " + err.message);
+    }
+    setIsUploadingCover(false);
+  };
+
+  const handleDrop = async (e) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleImageUpload(e.dataTransfer.files[0]);
@@ -404,15 +431,27 @@ export default function EditPostPage({ params }) {
 
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Preview Image URL</label>
-                <input
-                  type="text"
-                  name="previewImageSrc"
-                  value={formData.previewImageSrc}
-                  onChange={handleChange}
-                  disabled={!isDev}
-                  placeholder="/images/cover.png"
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="previewImageSrc"
+                    value={formData.previewImageSrc}
+                    onChange={handleChange}
+                    disabled={!isDev || isUploadingCover}
+                    placeholder="/images/cover.png"
+                    className="flex-1 w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                  />
+                  <label className="cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-md border px-3 py-2 text-sm flex items-center justify-center whitespace-nowrap disabled:opacity-50 transition-colors">
+                    {isUploadingCover ? "..." : "Upload"}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      disabled={!isDev || isUploadingCover} 
+                      onChange={handleCoverUpload} 
+                    />
+                  </label>
+                </div>
               </div>
 
               <div>

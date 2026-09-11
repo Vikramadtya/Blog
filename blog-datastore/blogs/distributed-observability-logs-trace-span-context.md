@@ -57,7 +57,7 @@ This is where **observability** and, in particular, **distributed tracing** beco
 
 ---
 
-# What is Observability?
+## What is Observability?
 
 Observability lets you understand a system from the outside by asking questions about its behavior without necessarily knowing its internal implementation.
 
@@ -78,7 +78,7 @@ The observability signals are
 
 The interesting part is that these concepts are not isolated **context connects them.**
 
-# Logs
+## Logs
 
 A **log** is a timestamped record of an event emitted by a system component.
 
@@ -101,7 +101,7 @@ However, logs by themselves have a major limitation in distributed systems. The 
 
 
 
-# Spans
+## Spans
 
 A **span** represents a single unit of work or operation.
 
@@ -155,7 +155,7 @@ http.route = "/orders/:id"
 
 
 
-# What is a Trace?
+## What is a Trace?
 
 A **trace** represents the end-to-end journey of a request or operation through a distributed system.
 
@@ -195,7 +195,7 @@ flowchart TD
 
 Without tracing, we might have to inspect logs from several different services and manually reconstruct this sequence.
 
-# The Trace Waterfall
+### The Trace Waterfall
 
 Most tracing backends visualize traces as a **waterfall**.
 
@@ -214,7 +214,7 @@ This allows to visually identify
 - unexpected dependencies
 
 
-# The Problem: How Does a Trace Cross Service Boundaries?
+## The Problem: How Does a Trace Cross Service Boundaries?
 
 This is where distributed tracing becomes interesting.
 
@@ -232,7 +232,7 @@ When Service A calls Service B, Service B needs to know that its operation is pa
 
 
 
-# Context
+### Context
 
 Context is the mechanism used to carry information associated with the current execution across the lifetime of an operation.
 
@@ -245,7 +245,7 @@ For tracing, the important pieces include:
 
 **Context is not the trace itself.** A trace is the complete distributed representation of an operation. Context is the state that allows individual pieces of that operation to know how they relate to the trace.
 
-# Context Propagation
+### Context Propagation
 
 The context has to cross a process and network boundary. **Context propagation** is the mechanism that moves context from one service or process to another.
 
@@ -265,9 +265,11 @@ sequenceDiagram
     B->>B: Create Span S2
 ```
 
-# W3C Trace Context
+### W3C Trace Context
 
 The W3C Trace Context specification standardizes how distributed tracing information is transmitted between services.
+
+#### `traceparent`
 
 The primary header is `traceparent` with typical value looks like `traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
 `
@@ -307,7 +309,7 @@ sequenceDiagram
 
 > A Trace ID identifies the entire distributed operation, while a Span ID identifies one particular operation within that trace.
 
-# `tracestate`
+#### `tracestate`
 
 Alongside `traceparent`, W3C Trace Context also defines `tracestate`. While `traceparent` contains the standardized tracing identifiers, `tracestate` carries additional vendor- or implementation-specific tracing information.
 
@@ -320,7 +322,7 @@ tracestate: vendor=value
 This allows different tracing systems to participate in the same distributed trace while carrying additional information that is meaningful to their implementation.
 
 
-# Baggage
+## Baggage
 
 The trace context answers **which trace and span does this request belong to?** But sometimes we also want to propagate application-specific information. This is where **Baggage** comes in. Baggage is a key-value store that can be propagated across service boundaries alongside trace context.
 
@@ -342,7 +344,7 @@ Service B can then use that information when creating telemetry.
 
 > **Baggage is not the same thing as span attributes.** Baggage is propagated state. A span attribute is telemetry attached to a specific span.
 
-# Logs + Traces
+## Logs + Traces
 
 Tracing becomes particularly powerful when logs and traces are correlated. On its own, a simple `ERROR` log isn't particularly useful. But if the log contains `trace_id`, `span_id` we can navigate directly from the trace to the exact log generated during the failing operation.
 
@@ -366,7 +368,7 @@ Context propagation makes this correlation possible across service boundaries. T
  
 Together, these signals give us a much stronger understanding of the system than any individual signal could provide.
 
-# Metrics
+## Metrics
 
 A **metric** is a numerical measurement recorded over time, usually aggregated across many events. Metrics are particularly useful for understanding the overall health of a system.
 
@@ -392,7 +394,7 @@ Suppose a metric tells `p99 latency = 2.1 seconds` now we know that something is
 > And context provides the connective tissue that allows these signals to be correlated.
 
 
-# Sampling
+## Sampling
 
 Tracing can generate a tremendous amount of data processing all that data can become expensive. This is where **sampling** comes in.
 
@@ -400,14 +402,14 @@ Sampling means selecting which traces or spans should be recorded and/or exporte
 
 For example, a sampling policy might keep 10% of successful requests or  100% of errors or 100% of slow requests
 
-# Head-Based Sampling
+#### Head-Based Sampling
 
 With **head-based sampling**, the sampling decision is made near the beginning of the trace. 
 
 - The advantage is simplicity and predictable resource usage.
 - The disadvantage is that you may decide to discard a trace **before knowing whether it will become interesting**.
 
-# Tail-Based Sampling
+#### Tail-Based Sampling
 
 With **tail-based sampling**, the system can wait until more or all of the trace is available before deciding whether to retain it. 
 
@@ -419,7 +421,7 @@ This is particularly useful when you want to drop routine successful requests bu
 - Important business operations
 
 
-# Why Sampling Must Be Consistent
+### Why Sampling Must Be Consistent
 
 For distributed tracing to remain useful, sampling decisions need to be coordinated appropriately so that traces remain coherent. If Service A decides to keep the trace but Service B independently decides to drop its span, we could end up with an incomplete trace:
 
@@ -435,7 +437,7 @@ flowchart TD
 This is one reason the sampling decision can be propagated through the trace context.
 
 
-# Do We Always Need Sampling?
+### Do We Always Need Sampling?
 
 Sampling may be unnecessary or less important when:
 - traffic volume is very low
@@ -448,9 +450,9 @@ For high-volume production systems, however, sampling can be an important part o
 
 > The goal is to **collect enough telemetry to answer the questions we care about at a reasonable cost.**
 
----
 
-# A Complete Request Through a Distributed System
+
+## A Complete Request Through a Distributed System
 
 Suppose a user places an order `POST /orders`. 
 
@@ -534,7 +536,7 @@ gantt
 > - Baggage carries additional application-defined information alongside that context.
 
 
-# References
+## References
 - OpenTelemetry Observability Primer  
   https://opentelemetry.io/docs/concepts/observability-primer/
 - W3C Trace Context  
