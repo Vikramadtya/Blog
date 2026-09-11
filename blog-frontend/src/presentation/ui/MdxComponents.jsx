@@ -109,7 +109,7 @@ export function getMDXComponents(components) {
       </li>
     ),
     blockquote: ({ className, children }) => (
-      <blockquote className={cn("mt-8 border-l-4 border-indigo-500 bg-indigo-500/5 py-1 pr-4 pl-6 italic text-muted-foreground dark:bg-indigo-500/10", className)}>
+      <blockquote className={cn("mt-8 border-l-4 border-indigo-500 bg-indigo-500/5 py-4 pr-4 pl-6 text-muted-foreground dark:bg-indigo-500/10 [&>p]:italic [&>p:first-child]:mt-0 [&>p:last-child]:mb-0 [&_code]:not-italic [&_pre]:not-italic", className)}>
         {children}
       </blockquote>
     ),
@@ -130,17 +130,23 @@ export function getMDXComponents(components) {
       <hr className={cn("my-12 border-t border-border", className)} />
     ),
     table: ({ className, children }) => (
-      <div className="my-8 w-full overflow-y-auto rounded-lg border border-border">
+      <div className="my-8 w-full overflow-x-auto overflow-y-hidden rounded-lg border border-border">
         <table className={cn("w-full text-left text-sm", className)}>{children}</table>
       </div>
     ),
+    thead: ({ className, children }) => (
+      <thead className={cn("bg-muted", className)}>{children}</thead>
+    ),
+    tr: ({ className, children }) => (
+      <tr className={cn("border-b border-border last:border-b-0", className)}>{children}</tr>
+    ),
     th: ({ className, children }) => (
-      <th className={cn("border-b border-border bg-muted px-4 py-3 font-semibold text-foreground", className)}>
+      <th className={cn("px-4 py-3 font-semibold text-foreground", className)}>
         {children}
       </th>
     ),
     td: ({ className, children }) => (
-      <td className={cn("border-b border-border px-4 py-3 text-muted-foreground", className)}>
+      <td className={cn("px-4 py-3 text-muted-foreground", className)}>
         {children}
       </td>
     ),

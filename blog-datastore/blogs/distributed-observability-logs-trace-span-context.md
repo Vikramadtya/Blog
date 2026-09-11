@@ -109,24 +109,6 @@ A **span** represents a single unit of work or operation.
 Suppose for a `GET` request the application might create a span for the HTTP request and inside that operation, the application might perform several other operations Each of these operations can be represented by its own span.
 
 
-```mermaid
-gantt
-    title GET /orders/:id
-    dateFormat X
-    axisFormat %L ms
-
-    section Request
-    GET /orders/:id : 0, 350
-
-    section Database
-    Query database : 20, 80
-
-    section Payment
-    Call payment service : 100, 150
-
-    section Inventory
-    Call inventory service : 260, 70
-```
 
 A span typically contains information such as:
 - Span name
@@ -166,10 +148,10 @@ http.route = "/orders/:id"
 ```
 
 > Attributes are particularly useful when querying traces. Instead of searching through arbitrary log strings, an observability backend can answer questions such as
->  ```
->  Show me all requests to `/orders/:id` that took more than 1 second.
->  Show me all database calls where `db.system = postgres`.
->  ```
+> ```
+> Show me all requests to `/orders/:id` that took more than 1 second.
+> Show me all database calls where `db.system = postgres`.
+> ```
 
 
 
