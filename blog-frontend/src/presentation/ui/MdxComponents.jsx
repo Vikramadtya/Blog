@@ -141,12 +141,12 @@ export function getMDXComponents(components) {
       <tr className={cn("border-b border-border last:border-b-0", className)}>{children}</tr>
     ),
     th: ({ className, children }) => (
-      <th className={cn("px-4 py-3 font-semibold text-foreground", className)}>
+      <th className={cn("!px-6 !py-3 font-semibold text-foreground", className)}>
         {children}
       </th>
     ),
     td: ({ className, children }) => (
-      <td className={cn("px-4 py-3 text-muted-foreground", className)}>
+      <td className={cn("!px-6 !py-3 text-muted-foreground", className)}>
         {children}
       </td>
     ),
