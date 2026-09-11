@@ -270,7 +270,7 @@ export default function AdminDashboard() {
                     <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-3">
                         <Link 
-                          href={`/blogs/${post.slug}`} 
+                          href={`/blogs/${post.slug}?preview=true`} 
                           target="_blank"
                           className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
                           title="Preview"

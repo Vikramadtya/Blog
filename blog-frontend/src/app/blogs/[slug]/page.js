@@ -28,8 +28,9 @@ export async function generateStaticParams() {
 }
 
 // SEO metadata generation
-export async function generateMetadata({ params }) {
-  const blogData = await blogService.getPostBySlug(params.slug);
+export async function generateMetadata({ params, searchParams }) {
+  const isPreview = searchParams?.preview === 'true';
+  const blogData = await blogService.getPostBySlug(params.slug, { includeUnpublished: isPreview });
   if (!blogData) return {};
 
   // Use dynamic OG if preview is missing
@@ -64,14 +65,16 @@ export async function generateMetadata({ params }) {
   };
 }
 
+import { notFound } from "next/navigation";
 import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvider";
 
 // Main blog post page
-export default async function Post({ params }) {
+export default async function Post({ params, searchParams }) {
   const { slug } = params;
+  const isPreview = searchParams?.preview === 'true';
 
-  const blogData = await blogService.getPostBySlug(slug);
-  if (!blogData) return null;
+  const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
+  if (!blogData) notFound();
   
   const parentSeriesSlug = blogData.series || blogData.slug;
   const seriesChildren = await (await blogService.getAllPosts()).filter(p => p.series === parentSeriesSlug).sort((a,b) => a.seriesOrder - b.seriesOrder);

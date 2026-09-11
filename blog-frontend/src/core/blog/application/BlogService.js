@@ -55,7 +55,7 @@ export class BlogService {
       this._setCache("all_posts", posts);
     }
 
-    if (!includeUnpublished) {
+    if (!includeUnpublished && process.env.NODE_ENV !== "development") {
       posts = posts.filter(p => p.isPublished());
     }
 
@@ -82,7 +82,7 @@ export class BlogService {
       this._setCache(cacheKey, post);
     }
 
-    if (!includeUnpublished && !post.isPublished()) {
+    if (!includeUnpublished && process.env.NODE_ENV !== "development" && !post.isPublished()) {
       return null;
     }
 
