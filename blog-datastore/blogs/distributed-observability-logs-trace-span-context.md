@@ -3,20 +3,21 @@ id: ea87ad8b-6f27-4332-9b91-0ca97d28c739
 title: 'Distributed Observability : Logs, Trace, Span, Context'
 slug: distributed-observability-logs-trace-span-context
 createdAt: '2026-09-10T18:50:38.931Z'
-updatedAt: '2026-09-11T09:15:20.159Z'
+updatedAt: '2026-09-11T09:59:29.292Z'
 tags:
   - Logs
   - Trace
   - Span
   - Context
   - Observability
-publish: false
+publish: true
 type: blog
 summary: >-
   Distributes Observability helps us to trace a request as it moves across
   components, services in a distributed environment.
-previewImageSrc: ''
+previewImageSrc: /uploads/1789120592297-320396555-d0be6696-98b5-406b-ad5e-b45e929e226f.png
 publishAt: ''
+readingTime: 13 min read
 ---
 # Distributed Observability: Logs, Metrics, Traces, Spans, and Context
 
@@ -29,7 +30,8 @@ flowchart LR
     User["User / Client"]
     Gateway["API Gateway"]
     Order["Order Service"]
-    Payment["Payment Service"]
+    Pa![context-propagation-example.svg](/uploads/1789120639813-68103152-context-propagation-example.svg)
+yment["Payment Service"]
     Inventory["Inventory Service"]
     DB["Database"]
     PG["Payment Gateway"]
@@ -204,6 +206,9 @@ Most tracing backends visualize traces as a **waterfall**.
 - The width represents duration.
 - The nesting in the trace represents parent-child relationships.
 
+![waterfall-trace.svg](/uploads/1789120755925-67270389-waterfall-trace.svg)
+
+
 This allows to visually identify
 - downstream dependencies
 - sequential operations
@@ -248,6 +253,9 @@ For tracing, the important pieces include:
 ### Context Propagation
 
 The context has to cross a process and network boundary. **Context propagation** is the mechanism that moves context from one service or process to another.
+
+![context-propagation-example.svg](/uploads/1789120679119-923954648-context-propagation-example.svg)
+
 
 > OpenTelemetry uses **propagators** to serialize and deserialize this context when it is injected into or extracted from messages.
 

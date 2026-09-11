@@ -14,54 +14,54 @@
         ]
     },
     {
-        "id": "a33dd990-5a6b-4cf2-9cd6-23bd4eb63329",
+        "id": "4d87b338-7443-4f8a-a119-078e1e6035a5",
         "name": "Logs",
-        "color": "#12e0c4",
+        "color": "#cc3fe4",
         "count": 1,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739"
         ]
     },
     {
-        "id": "ee5eed2e-4fce-471f-a7d1-7efa550fe057",
+        "id": "73e4aca0-46f2-4c6a-ab21-5e1d5fe116a8",
         "name": "Trace",
-        "color": "#b97e2b",
+        "color": "#7cd1a4",
         "count": 1,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739"
         ]
     },
     {
-        "id": "d2c9728b-c9cc-4886-b53e-47403438c7ed",
+        "id": "24594c77-4228-4f8a-9d47-80dc3a165726",
         "name": "Span",
-        "color": "#571395",
+        "color": "#a900c3",
         "count": 1,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739"
         ]
     },
     {
-        "id": "fae5b7af-1378-4883-8b96-fcdb4dbb320d",
+        "id": "88992895-b735-4908-8d8d-e34317b4e636",
         "name": "Context",
-        "color": "#7a9e2e",
+        "color": "#b4a61a",
         "count": 1,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739"
         ]
     },
     {
-        "id": "392a35c6-c353-4309-b51f-deaa11efb6db",
+        "id": "766c49c8-b0c8-4255-8535-fdece281577f",
         "name": "Observability",
-        "color": "#1a6822",
+        "color": "#e4fb9d",
         "count": 1,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739"
         ]
     },
     {
-        "id": "d279a0cf-3c2b-472c-8e3b-6768ca7640fc",
+        "id": "dcea8c9a-61ef-4abb-a83d-64c334218961",
         "name": "deployed",
-        "color": "#9a14df",
+        "color": "#4c8dc7",
         "count": 2,
         "blogs": [
             "f8b34c36-0716-4cb2-8fee-3ed013a68260",
@@ -69,18 +69,18 @@
         ]
     },
     {
-        "id": "68669920-06b0-4408-8c96-c6becb9d9366",
+        "id": "6dedbab8-4bb7-43bc-91c7-1f424adcbf43",
         "name": "blog",
-        "color": "#b07ae9",
+        "color": "#cca0e9",
         "count": 1,
         "blogs": [
             "f54a0dd9-654e-40ae-a2af-af5416e77f83"
         ]
     },
     {
-        "id": "b136dd17-28a4-4312-b123-15bd7700006f",
+        "id": "04d3ee7e-edc9-42c7-96c2-7677c991e842",
         "name": "linux",
-        "color": "#85a5ea",
+        "color": "#eeb005",
         "count": 2,
         "blogs": [
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
@@ -88,9 +88,9 @@
         ]
     },
     {
-        "id": "2fcea516-e1e2-44a3-afef-a4a9cf1e0240",
+        "id": "dd3af644-3174-46f3-9d83-065179d82494",
         "name": "code",
-        "color": "#b9401a",
+        "color": "#a5cd7a",
         "count": 2,
         "blogs": [
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
@@ -98,9 +98,9 @@
         ]
     },
     {
-        "id": "c3dc24ba-460d-4cf4-af4f-f865dfdc0120",
+        "id": "3f3b1590-cdb5-4757-91dd-cf7f5bb406da",
         "name": "snippet",
-        "color": "#44a864",
+        "color": "#62d683",
         "count": 2,
         "blogs": [
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
@@ -108,27 +108,27 @@
         ]
     },
     {
-        "id": "9be60989-932f-4284-bb71-0a5706fb16c9",
+        "id": "735bc3c5-76b9-4475-a530-6dd67a6eeb35",
         "name": "javascript",
-        "color": "#3aca95",
+        "color": "#cb70a3",
         "count": 1,
         "blogs": [
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599"
         ]
     },
     {
-        "id": "2c7d3a19-d292-4762-a8a1-163265306409",
+        "id": "c072d6b4-73b1-4951-b789-ab12a022e46d",
         "name": "sort algorithms",
-        "color": "#306d3c",
+        "color": "#924a6d",
         "count": 1,
         "blogs": [
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599"
         ]
     },
     {
-        "id": "50659654-e8b2-42ce-ac3e-8b408e879994",
+        "id": "1f33b6d3-2011-40cf-9d41-b862bc1690eb",
         "name": "tar",
-        "color": "#87207e",
+        "color": "#0eb97c",
         "count": 1,
         "blogs": [
             "9aecebee-4b11-4014-a6aa-8c11aac01dd1"

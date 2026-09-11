@@ -18,7 +18,15 @@ export default function Mermaid({ chart }) {
 
     const renderChart = async () => {
       try {
-        const { svg: renderedSvg } = await mermaid.render(id.current, chart);
+        // Decode HTML entities that MDX or rehype might have escaped
+        const decodedChart = chart
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&amp;/g, '&');
+          
+        const { svg: renderedSvg } = await mermaid.render(id.current, decodedChart);
         setSvg(renderedSvg);
       } catch (err) {
         console.error('Mermaid render error:', err);
