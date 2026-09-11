@@ -1,4 +1,9 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import { siteMetadata } from "./site.config.mjs";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -72,6 +77,14 @@ const nextConfig = {
   },
   output: "standalone",
   experimental: {
+    outputFileTracingRoot: path.join(__dirname, '../'),
+    outputFileTracingIncludes: {
+      '/*': ['../blog-datastore/**/*'],
+      '/api/**/*': ['../blog-datastore/**/*'],
+      '/blogs/**/*': ['../blog-datastore/**/*'],
+      '/notes/**/*': ['../blog-datastore/**/*'],
+      '/admin/**/*': ['../blog-datastore/**/*'],
+    },
     serverComponentsExternalPackages: [
       "shiki",
       "rehype-pretty-code",
