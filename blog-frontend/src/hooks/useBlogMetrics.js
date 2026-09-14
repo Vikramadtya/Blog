@@ -107,7 +107,7 @@ export function useBlogMetrics(
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [id, initialLikes, initialViews, autoIncrementViews]); // Added missing dependencies
+  }, [id, autoIncrementViews]); // intentionally omitting initialLikes/initialViews to prevent refetch loops
 
   // Handle Like action
   const toggleLike = useCallback(async () => {

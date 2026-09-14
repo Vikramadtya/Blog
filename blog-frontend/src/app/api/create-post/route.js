@@ -1,3 +1,4 @@
+import { checkAdminAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
@@ -6,7 +7,9 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req) {
   // Only allow this endpoint in local development for security!
-  if (process.env.NODE_ENV !== "development") {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
+  if (false) {
     return NextResponse.json(
       { error: "This endpoint is only available in local development." },
       { status: 403 }

@@ -81,15 +81,20 @@ export default async function Post({ params, searchParams }) {
   if (!blogData) notFound();
   
   const parentSeriesSlug = blogData.series || blogData.slug;
-  const seriesChildren = await (await blogService.getAllPosts()).filter(p => p.series === parentSeriesSlug).sort((a,b) => a.seriesOrder - b.seriesOrder);
+  const allBlogsData = await blogService.getAllPosts();
+  const seriesChildren = allBlogsData.filter(p => p.series === parentSeriesSlug).sort((a,b) => a.seriesOrder - b.seriesOrder);
   const isSeries = seriesChildren.length > 0;
-  const seriesParentData = isSeries ? await blogService.getPostBySlug(parentSeriesSlug) : null;
+  let seriesParentData = null;
+  if (isSeries) {
+    try {
+      seriesParentData = await blogService.getPostBySlug(parentSeriesSlug);
+    } catch (e) {
+      console.warn("Failed to fetch series parent:", e);
+    }
+  }
 
-  const [content, allBlogsData] = await Promise.all([
-    blogData.content,
-    blogService.getAllPosts(),
-  ]);
-  const tableOfContent = null /* TOC is now handled differently or we can extract it on the client */;
+  const content = blogData.content;
+  // tableOfContent is now generated dynamically if needed, kept null here for StickyBar
 
   const jsonLd = {
     "@context": "https://schema.org",

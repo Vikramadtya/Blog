@@ -26,6 +26,8 @@ Start writing...`;
       await noteService.saveNoteRaw(targetPath, initialContent);
       return NextResponse.json({ success: true, targetPath });
     }
+    
+    return NextResponse.json({ success: false, error: "Invalid type" }, { status: 400 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

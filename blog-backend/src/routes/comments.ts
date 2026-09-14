@@ -4,8 +4,10 @@ import { getDb } from "../db";
 import { eq, desc } from "drizzle-orm";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
+import type { Bindings } from '../index';
+import { adminAuth } from '../middleware/auth';
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<{ Bindings: Bindings }>();
 
 const commentSchema = z.object({
   authorName: z.string().min(1).max(100),
@@ -59,9 +61,9 @@ app.post(
 );
 
 // Delete a comment (for moderation)
-app.delete("/:id", async (c) => {
+app.delete("/:id", adminAuth, async (c) => {
   const db = getDb(c.env.DATABASE_URL);
-  const id = c.req.param("id");
+  const id = c.req.param("id") as string;
 
   try {
     await db.delete(comments).where(eq(comments.id, id));

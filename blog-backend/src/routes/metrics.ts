@@ -9,14 +9,21 @@ import { metrics as otelMetrics } from '@opentelemetry/api';
 
 const metrics = new Hono<{ Bindings: Bindings }>();
 
-// Create OpenTelemetry counters
-const meter = otelMetrics.getMeter('blog-backend');
-const viewsCounter = meter.createCounter('blog.views.total', {
-  description: 'Total number of blog views',
-});
-const likesCounter = meter.createCounter('blog.likes.total', {
-  description: 'Total number of blog likes',
-});
+let viewsCounter: any = null;
+let likesCounter: any = null;
+
+function getCounters() {
+  if (!viewsCounter) {
+    const meter = otelMetrics.getMeter('blog-backend');
+    viewsCounter = meter.createCounter('blog.views.total', {
+      description: 'Total number of blog views',
+    });
+    likesCounter = meter.createCounter('blog.likes.total', {
+      description: 'Total number of blog likes',
+    });
+  }
+  return { viewsCounter, likesCounter };
+}
 
 // Strict validation schema for the blogId parameter
 const paramSchema = z.object({
@@ -54,7 +61,7 @@ metrics.post('/:blogId/views', zValidator('param', paramSchema), async (c) => {
     const { blogId } = c.req.valid('param');
 
     // Emit OTel Metric
-    viewsCounter.add(1, { blog_id: blogId });
+    getCounters().viewsCounter.add(1, { blog_id: blogId });
     console.log(`[Metrics API] Recorded 1 view for blogId: ${blogId}`);
 
     const metric = await db.insert(blogMetrics)
@@ -81,7 +88,7 @@ metrics.post('/:blogId/likes', zValidator('param', paramSchema), async (c) => {
     const { blogId } = c.req.valid('param');
 
     // Emit OTel Metric
-    likesCounter.add(1, { blog_id: blogId });
+    getCounters().likesCounter.add(1, { blog_id: blogId });
     console.log(`[Metrics API] Recorded 1 like for blogId: ${blogId}`);
 
     const metric = await db.insert(blogMetrics)

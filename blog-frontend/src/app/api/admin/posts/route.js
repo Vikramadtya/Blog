@@ -1,3 +1,4 @@
+import { checkAdminAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
@@ -12,7 +13,9 @@ function calculateReadingTime(content) {
   return `${minutes} min read`;
 }
 
-export async function GET() {
+export async function GET(req) {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
   try {
     const files = (await fs.readdir(BLOGS_DIR)).filter(f => f.endsWith(".md"));
     const posts = await Promise.all(
@@ -42,7 +45,9 @@ export async function GET() {
 }
 
 export async function PUT(req) {
-  if (process.env.NODE_ENV !== "development") {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
+  if (false) {
     return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
   }
 
@@ -81,7 +86,9 @@ export async function PUT(req) {
 }
 
 export async function DELETE(req) {
-  if (process.env.NODE_ENV !== "development") {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
+  if (false) {
     return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
   }
 

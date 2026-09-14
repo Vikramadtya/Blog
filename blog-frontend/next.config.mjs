@@ -8,7 +8,6 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   optimizeFonts: false,
   pageExtensions: ["js", "jsx", "mdx"],
   images: {
@@ -17,7 +16,7 @@ const nextConfig = {
         protocol: "https",
         hostname: siteMetadata.hostname,
         port: "",
-        pathname: "/images/**",
+        pathname: "/**",
       },
     ],
   },

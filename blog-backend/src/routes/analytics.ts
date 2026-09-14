@@ -1,11 +1,13 @@
 import { Hono } from "hono";
+import type { Bindings } from '../index';
+import { adminAuth } from '../middleware/auth';
 import { blogMetrics, subscribers, comments } from "../db/schema";
 import { getDb } from "../db";
 import { sql } from "drizzle-orm";
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<{ Bindings: Bindings }>();
 
-app.get("/", async (c) => {
+app.get("/", adminAuth, async (c) => {
   const db = getDb(c.env.DATABASE_URL);
 
   try {

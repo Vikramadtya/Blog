@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { getDb } from '../db';
 import { supportContacts } from '../db/schema';
 import type { Bindings } from '../index';
+import { adminAuth } from '../middleware/auth';
 
 const contact = new Hono<{ Bindings: Bindings }>();
 
@@ -53,7 +54,7 @@ contact.post('/', zValidator('json', contactSchema), async (c) => {
  * GET /contact
  * Retrieves all support contacts for the admin dashboard.
  */
-contact.get('/', async (c) => {
+contact.get('/', adminAuth, async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
     const allContacts = await db.select().from(supportContacts);

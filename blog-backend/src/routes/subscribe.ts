@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { getDb } from '../db';
 import { subscribers } from '../db/schema';
 import type { Bindings } from '../index';
+import { adminAuth } from '../middleware/auth';
 
 const subscribe = new Hono<{ Bindings: Bindings }>();
 
@@ -54,7 +55,7 @@ subscribe.post('/', zValidator('json', subscribeSchema), async (c) => {
  * GET /subscribe
  * Retrieves all subscribers for the admin dashboard.
  */
-subscribe.get('/', async (c) => {
+subscribe.get('/', adminAuth, async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
     const allSubscribers = await db.select().from(subscribers);

@@ -17,6 +17,7 @@ export type Bindings = {
   ALLOWED_ORIGIN: string;
   OTEL_EXPORTER_OTLP_ENDPOINT?: string;
   OTEL_EXPORTER_OTLP_HEADERS?: string;
+  ADMIN_SECRET?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -30,7 +31,7 @@ app.use('*', async (c, next) => {
   const corsMiddleware = cors({
     origin: allowedOrigin,
     allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'traceparent', 'tracestate'],
+    allowHeaders: ['Content-Type', 'traceparent', 'tracestate', 'Authorization'],
   });
   return corsMiddleware(c, next);
 });
@@ -47,25 +48,21 @@ export default {
   fetch: (request: Request, env: Bindings, ctx: ExecutionContext) => {
     // Only instrument if OTLP endpoint is provided
     if (env.OTEL_EXPORTER_OTLP_ENDPOINT) {
-      return instrument(
-        request,
-        env,
-        ctx,
-        {
-          config: (env) => {
-            return {
-              exporter: {
-                url: env.OTEL_EXPORTER_OTLP_ENDPOINT,
-                headers: env.OTEL_EXPORTER_OTLP_HEADERS 
-                  ? { Authorization: env.OTEL_EXPORTER_OTLP_HEADERS } 
-                  : undefined,
-              },
-              service: { name: 'blog-microservice' },
-            };
-          },
-        },
-        (req, env, ctx) => app.fetch(req, env, ctx)
+      const instrumentedApp = instrument(
+        app,
+        (env: Bindings) => {
+          return {
+            exporter: {
+              url: env.OTEL_EXPORTER_OTLP_ENDPOINT as string,
+              headers: env.OTEL_EXPORTER_OTLP_HEADERS 
+                ? { Authorization: env.OTEL_EXPORTER_OTLP_HEADERS } 
+                : undefined,
+            },
+            service: { name: 'blog-microservice' },
+          };
+        }
       );
+      return instrumentedApp.fetch!(request as any, env, ctx as any);
     }
     // Fallback to uninstrumented execution if missing configuration
     return app.fetch(request, env, ctx);

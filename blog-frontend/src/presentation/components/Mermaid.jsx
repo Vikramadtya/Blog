@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 
 export default function Mermaid({ chart }) {
   const [svg, setSvg] = useState('');
-  const id = useRef(`mermaid-${Math.random().toString(36).substring(2, 9)}`);
+  const id = useRef(`mermaid-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`);
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {

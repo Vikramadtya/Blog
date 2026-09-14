@@ -52,7 +52,7 @@ export default function BackendHealthCheck() {
     pollInterval = setInterval(checkHealth, 5000);
 
     return () => {
-      isChecking.current = false;
+      isChecking.current = true; // Prevent re-running in strict mode
       clearInterval(pollInterval);
       toast.dismiss(TOAST_ID);
     };

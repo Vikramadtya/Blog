@@ -1,3 +1,4 @@
+import { checkAdminAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { blogService } from "@/core";
@@ -7,7 +8,9 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 const MICROSERVICE_URL = process.env.NEXT_PUBLIC_MICROSERVICE_URL || "http://localhost:8787";
 
 export async function POST(req) {
-  if (process.env.NODE_ENV !== "development") {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
+  if (false) {
     return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
   }
 
@@ -65,7 +68,7 @@ export async function POST(req) {
 
     // 4. Send emails using Resend Batch API
     const emails = subscribers.map((sub) => ({
-      from: `${siteMetadata.title} <noreply@${siteMetadata.siteUrl.replace("https://", "")}>`, // Note: You need a verified domain in Resend
+      from: `${siteMetadata.title} <${process.env.EMAIL_FROM || "updates@neuralcook.com"}>`, // Note: You need a verified domain in Resend
       to: [sub.email],
       subject: `New Post: ${blog.title}`,
       html: html,

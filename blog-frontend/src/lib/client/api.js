@@ -45,7 +45,7 @@ async function get(url) {
     try {
       return await fetcher(url);
     } catch (e) {
-      lastError = e;
+      lastError = e; console.warn("API retry failed:", e);
     }
   }
   throw lastError;

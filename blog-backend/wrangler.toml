@@ -13,4 +13,3 @@ ALLOWED_ORIGIN = "https://www.neuralcook.com"
 
 # OpenTelemetry Exporter Endpoint (e.g. Grafana Cloud OTLP Gateway)
 # The Headers/API Key must be set via `wrangler secret put OTEL_EXPORTER_OTLP_HEADERS`
-OTEL_EXPORTER_OTLP_ENDPOINT = ""

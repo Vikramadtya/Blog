@@ -6,7 +6,7 @@ import Link from "next/link";
 import MarkdownPreview from "@/presentation/admin/MarkdownPreview";
 
 export default function EditPostPage({ params }) {
-  const { filename } = params;
+  const filename = decodeURIComponent(params.filename).replace(/^(\.\.\/|\.\.\\|\/|\\)+/, "");
   const router = useRouter();
 
   const [formData, setFormData] = useState({

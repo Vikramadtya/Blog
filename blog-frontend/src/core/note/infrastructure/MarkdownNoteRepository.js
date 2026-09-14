@@ -213,22 +213,24 @@ export class MarkdownNoteRepository {
   }
 
   async getNoteByRawPath(relativePath) {
-    const absolutePath = path.join(this.rootPath, relativePath);
+    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    const absolutePath = path.join(this.rootPath, normalizedPath);
     if (!absolutePath.startsWith(this.rootPath)) {
       throw new ValidationError("Invalid path traversal");
     }
 
     try {
       const content = await fs.readFile(absolutePath, "utf-8");
-      return { path: relativePath, content };
+      return { path: normalizedPath, content };
     } catch (err) {
-      if (err.code === "ENOENT") throw new NotFoundError("Note", relativePath);
+      if (err.code === "ENOENT") throw new NotFoundError("Note", normalizedPath);
       throw new InfrastructureError("Failed to read note file", err);
     }
   }
 
   async saveNoteRawPath(relativePath, content) {
-    const absolutePath = path.join(this.rootPath, relativePath);
+    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    const absolutePath = path.join(this.rootPath, normalizedPath);
     if (!absolutePath.startsWith(this.rootPath)) {
       throw new ValidationError("Invalid path traversal");
     }
@@ -241,7 +243,8 @@ export class MarkdownNoteRepository {
   }
 
   async deleteRawPath(relativePath) {
-    const absolutePath = path.join(this.rootPath, relativePath);
+    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    const absolutePath = path.join(this.rootPath, normalizedPath);
     if (!absolutePath.startsWith(this.rootPath)) {
       throw new ValidationError("Invalid path traversal");
     }
@@ -261,7 +264,8 @@ export class MarkdownNoteRepository {
   }
 
   async createDirectory(relativePath) {
-    const absolutePath = path.join(this.rootPath, relativePath);
+    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
+    const absolutePath = path.join(this.rootPath, normalizedPath);
     if (!absolutePath.startsWith(this.rootPath)) {
       throw new ValidationError("Invalid path traversal");
     }

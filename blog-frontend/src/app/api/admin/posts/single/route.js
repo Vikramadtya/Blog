@@ -1,3 +1,4 @@
+import { checkAdminAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
@@ -6,6 +7,8 @@ import matter from "gray-matter";
 const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
 
 export async function GET(req) {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
   const { searchParams } = new URL(req.url);
   const filename = searchParams.get("filename");
   if (!filename) return NextResponse.json({ error: "Filename is required" }, { status: 400 });

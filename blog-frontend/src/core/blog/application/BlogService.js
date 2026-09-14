@@ -43,23 +43,27 @@ export class BlogService {
   }
 
   async getAllPosts({ includeUnpublished = false } = {}) {
-    let posts = this._getCached("all_posts");
+    const isDev = process.env.NODE_ENV === "development";
+    const wantsAll = includeUnpublished || isDev;
+    const cacheKey = wantsAll ? "all_posts_admin" : "all_posts_public";
+    
+    let posts = this._getCached(cacheKey);
     
     if (!posts) {
       const rawPosts = await this.repository.findAll();
-      posts = await Promise.all(rawPosts.map(p => this._hydratePost(p)));
+      let hydrated = await Promise.all(rawPosts.map(p => this._hydratePost(p)));
       
-      // Sort by creation date descending
-      posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      hydrated.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       
-      this._setCache("all_posts", posts);
+      if (!wantsAll) {
+        hydrated = hydrated.filter(p => p.isPublished());
+      }
+      
+      posts = hydrated;
+      this._setCache(cacheKey, posts);
     }
 
-    if (!includeUnpublished && process.env.NODE_ENV !== "development") {
-      posts = posts.filter(p => p.isPublished());
-    }
-
-    return posts;
+    return posts.map(p => new Post(p.toJSON())); // Clone to prevent mutation
   }
 
   async getPublishedBlogs() {
@@ -73,20 +77,24 @@ export class BlogService {
   }
 
   async getPostBySlug(slug, { includeUnpublished = false } = {}) {
-    const cacheKey = `post_slug_${slug}`;
+    const isDev = process.env.NODE_ENV === "development";
+    const wantsAll = includeUnpublished || isDev;
+    const cacheKey = `post_slug_${slug}_${wantsAll ? 'admin' : 'public'}`;
+    
     let post = this._getCached(cacheKey);
 
     if (!post) {
       const rawPost = await this.repository.findBySlug(slug);
       post = await this._hydratePost(rawPost);
+      
+      if (!wantsAll && !post.isPublished()) {
+        return null;
+      }
+      
       this._setCache(cacheKey, post);
     }
 
-    if (!includeUnpublished && process.env.NODE_ENV !== "development" && !post.isPublished()) {
-      return null;
-    }
-
-    return post;
+    return post ? new Post(post.toJSON()) : null; // Clone to prevent mutation
   }
 
   async getAllTags() {

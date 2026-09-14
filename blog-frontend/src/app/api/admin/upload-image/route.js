@@ -1,9 +1,12 @@
+import { checkAdminAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
 export async function POST(req) {
-  if (process.env.NODE_ENV !== "development") {
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
+  if (false) {
     return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
   }
 
@@ -11,8 +14,16 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get("file");
 
-    if (!file) {
+    if (!file || typeof file === 'string') {
       return NextResponse.json({ error: "No file received." }, { status: 400 });
+    }
+
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json({ error: "Invalid file type. Only images are allowed." }, { status: 400 });
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "File too large. Maximum size is 5MB." }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
