@@ -94,7 +94,7 @@ export default async function Post({ params, searchParams }) {
   }
 
   const content = blogData.content;
-  // tableOfContent is now generated dynamically if needed, kept null here for StickyBar
+  const tableOfContent = null; // TOC is now generated dynamically if needed, kept null here for StickyBar
 
   const jsonLd = {
     "@context": "https://schema.org",
