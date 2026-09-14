@@ -1,3 +1,4 @@
+import { checkAdminAuth } from "@/lib/auth";
 import { noteService } from "@/core";
 import { NextResponse } from "next/server";
 export async function GET(request) {
