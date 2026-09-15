@@ -15,6 +15,8 @@ const Card = (props) => {
     description,
     tags,
     slug,
+    permalink,
+    isSeries,
     date,
     createdAt,
     likes: initialLikes,
@@ -23,8 +25,9 @@ const Card = (props) => {
     id,
     previewImageSrc,
     readingTime,
-  } = blog;
+  } = blog.permalink !== undefined ? blog : { ...blog, permalink: props.permalink, isSeries: props.isSeries };
 
+  const resolvedPermalink = permalink || slug;
   const displayDate = date || createdAt;
   const { likes, views } = useBlogMetrics(
     id,
@@ -68,10 +71,16 @@ const Card = (props) => {
         </div>
 
         {/* Title + Description */}
-        <Link href={`/blogs/${blog.permalink || slug}`} passHref>
+        <Link href={`/blogs/${resolvedPermalink}`} passHref>
           <div>
             <h2 className="text-xl flex items-center gap-2 font-semibold text-neutral-900 hover:underline dark:text-white">
               {title}
+              {isSeries && (
+                <span className="inline-flex items-center gap-1 rounded-md bg-violet-50 px-2 py-1 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-600/20 dark:bg-violet-500/10 dark:text-violet-400 dark:ring-violet-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+                  Series
+                </span>
+              )}
               {blog.publish === false && (
                 <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-500/10 dark:text-yellow-500 dark:ring-yellow-500/20">
                   Draft

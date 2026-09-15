@@ -17,7 +17,17 @@ export async function generateMetadata() {
 }
 
 export default async function Blog() {
-  const blogs = await blogService.getPublishedBlogs();
+  const allBlogs = await blogService.getPublishedBlogs();
+
+  // Only show top-level posts. Sub-pages (those with a `series` field pointing
+  // to another post's slug) are shown inside the parent series page, not here.
+  const blogs = allBlogs.filter(b => !b.series);
+
+  // Build a set of slugs that have children (i.e. are a series parent)
+  const seriesParentSlugs = new Set(
+    allBlogs.filter(b => b.series).map(b => b.series)
+  );
+
   const blogIdToMetadata = blogs.reduce((acc, data) => {
     acc[data.id] = data;
     return acc;
@@ -71,7 +81,7 @@ export default async function Blog() {
           </p>
           {/* Blog Grid */}
           <section className="mx-auto w-full max-w-7xl">
-            <ContentGrid blogs={blogs} blogIdToMetadata={blogIdToMetadata} />
+            <ContentGrid blogs={blogs} blogIdToMetadata={blogIdToMetadata} seriesParentSlugs={seriesParentSlugs} />
           </section>
         </section>
       </main>
