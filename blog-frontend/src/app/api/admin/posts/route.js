@@ -26,6 +26,8 @@ export async function GET(req) {
           filename: file,
           title: data.title || "Untitled",
           slug: data.slug || file.replace(".md", ""),
+          series: data.series || null,
+          seriesOrder: data.seriesOrder || 0,
           publish: !!data.publish,
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
