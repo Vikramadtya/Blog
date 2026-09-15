@@ -57,6 +57,7 @@ export async function PUT(req) {
       ? metadata.tags.split(",").map(t => t.trim()).filter(Boolean)
       : metadata.tags;
 
+    if (metadata.seriesOrder) metadata.seriesOrder = Number(metadata.seriesOrder);
     const newMetadata = {
       ...existingData,
       ...metadata,

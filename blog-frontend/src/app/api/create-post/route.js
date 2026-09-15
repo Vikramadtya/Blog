@@ -18,7 +18,7 @@ export async function POST(req) {
 
   try {
     const data = await req.json();
-    const { title, slug, summary, tags, type, previewImageSrc } = data;
+    const { title, slug, summary, tags, type, previewImageSrc, series, seriesOrder } = data;
 
     if (!title || !slug) {
       return NextResponse.json(
@@ -56,6 +56,8 @@ export async function POST(req) {
       publish: false,
       type: type || "blog",
       summary: summary || "",
+      series: series || "",
+      seriesOrder: seriesOrder ? Number(seriesOrder) : undefined,
       previewImageSrc: previewImageSrc || ""
     };
 

@@ -11,6 +11,8 @@ export default function EditPostPage({ params }) {
 
   const [formData, setFormData] = useState({
     title: "",
+    series: "",
+    seriesOrder: "",
     summary: "",
     tags: "",
     type: "blog",
@@ -37,6 +39,8 @@ export default function EditPostPage({ params }) {
         if (res.ok) {
           setFormData({
             title: data.metadata.title || "",
+            series: data.metadata.series || "",
+            seriesOrder: data.metadata.seriesOrder || "",
             summary: data.metadata.summary || "",
             tags: data.metadata.tags || "",
             type: data.metadata.type || "blog",
@@ -404,6 +408,32 @@ export default function EditPostPage({ params }) {
               </div>
 
               <div>
+              <div>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Series Slug (Optional)</label>
+                <input
+                  type="text"
+                  name="series"
+                  value={formData.series}
+                  onChange={handleChange}
+                  disabled={!isDev}
+                  placeholder="Parent post slug"
+                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Series Order (Optional)</label>
+                <input
+                  type="number"
+                  name="seriesOrder"
+                  value={formData.seriesOrder}
+                  onChange={handleChange}
+                  disabled={!isDev}
+                  placeholder="e.g. 1"
+                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                />
+              </div>
+
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Tags (comma separated)</label>
                 <input
                   type="text"

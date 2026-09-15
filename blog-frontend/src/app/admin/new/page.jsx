@@ -7,6 +7,8 @@ import { siteMetadata } from "../../../../site.config.mjs";
 export default function NewPostPage() {
   const [formData, setFormData] = useState({
     title: "",
+    series: "",
+    seriesOrder: "",
     slug: "",
     summary: "",
     tags: "blog",
@@ -52,7 +54,9 @@ export default function NewPostPage() {
         setStatus("success");
         setMessage(`Success! File created at: ${data.filePath}`);
         // Reset form
-        setFormData({ title: "", slug: "", summary: "", tags: "blog", type: "blog" });
+        setFormData({ title: "",
+    series: "",
+    seriesOrder: "", slug: "", summary: "", tags: "blog", type: "blog" });
       } else {
         setStatus("error");
         setMessage(data.error || "An error occurred.");
@@ -145,6 +149,40 @@ export default function NewPostPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
+            <div className="col-span-full">
+              <label htmlFor="series" className="block text-sm font-medium leading-6 text-foreground">
+                Series Slug (Optional)
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  name="series"
+                  id="series"
+                  placeholder="Parent post slug"
+                  value={formData.series}
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-0 py-1.5 px-3 text-foreground bg-background shadow-sm ring-1 ring-inset ring-border focus:ring-2 focus:ring-inset focus:ring-[#f05a28] sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="col-span-full">
+              <label htmlFor="seriesOrder" className="block text-sm font-medium leading-6 text-foreground">
+                Series Order (Optional)
+              </label>
+              <div className="mt-2">
+                <input
+                  type="number"
+                  name="seriesOrder"
+                  id="seriesOrder"
+                  placeholder="e.g. 1"
+                  value={formData.seriesOrder}
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-0 py-1.5 px-3 text-foreground bg-background shadow-sm ring-1 ring-inset ring-border focus:ring-2 focus:ring-inset focus:ring-[#f05a28] sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
             <label htmlFor="tags" className="block text-sm font-medium leading-6 text-foreground">
               Tags (comma separated)
             </label>
