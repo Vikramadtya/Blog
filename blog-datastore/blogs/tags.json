@@ -3,13 +3,14 @@
         "id": "00000000-0000-0000-0000-000000000000",
         "name": "all",
         "color": "#3498db",
-        "count": 6,
+        "count": 7,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739",
             "f8b34c36-0716-4cb2-8fee-3ed013a68260",
             "f54a0dd9-654e-40ae-a2af-af5416e77f83",
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
+            "f941b6f2-bac7-4b58-a9c6-313278c55928",
             "9aecebee-4b11-4014-a6aa-8c11aac01dd1"
         ]
     },
@@ -123,6 +124,24 @@
         "count": 1,
         "blogs": [
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599"
+        ]
+    },
+    {
+        "id": "2e69ea06-a47f-4c44-b6b3-745517d71918",
+        "name": "spec driven development",
+        "color": "#3843c4",
+        "count": 1,
+        "blogs": [
+            "f941b6f2-bac7-4b58-a9c6-313278c55928"
+        ]
+    },
+    {
+        "id": "6c0deb3f-21a6-43b8-af21-1fbb86fe599b",
+        "name": "ai",
+        "color": "#000c28",
+        "count": 1,
+        "blogs": [
+            "f941b6f2-bac7-4b58-a9c6-313278c55928"
         ]
     },
     {

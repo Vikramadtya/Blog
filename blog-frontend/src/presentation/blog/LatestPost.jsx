@@ -8,7 +8,7 @@ const LatestPost = ({
   title,
   description,
   tags,
-  slug,
+  slug, permalink,
   previewImageSrc,
   readingTime,
 }) => {
@@ -29,7 +29,7 @@ const LatestPost = ({
             <div className="flex-grow border-t border-gray-300 dark:border-gray-700" />
           </div>
 
-          <Link href={`/blogs/${slug}`}>
+          <Link href={`/blogs/${permalink || slug}`}>
             <h1 className="text-3xl font-bold leading-tight tracking-tight transition-all md:text-5xl">
               {title}
             </h1>
@@ -48,7 +48,7 @@ const LatestPost = ({
 
           {/* CTA Button */}
           <Link
-            href={`/blogs/${slug}`}
+            href={`/blogs/${permalink || slug}`}
             className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-primary/60"
           >
             {content.shared.readMore}

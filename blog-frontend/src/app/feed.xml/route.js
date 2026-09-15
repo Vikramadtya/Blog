@@ -7,7 +7,7 @@ export async function GET() {
 
   const items = blogs
     .map((blog) => {
-      const url = `${siteMetadata.siteUrl}/blogs/${blog.slug}`;
+      const url = `${siteMetadata.siteUrl}/blogs/${blog.permalink}`;
       return `
     <item>
       <title><![CDATA[${blog.title}]]></title>

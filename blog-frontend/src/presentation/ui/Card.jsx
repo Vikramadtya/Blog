@@ -68,7 +68,7 @@ const Card = (props) => {
         </div>
 
         {/* Title + Description */}
-        <Link href={`/blogs/${slug}`} passHref>
+        <Link href={`/blogs/${blog.permalink || slug}`} passHref>
           <div>
             <h2 className="text-xl flex items-center gap-2 font-semibold text-neutral-900 hover:underline dark:text-white">
               {title}

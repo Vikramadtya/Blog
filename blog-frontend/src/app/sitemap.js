@@ -4,7 +4,7 @@ import { siteMetadata } from "../../site.config.mjs";
 export default async function sitemap() {
   const blogs = await blogService.getAllPosts();
   const blogUrls = blogs.map((blog) => ({
-    url: `${siteMetadata.siteUrl}/blogs/${blog.slug}`,
+    url: `${siteMetadata.siteUrl}/blogs/${blog.permalink}`,
     lastModified: new Date(blog.updatedAt || blog.createdAt),
     changeFrequency: "monthly",
     priority: 0.8,

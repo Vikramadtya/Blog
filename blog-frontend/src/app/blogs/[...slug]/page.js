@@ -28,13 +28,15 @@ import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
 // Static params for SSG
 export async function generateStaticParams() {
   const blogs = await blogService.getAllPosts();
-  return blogs.map((blog) => ({ slug: blog.slug }));
+  return blogs.map((blog) => ({ slug: blog.permalink.split("/") }));
 }
 
 // SEO metadata generation
 export async function generateMetadata({ params, searchParams }) {
+  const slugParam = params.slug;
+  const slug = Array.isArray(slugParam) ? slugParam[slugParam.length - 1] : slugParam;
   const isPreview = searchParams?.preview === 'true';
-  const blogData = await blogService.getPostBySlug(params.slug, { includeUnpublished: isPreview });
+  const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
   if (!blogData) return {};
 
   // Use dynamic OG if preview is missing
@@ -48,7 +50,7 @@ export async function generateMetadata({ params, searchParams }) {
     openGraph: {
       title: blogData.title,
       description: blogData.description,
-      url: `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
+      url: `${siteMetadata.siteUrl}/blogs/${blogData.permalink}`,
       siteName: siteMetadata.title,
       locale: siteMetadata.locale,
       type: "article",
@@ -64,7 +66,7 @@ export async function generateMetadata({ params, searchParams }) {
       images: [ogImageUrl],
     },
     alternates: {
-      canonical: `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
+      canonical: `${siteMetadata.siteUrl}/blogs/${blogData.permalink}`,
     },
   };
 }
@@ -74,7 +76,8 @@ import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvide
 
 // Main blog post page
 export default async function Post({ params, searchParams }) {
-  const { slug } = params;
+  const { slug: slugParam } = params;
+  const slug = Array.isArray(slugParam) ? slugParam[slugParam.length - 1] : slugParam;
   const isPreview = searchParams?.preview === 'true';
 
   const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
@@ -125,7 +128,7 @@ export default async function Post({ params, searchParams }) {
     wordCount: content.split(/\s+/).length,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
+      "@id": `${siteMetadata.siteUrl}/blogs/${blogData.permalink}`,
     },
   };
 
@@ -149,7 +152,7 @@ export default async function Post({ params, searchParams }) {
         "@type": "ListItem",
         position: 3,
         name: blogData.title,
-        item: `${siteMetadata.siteUrl}/blogs/${blogData.slug}`,
+        item: `${siteMetadata.siteUrl}/blogs/${blogData.permalink}`,
       },
     ],
   };
@@ -231,7 +234,7 @@ export default async function Post({ params, searchParams }) {
         <AuthorBio />
 
         {/* Sticky TOC / Like-Share bar */}
-        <StickyBar blogSlug={blogData.slug} title={blogData.title} tableOfContent={tableOfContent} />
+        <StickyBar blogSlug={blogData.permalink} title={blogData.title} tableOfContent={tableOfContent} />
 
         {/* Related Posts */}
         <RelatedPosts
@@ -248,7 +251,7 @@ export default async function Post({ params, searchParams }) {
         {siteMetadata.features.socialShare && (
           <ShareBar
             className="mb-10"
-            shareUrl={`${siteMetadata.siteUrl}/blogs/${blogData.slug}`}
+            shareUrl={`${siteMetadata.siteUrl}/blogs/${blogData.permalink}`}
             title={blogData.title}
           />
         )}

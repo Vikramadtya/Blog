@@ -46,6 +46,10 @@ export class Post {
     this.content = content || "";
   }
 
+  get permalink() {
+    return this.series ? `${this.series}/${this.slug}` : this.slug;
+  }
+
   isPublished() {
     return this.publish === true;
   }
@@ -75,6 +79,7 @@ export class Post {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       slug: this.slug,
+      permalink: this.permalink,
       type: this.type,
       publish: this.publish,
       tags: this.tags,

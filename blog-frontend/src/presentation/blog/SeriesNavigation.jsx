@@ -38,7 +38,7 @@ export default function SeriesNavigation({ parent, seriesParts, currentSlug }) {
           return (
             <Link
               key={part.slug}
-              href={`/blogs/${part.slug}`}
+              href={`/blogs/${part.permalink || part.slug}`}
               className={`block rounded-lg px-4 py-3 transition-colors ${
                 isActive 
                   ? "bg-muted font-medium text-foreground" 

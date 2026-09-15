@@ -38,7 +38,7 @@ export async function POST(req) {
       throw new Error("Blog not found");
     }
 
-    const postUrl = `${siteMetadata.siteUrl}/blogs/${blog.slug}`;
+    const postUrl = `${siteMetadata.siteUrl}/blogs/${blog.permalink}`;
     const coverImage = blog.previewImageSrc 
       ? `${siteMetadata.siteUrl}${blog.previewImageSrc}`
       : `${siteMetadata.siteUrl}/api/og?title=${encodeURIComponent(blog.title)}&readingTime=${encodeURIComponent(blog.readingTime || "")}`;

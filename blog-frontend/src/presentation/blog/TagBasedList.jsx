@@ -67,7 +67,7 @@ const TagBasedList = ({ tags, tagToMetadataBlog, allBlogs }) => {
                 </div>
 
                 <a
-                  href={`/blogs/${blog.slug}`}
+                  href={`/blogs/${blog.permalink || blog.slug}`}
                   className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
                 >
                   {content.shared.readMore} →
