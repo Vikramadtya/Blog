@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { siteMetadata } from "../../../../site.config.mjs";
 
 export default function NewPostPage() {
+  const searchParams = useSearchParams();
+  const initialSeries = searchParams ? searchParams.get("series") || "" : "";
   const [formData, setFormData] = useState({
     title: "",
-    series: "",
+    series: initialSeries,
     seriesOrder: "",
     slug: "",
     summary: "",
@@ -55,7 +57,7 @@ export default function NewPostPage() {
         setMessage(`Success! File created at: ${data.filePath}`);
         // Reset form
         setFormData({ title: "",
-    series: "",
+    series: initialSeries,
     seriesOrder: "", slug: "", summary: "", tags: "blog", type: "blog" });
       } else {
         setStatus("error");
