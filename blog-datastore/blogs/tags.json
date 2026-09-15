@@ -3,10 +3,11 @@
         "id": "00000000-0000-0000-0000-000000000000",
         "name": "all",
         "color": "#3498db",
-        "count": 7,
+        "count": 8,
         "blogs": [
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739",
             "f8b34c36-0716-4cb2-8fee-3ed013a68260",
+            "720c7148-719a-4e99-a35e-892114cb3b80",
             "f54a0dd9-654e-40ae-a2af-af5416e77f83",
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
@@ -67,6 +68,24 @@
         "blogs": [
             "f8b34c36-0716-4cb2-8fee-3ed013a68260",
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599"
+        ]
+    },
+    {
+        "id": "f5635fcc-e621-4528-b560-6dbc440e2e11",
+        "name": "speckit",
+        "color": "#49493b",
+        "count": 1,
+        "blogs": [
+            "720c7148-719a-4e99-a35e-892114cb3b80"
+        ]
+    },
+    {
+        "id": "3538387d-0a70-498c-bc64-7f28eccdb563",
+        "name": "github",
+        "color": "#c11be3",
+        "count": 1,
+        "blogs": [
+            "720c7148-719a-4e99-a35e-892114cb3b80"
         ]
     },
     {

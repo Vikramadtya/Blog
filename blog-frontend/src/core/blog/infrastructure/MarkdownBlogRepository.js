@@ -57,18 +57,27 @@ export class MarkdownBlogRepository {
   }
 
   async findBySlug(slug) {
-    // In our markdown setup, the filename (id) is usually the slug.
-    // However, the frontmatter slug might override it.
-    // To be perfectly robust, we search all posts if we can't find it directly by filename.
+    // slug may be:
+    //   - a plain slug:     "github-spec-kit"
+    //   - a full permalink: "spec-driven-development/github-spec-kit"
+    // We always resolve to the leaf slug for file lookup.
+    const leafSlug = slug.includes("/") ? slug.split("/").pop() : slug;
+
+    // Fast path: try direct filename match on the leaf slug
     try {
-      const directPost = await this._readFile(`${slug}.md`);
-      if (directPost.slug === slug) return directPost;
+      const directPost = await this._readFile(`${leafSlug}.md`);
+      if (directPost.slug === leafSlug || directPost.slug === slug) return directPost;
     } catch (err) {
       // Not found directly by filename, fallback to scanning
     }
 
+    // Fallback: scan all posts matching by slug or by permalink (series/slug)
     const allPosts = await this.findAll();
-    const post = allPosts.find(p => p.slug === slug);
+    const post = allPosts.find(p =>
+      p.slug === leafSlug ||
+      p.slug === slug ||
+      (p.series ? `${p.series}/${p.slug}` : p.slug) === slug
+    );
     if (!post) throw new NotFoundError("Post", slug);
     return post;
   }

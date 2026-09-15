@@ -34,7 +34,8 @@ export async function generateStaticParams() {
 // SEO metadata generation
 export async function generateMetadata({ params, searchParams }) {
   const slugParam = params.slug;
-  const slug = Array.isArray(slugParam) ? slugParam[slugParam.length - 1] : slugParam;
+  // Join all segments to form the full permalink (e.g. "parent/child")
+  const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
   const isPreview = searchParams?.preview === 'true';
   const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
   if (!blogData) return {};
@@ -77,7 +78,8 @@ import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvide
 // Main blog post page
 export default async function Post({ params, searchParams }) {
   const { slug: slugParam } = params;
-  const slug = Array.isArray(slugParam) ? slugParam[slugParam.length - 1] : slugParam;
+  // Join all segments to form the full permalink (e.g. "parent/child")
+  const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
   const isPreview = searchParams?.preview === 'true';
 
   const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
