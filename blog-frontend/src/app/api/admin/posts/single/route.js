@@ -57,13 +57,25 @@ export async function PUT(req) {
       ? metadata.tags.split(",").map(t => t.trim()).filter(Boolean)
       : metadata.tags;
 
-    if (metadata.seriesOrder) metadata.seriesOrder = Number(metadata.seriesOrder);
+    // Cast seriesOrder to number; remove series fields if empty to avoid YAML undefined errors
+    if (metadata.seriesOrder) {
+      metadata.seriesOrder = Number(metadata.seriesOrder);
+    } else {
+      delete metadata.seriesOrder;
+    }
+    if (!metadata.series) {
+      delete metadata.series;
+    }
+
     const newMetadata = {
       ...existingData,
       ...metadata,
       tags: tagsArray,
       updatedAt: new Date().toISOString()
     };
+
+    // Remove any undefined values that would crash js-yaml
+    Object.keys(newMetadata).forEach(k => newMetadata[k] === undefined && delete newMetadata[k]);
 
     const fileContent = matter.stringify(content, newMetadata);
     await fs.writeFile(filePath, fileContent, "utf8");

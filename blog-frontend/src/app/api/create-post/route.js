@@ -56,10 +56,14 @@ export async function POST(req) {
       publish: false,
       type: type || "blog",
       summary: summary || "",
-      series: series || "",
-      seriesOrder: seriesOrder ? Number(seriesOrder) : undefined,
       previewImageSrc: previewImageSrc || ""
     };
+
+    // Only add series fields when actually provided — undefined/empty values crash js-yaml
+    if (series) {
+      metadata.series = series;
+      metadata.seriesOrder = seriesOrder ? Number(seriesOrder) : 1;
+    }
 
     const content = `# ${title}\n\nStart typing here...`;
     const fileContent = matter.stringify(content, metadata);

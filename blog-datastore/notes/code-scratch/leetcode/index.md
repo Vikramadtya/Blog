@@ -18,60 +18,40 @@ First analyse my submission & complexity , tell me where i can improve. If there
 
 Problem Link :
 
-https://leetcode.com/problems/valid-parentheses/?envType=company&envId=linkedin&favoriteSlug=linkedin-all
+https://takeuforward.org/practice/dsa/maximum-consecutive-ones?category=fundamentals&source=strivers-a2z-dsa-sheet
 
 Problem Statement:
 
-Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+Given a binary array nums, return the maximum number of consecutive 1s in the array.
 
-An input string is valid if:
-
-Open brackets must be closed by the same type of brackets.
-Open brackets must be closed in the correct order.
-Every close bracket has a corresponding open bracket of the same type.
-
- 
-
+A binary array is an array that contains only 0s and 1s.
 
 Candidate Solution:
 
 ```java
 class Solution {
-    public boolean isValid(String s) {
-        if( s == null || s.isEmpty() ) return true;
+    public int findMaxConsecutiveOnes(int[] nums) {
+        if(nums == null || nums.length == 0) return -0;
 
-        // if length is odd its not valid
-        if(s.length()%2 != 0) return false;
-
-        Stack<Character> stk = new Stack<>();
-
-        for(char c : s.toCharArray()) {
-            if(c == '(' || c == '{' || c == '[') {
-                stk.push(c);
-            } else if(c == ')') {
-                if(stk.isEmpty()) return false;
-                if(stk.peek() != '(') return false;
-                stk.pop();
-            } else if(c == '}') {
-                if(stk.isEmpty()) return false;
-                if(stk.peek() != '{') return false;
-                stk.pop();
-            } else if(c == ']') {
-                if(stk.isEmpty()) return false;
-                if(stk.peek() != '[') return false;
-                stk.pop();
+        int count = 0, max = 0;
+        
+        for(int i = 0; i < nums.length; ++i) {
+            if(nums[i] == 1) {
+                count++;
+                max = Math.max(count,max);
+            } else {
+                count = 0;
             }
         }
 
-
-        return stk.isEmpty();
+        return max;
     }
 }
 ```
 
 Claimed Complexity:
 
-Space Complexity : O(n)
+Space Complexity : O(1)
 Time Complexity : O(n)
 
 ---
