@@ -50,22 +50,6 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        brand: {
-          DEFAULT: "var(--brand)",
-          2: "var(--brand-2)",
-        },
-        ink: {
-          DEFAULT: "var(--ink)",
-          muted: "var(--ink-muted)",
-        },
-        line: "var(--line)",
-        surface: "var(--surface)",
-      },
-      fontFamily: {
-        sans: ["Manrope", "sans-serif"],
-        serif: ["Playfair Display", "Georgia", "serif"],
-        display: ["Syne", "sans-serif"],
-        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",

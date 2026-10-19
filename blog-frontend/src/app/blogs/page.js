@@ -1,11 +1,8 @@
 import React from "react";
+import ContentGrid from "@/presentation/ui/ContentGrid";
 import { blogService } from "@/core";
-import { siteMetadata } from "../../../site.config.mjs";
-import { buildBlogIndexData } from "@/lib/blogCategories";
-import BlogExplorerSidebar from "@/presentation/blog/BlogExplorerSidebar";
-import BlogIndexHero from "@/presentation/blog/BlogIndexHero";
-import BlogCategorizedView from "@/presentation/blog/BlogCategorizedView";
 
+import { siteMetadata } from "../../../site.config.mjs";
 const { content } = siteMetadata;
 
 export async function generateMetadata() {
@@ -20,16 +17,23 @@ export async function generateMetadata() {
 
 export default async function Blog() {
   const isDev = process.env.NODE_ENV === "development";
-  // In development, show all posts (including drafts with Draft badges); in prod, show published
-  const allPosts = isDev
+  const allBlogs = isDev
     ? await blogService.getAllPosts({ includeUnpublished: true })
     : await blogService.getPublishedBlogs();
 
-  const {
-    categories,
-    totalPosts,
-    totalSeries,
-  } = buildBlogIndexData(allPosts);
+  // Only show top-level posts. Sub-pages (those with a `series` field pointing
+  // to another post's slug) are shown inside the parent series page, not here.
+  const blogs = allBlogs.filter((b) => !b.series);
+
+  // Build a set of slugs that have children (i.e. are a series parent)
+  const seriesParentSlugs = new Set(
+    allBlogs.filter((b) => b.series).map((b) => b.series)
+  );
+
+  const blogIdToMetadata = blogs.reduce((acc, data) => {
+    acc[data.id] = data;
+    return acc;
+  }, {});
 
   const collectionJsonLd = {
     "@context": "https://schema.org",
@@ -68,22 +72,25 @@ export default async function Blog() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
       />
-
-      <div className="blog-page-layout">
-        {/* Left: Code-Editor File Tree Explorer */}
-        <BlogExplorerSidebar categories={categories} />
-
-        {/* Main: Hero + Terminal Filter Chips + Categorized Series Grid */}
-        <main className="blog-index min-w-0">
-          <BlogIndexHero
-            totalPosts={totalPosts}
-            totalSeries={totalSeries}
-            totalCategories={categories.length}
-          />
-
-          <BlogCategorizedView categories={categories} />
-        </main>
-      </div>
+      <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">
+        {/* Header Section */}
+        <section className="mx-auto mb-12 w-full max-w-5xl">
+          <h1 className="text-4xl font-bold tracking-tight text-primary dark:text-white sm:text-5xl md:text-6xl">
+            {content.blogs.title}
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+            {content.blogs.description}
+          </p>
+          {/* Blog Grid */}
+          <section className="mx-auto w-full max-w-7xl">
+            <ContentGrid
+              blogs={blogs}
+              blogIdToMetadata={blogIdToMetadata}
+              seriesParentSlugs={seriesParentSlugs}
+            />
+          </section>
+        </section>
+      </main>
     </>
   );
 }
