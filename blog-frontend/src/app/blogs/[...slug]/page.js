@@ -7,6 +7,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import { Separator } from "@/presentation/ui/Separator";
 import BlogHero from "@/presentation/blog/BlogHero";
@@ -204,6 +205,12 @@ export default async function Post({ params, searchParams }) {
       <ScrollProgressBar />
 
       <article className="relative mx-auto max-w-5xl px-6 py-12 md:px-12 lg:px-20">
+        <Link
+          href="/blogs"
+          className="mb-8 inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-primary transition-opacity hover:opacity-80 hover:underline"
+        >
+          &larr; All posts
+        </Link>
         {/* Cover Image */}
         {blogData.previewImageSrc && (
           <div className="mb-12 w-full overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">

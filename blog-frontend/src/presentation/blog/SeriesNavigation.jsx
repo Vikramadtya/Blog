@@ -16,46 +16,45 @@ export default function SeriesNavigation({ parent, seriesParts, currentSlug }) {
     <div className="my-10 rounded-xl border border-border bg-card p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <span className="mb-2 inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+          <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-primary/10 px-2.5 py-0.5 text-xs font-mono font-semibold text-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="mr-1"
             >
               <path d="M4 9h16" />
               <path d="M4 15h16" />
               <path d="M10 3L8 21" />
               <path d="M16 3l-2 18" />
             </svg>
-            Series
+            SERIES
           </span>
-          <h3 className="text-lg font-bold tracking-tight text-foreground">
+          <h3 className="font-display text-xl font-bold tracking-tight text-foreground">
             {parent.title}
           </h3>
         </div>
-        <div className="text-sm font-medium text-muted-foreground">
+        <div className="text-xs font-mono font-medium text-muted-foreground">
           {currentIndex + 1} / {allParts.length} Parts
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {allParts.map((part, idx) => {
           const isActive = part.slug === currentSlug;
           return (
             <Link
               key={part.slug}
               href={`/blogs/${part.permalink || part.slug}`}
-              className={`block rounded-lg px-4 py-3 transition-colors ${
+              className={`block rounded-lg px-4 py-2.5 transition-colors border ${
                 isActive
-                  ? "bg-muted font-medium text-foreground"
-                  : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  ? "bg-primary/10 border-primary/30 font-semibold text-primary"
+                  : "bg-transparent border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               }`}
             >
               <div className="flex items-center justify-between">

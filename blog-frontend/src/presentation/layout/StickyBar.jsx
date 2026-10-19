@@ -22,7 +22,7 @@ const StickyBar = ({ blogSlug, title, tableOfContent }) => {
 
   return (
     <div className="sticky bottom-10 z-30 hidden w-full items-center justify-center md:flex">
-      <div className="bg-surface dark:bg-surfaceDark/70 flex items-center gap-4 rounded-full border border-primary/30 px-6 py-3 shadow-md backdrop-blur-md transition-all">
+      <div className="bg-card/95 border border-border flex items-center gap-4 rounded-full px-6 py-2.5 shadow-lg backdrop-blur-md transition-all">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

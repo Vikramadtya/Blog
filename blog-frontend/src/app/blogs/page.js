@@ -72,23 +72,31 @@ export default async function Blog() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
       />
-      <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">
-        {/* Header Section */}
-        <section className="mx-auto mb-12 w-full max-w-5xl">
-          <h1 className="text-4xl font-bold tracking-tight text-primary dark:text-white sm:text-5xl md:text-6xl">
-            {content.blogs.title}
+      <main className="min-h-screen w-full bg-background px-6 pt-16 md:px-12 lg:px-24 xl:px-32">
+        {/* Header Section with Editorial & Terminal Aesthetic */}
+        <section className="mx-auto mb-12 w-full max-w-5xl border-b border-dashed border-border pb-8">
+          <p className="mb-2 text-xs font-mono text-muted-foreground">
+            <span className="text-primary font-semibold">$ cd ~/blog</span>
+          </p>
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground">
+            {content.blogs.title || "Notes from the lab."}
           </h1>
-          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-lg leading-relaxed text-muted-foreground font-sans max-w-3xl">
             {content.blogs.description}
           </p>
-          {/* Blog Grid */}
-          <section className="mx-auto w-full max-w-7xl">
-            <ContentGrid
-              blogs={blogs}
-              blogIdToMetadata={blogIdToMetadata}
-              seriesParentSlugs={seriesParentSlugs}
-            />
-          </section>
+          <p className="mt-4 text-xs font-mono text-muted-foreground">
+            [{blogs.length} posts
+            {seriesParentSlugs.size > 0 && ` · ${seriesParentSlugs.size} series`}]
+          </p>
+        </section>
+
+        {/* Blog Grid */}
+        <section className="mx-auto w-full max-w-7xl">
+          <ContentGrid
+            blogs={blogs}
+            blogIdToMetadata={blogIdToMetadata}
+            seriesParentSlugs={seriesParentSlugs}
+          />
         </section>
       </main>
     </>

@@ -25,7 +25,9 @@ const Card = (props) => {
     id,
     previewImageSrc,
     readingTime,
-  } = blog.permalink !== undefined ? blog : { ...blog, permalink: props.permalink, isSeries: props.isSeries };
+  } = blog.permalink !== undefined
+    ? blog
+    : { ...blog, permalink: props.permalink, isSeries: props.isSeries };
 
   const resolvedPermalink = permalink || slug;
   const displayDate = date || createdAt;
@@ -33,15 +35,16 @@ const Card = (props) => {
     id,
     initialLikes,
     initialViews,
-    false,
+    false
   );
   const sourceUrl = siteMetadata.siteRepo
     ? `${siteMetadata.siteRepo}/blob/main/blog-datastore/blogs/${slug}.md`
     : null;
+
   return (
-    <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900">
+    <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:border-primary/60 hover:shadow-md">
       {previewImageSrc && (
-        <div className="relative aspect-video w-full overflow-hidden">
+        <div className="relative aspect-video w-full overflow-hidden border-b border-border">
           <Image
             src={previewImageSrc}
             alt={title}
@@ -56,15 +59,15 @@ const Card = (props) => {
 
       <div className="flex flex-col justify-between p-5">
         {/* Blog Meta Header */}
-        <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
-          <span className="italic">#{blogNumber}</span>
+        <div className="mb-2.5 flex items-center justify-between text-xs font-mono text-muted-foreground">
+          <span className="font-semibold text-primary">#{blogNumber}</span>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Icon kind="heart" className="h-4 w-4 text-rose-500" />
+            <div className="flex items-center gap-1" title="Likes">
+              <Icon kind="heart" className="h-3.5 w-3.5 text-rose-500" />
               <span>{likes ?? 0}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Icon kind="eye" className="h-4 w-4 text-indigo-500" />
+            <div className="flex items-center gap-1" title="Views">
+              <Icon kind="eye" className="h-3.5 w-3.5 text-primary" />
               <span>{views ?? 0}</span>
             </div>
           </div>
@@ -72,39 +75,58 @@ const Card = (props) => {
 
         {/* Title + Description */}
         <Link href={`/blogs/${resolvedPermalink}`} passHref>
-          <div>
-            <h2 className="text-xl flex items-center gap-2 font-semibold text-neutral-900 hover:underline dark:text-white">
+          <div className="group cursor-pointer">
+            <h2 className="font-display text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
               {title}
               {isSeries && (
-                <span className="inline-flex items-center gap-1 rounded-md bg-violet-50 px-2 py-1 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-600/20 dark:bg-violet-500/10 dark:text-violet-400 dark:ring-violet-500/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+                <span className="ml-2 inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-mono font-medium text-primary border border-primary/20">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M8 6h13" />
+                    <path d="M8 12h13" />
+                    <path d="M8 18h13" />
+                    <path d="M3 6h.01" />
+                    <path d="M3 12h.01" />
+                    <path d="M3 18h.01" />
+                  </svg>
                   Series
                 </span>
               )}
               {blog.publish === false && (
-                <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-500/10 dark:text-yellow-500 dark:ring-yellow-500/20">
+                <span className="ml-2 inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-mono font-medium text-amber-700 dark:text-amber-400 border border-amber-500/20">
                   Draft
                 </span>
               )}
             </h2>
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground font-sans line-clamp-3">
               {description}
             </p>
           </div>
         </Link>
 
         {/* Tags */}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-1.5">
           {tags.map((tag) => (
             <Tag key={tag.id} text={tag.name} color={tag.color} id={tag.id} />
           ))}
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex items-center justify-between border-t pt-4 text-sm text-muted-foreground dark:border-neutral-700">
+        <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-xs font-mono text-muted-foreground">
           {sourceUrl ? (
             <Link href={sourceUrl} passHref>
-              <span className="hover:underline">View Source</span>
+              <span className="hover:text-primary transition-colors hover:underline">
+                View Source
+              </span>
             </Link>
           ) : (
             <span />
@@ -112,7 +134,7 @@ const Card = (props) => {
           {readingTime && (
             <div className="flex items-center gap-1">
               <Icon kind="clock" className="h-3 w-3" />
-              <span className="text-xs">{readingTime}</span>
+              <span>{readingTime}</span>
             </div>
           )}
           <span>{dayjs(displayDate).format("MMM D, YYYY")}</span>
