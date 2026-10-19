@@ -197,3 +197,52 @@ html.dark pre[data-theme*=" "] span {
   background: var(--line);
   border-radius: 4px;
 }
+
+/* Table Styling & KaTeX alignment */
+.prose table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.prose table thead th {
+  padding: 0.85rem 1.5rem !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--line) !important;
+  border-right: 1px solid var(--line) !important;
+}
+
+.prose table thead th:last-child {
+  border-right: none !important;
+}
+
+.prose table tbody td {
+  padding: 0.95rem 1.5rem !important;
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--line) !important;
+  border-right: 1px solid var(--line) !important;
+  vertical-align: middle !important;
+}
+
+.prose table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+.prose table tbody td:last-child {
+  border-right: none !important;
+}
+
+/* KaTeX table cell display math reset: prevents 1em vertical gap & awkward centering */
+.prose table .katex-display,
+table .katex-display {
+  display: inline-block !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+.prose table .katex,
+table .katex {
+  font-size: 1.05em;
+}
+

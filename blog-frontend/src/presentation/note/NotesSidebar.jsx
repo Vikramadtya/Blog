@@ -10,18 +10,16 @@ function TreeNode({ node, bookSlug, level = 0 }) {
   if (node.type === "file") {
     const href = `/notes/${bookSlug}/${node.path.join("/")}`;
     const isActive = pathname === href;
-    
-    // In the image, root files (About) are bold, child files are lighter
     const isRoot = level === 0;
     
     return (
-      <div className={`${isRoot ? "mt-6 mb-2" : "my-2"}`}>
+      <div className={isRoot ? "mb-2" : "my-0.5"}>
         <Link 
           href={href}
-          className={`block text-sm transition-colors ${
+          className={`block text-sm py-1.5 px-3 rounded-lg transition-colors leading-snug ${
             isActive 
-              ? "text-blue-600 font-semibold dark:text-blue-400" 
-              : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+              ? "bg-blue-50/80 font-semibold text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" 
+              : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/60 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-zinc-800/40"
           } ${isRoot ? "font-semibold" : ""}`}
         >
           {node.title}
@@ -37,12 +35,12 @@ function TreeNode({ node, bookSlug, level = 0 }) {
   });
 
   return (
-    <div className="mt-8 mb-2">
-      <div className="text-xs font-bold tracking-wider text-gray-900 dark:text-gray-300 uppercase mb-3">
+    <div className={level === 0 ? "mt-6 mb-2" : "mt-4 mb-2 ml-1 pl-2 border-l border-gray-100 dark:border-zinc-800/60"}>
+      <div className="px-3 text-xs font-bold tracking-wider text-gray-900 dark:text-gray-300 uppercase mb-2">
         {node.title}
       </div>
       
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         {sortedChildren.map((child, idx) => (
           <TreeNode key={idx} node={child} bookSlug={bookSlug} level={level + 1} />
         ))}

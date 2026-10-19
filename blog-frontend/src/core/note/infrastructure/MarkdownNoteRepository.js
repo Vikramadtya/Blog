@@ -17,6 +17,14 @@ export class MarkdownNoteRepository {
       .replace(/(^-|-$)/g, "");
   }
 
+  _toTitleCase(str) {
+    return str
+      .replace(/[-_]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
   async getTree(bookSlug) {
     const bookDir = path.join(this.rootPath, bookSlug);
 
@@ -59,31 +67,51 @@ export class MarkdownNoteRepository {
             });
           }
         } else {
-          let title = entry.name.replace(/\.md$/, "").replace(/^[0-9.-]+\s*/, "");
           let sno = 999999;
-          
+          const match = entry.name.match(/^([0-9]+)(?:[\.\-\s]|$)/);
+          if (match) sno = parseInt(match[1], 10);
+
+          let title = "";
           try {
              const content = await fs.readFile(fullPath, 'utf-8');
              const parsed = matter(content);
              
-             // Extract title or name
-             if (parsed.data.title) title = parsed.data.title;
-             else if (parsed.data.name) title = parsed.data.name;
+             // Extract title or name from frontmatter
+             if (parsed.data.title) title = String(parsed.data.title).trim();
+             else if (parsed.data.name) title = String(parsed.data.name).trim();
              
              // Check various possible frontmatter keys for sorting
              if (parsed.data['s.no'] !== undefined) sno = Number(parsed.data['s.no']);
              else if (parsed.data.sno !== undefined) sno = Number(parsed.data.sno);
              else if (parsed.data.order !== undefined) sno = Number(parsed.data.order);
              else if (parsed.data.id !== undefined) sno = Number(parsed.data.id);
-             else {
-               // Fallback: try to extract from filename
-               const match = entry.name.match(/^([0-9]+)[\.\-]/);
-               if (match) sno = parseInt(match[1], 10);
+
+             // If no frontmatter title, extract the first H1 in markdown content
+             if (!title) {
+               const headingMatch = parsed.content.match(/^#\s+(.*)/m);
+               if (headingMatch) {
+                 title = headingMatch[1].trim();
+               }
              }
           } catch (e) {
-             // Fallback: try to extract from filename
-             const match = entry.name.match(/^([0-9]+)[\.\-]/);
-             if (match) sno = parseInt(match[1], 10);
+             // Fallback below
+          }
+
+          const rawBase = entry.name.replace(/\.md$/, "");
+          if (!title) {
+            if (rawBase.toLowerCase() === "index") {
+              title = "About";
+            } else {
+              const cleanName = rawBase.replace(/^[0-9]+[\.\-\s]*/, "");
+              title = cleanName ? this._toTitleCase(cleanName) : rawBase;
+            }
+          } else if (rawBase.toLowerCase() === "about") {
+            title = "About";
+          }
+
+          // Prepend problem number / sno from filename if not present in title
+          if (sno !== 999999 && !title.match(new RegExp(`^${sno}(?:[.\\s-]|$)`))) {
+            title = `${sno}. ${title}`;
           }
 
           nodes.push({
@@ -210,7 +238,36 @@ export class MarkdownNoteRepository {
 
     if (!title) {
       const match = markdownContent.match(/^#\s+(.*)/m);
-      title = match ? match[1].trim() : path.basename(resolvedFilePath, ".md").replace(/^[0-9.-]+\s*/, "");
+      if (match) {
+        title = match[1].trim();
+      } else {
+        const rawBase = path.basename(resolvedFilePath, ".md");
+        if (rawBase.toLowerCase() === "index") {
+          title = "About";
+        } else {
+          const cleanName = rawBase.replace(/^[0-9]+[\.\-\s]*/, "");
+          title = cleanName ? this._toTitleCase(cleanName) : rawBase;
+        }
+      }
+    }
+
+    const baseFileName = path.basename(resolvedFilePath);
+    if (baseFileName.replace(/\.md$/, "").toLowerCase() === "about") {
+      title = "About";
+    }
+
+    // Check if filename or frontmatter has problem number prefix
+    const numMatch = baseFileName.match(/^([0-9]+)(?:[\.\-\s]|$)/);
+    let problemNum = numMatch ? parseInt(numMatch[1], 10) : null;
+    if (!problemNum) {
+      if (data["s.no"] !== undefined) problemNum = Number(data["s.no"]);
+      else if (data.sno !== undefined) problemNum = Number(data.sno);
+      else if (data.order !== undefined) problemNum = Number(data.order);
+      else if (data.id !== undefined) problemNum = Number(data.id);
+    }
+
+    if (problemNum && !title.match(new RegExp(`^${problemNum}(?:[.\\s-]|$)`))) {
+      title = `${problemNum}. ${title}`;
     }
 
     // Strip the first H1 tag

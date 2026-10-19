@@ -130,23 +130,23 @@ export function getMDXComponents(components) {
       <hr className={cn("my-12 border-t border-border", className)} />
     ),
     table: ({ className, children }) => (
-      <div className="my-8 w-full overflow-x-auto overflow-y-hidden rounded-lg border border-border">
-        <table className={cn("w-full text-left text-sm", className)}>{children}</table>
+      <div className="my-8 w-full overflow-x-auto rounded-xl border border-border shadow-sm bg-card">
+        <table className={cn("w-full border-collapse text-left text-sm", className)}>{children}</table>
       </div>
     ),
     thead: ({ className, children }) => (
-      <thead className={cn("bg-muted", className)}>{children}</thead>
+      <thead className={cn("bg-muted/80 border-b border-border", className)}>{children}</thead>
     ),
     tr: ({ className, children }) => (
-      <tr className={cn("border-b border-border last:border-b-0", className)}>{children}</tr>
+      <tr className={cn("border-b border-border/60 last:border-b-0 transition-colors hover:bg-muted/30", className)}>{children}</tr>
     ),
     th: ({ className, children }) => (
-      <th className={cn("!px-6 !py-3 font-semibold text-foreground", className)}>
+      <th className={cn("!px-6 !py-3.5 text-sm font-semibold text-foreground tracking-wide border-r border-border/50 last:border-r-0", className)}>
         {children}
       </th>
     ),
     td: ({ className, children }) => (
-      <td className={cn("!px-6 !py-3 text-muted-foreground", className)}>
+      <td className={cn("!px-6 !py-3.5 text-sm text-foreground/90 border-r border-border/50 last:border-r-0 align-middle", className)}>
         {children}
       </td>
     ),

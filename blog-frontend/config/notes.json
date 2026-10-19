@@ -7,7 +7,7 @@
   },
   {
     "category": "BOOK",
-    "title": "Design Pattern",
+    "title": "Low Level Design",
     "description": "Explore common software design patterns with real-world examples and clarity.",
     "link": "/notes/low-level-design"
   },
@@ -25,9 +25,30 @@
   },
   {
     "category": "BOOK",
-    "title": "General Notes",
+    "title": "Snippets",
     "description": "General technology notes, including Docker and Prompt Engineering.",
-    "link": "/notes/notes"
+    "link": "/notes/snippets"
+  },
+  {
+    "category": "BOOK",
+    "title": "Docker",
+    "link": "/notes/docker"
+  },
+  {
+    "category": "BOOK",
+    "title": "AI",
+    "link": "/notes/ai"
+  },
+  {
+    "category": "BOOK",
+    "title": "Prompt Engineering for LLMs",
+    "link": "/notes/prompt-engineering-for-llms"
+  },
+  {
+    "category": "BOOK",
+    "title": "Rest API Design",
+    "description": "Learn the fundamentals of designing RESTful APIs with detailed examples and best practices.",
+    "link": "/notes/rest-api-design"
   },
   {
     "category": "BOOK",
