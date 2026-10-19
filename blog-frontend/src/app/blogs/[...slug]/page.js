@@ -6,24 +6,48 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+import Link from "next/link";
+import dayjs from "dayjs";
+import { notFound } from "next/navigation";
 
 import { Separator } from "@/presentation/ui/Separator";
-import BlogHero from "@/presentation/blog/BlogHero";
 import CommentsSection from "@/presentation/blog/CommentsSection";
 import Doodle from "@/presentation/ui/Doodle";
-import StickyBar from "@/presentation/layout/StickyBar";
 import ScrollProgressBar from "@/presentation/ui/ScrollPercentageBar";
 import ShareBar from "@/presentation/blog/ShareBar";
 import RelatedPosts from "@/presentation/blog/RelatedPosts";
 import AuthorBio from "@/presentation/blog/AuthorBio";
 import NewsletterForm from "@/presentation/blog/NewsletterForm";
+import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
+import BlogPostLayout from "@/presentation/blog/BlogPostLayout";
+import BlogReadingNavigation from "@/presentation/blog/BlogReadingNavigation";
 
 import { getMDXComponents } from "@/presentation/ui/MdxComponents";
 import { prettyCodeOptions } from "@/lib/markdownConstants";
 import { blogService } from "@/core";
-import { BLOG_TYPES } from "@/lib/constants";
 import { siteMetadata } from "../../../../site.config.mjs";
-import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
+import { buildBlogIndexData } from "@/lib/blogCategories";
+import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvider";
+
+function extractHeadings(markdown) {
+  if (!markdown) return [];
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const headings = [];
+  let match;
+  while ((match = headingRegex.exec(markdown)) !== null) {
+    const level = match[1].length;
+    const rawText = match[2].trim();
+    const text = rawText
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/[*_`]/g, "");
+    const id = text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
+    headings.push({ level, text, id });
+  }
+  return headings;
+}
 
 // Static params for SSG
 export async function generateStaticParams() {
@@ -34,16 +58,18 @@ export async function generateStaticParams() {
 // SEO metadata generation
 export async function generateMetadata({ params, searchParams }) {
   const slugParam = params.slug;
-  // Join all segments to form the full permalink (e.g. "parent/child")
   const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
-  const isPreview = searchParams?.preview === 'true';
-  const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
+  const isPreview = searchParams?.preview === "true";
+  const blogData = await blogService.getPostBySlug(slug, {
+    includeUnpublished: isPreview,
+  });
   if (!blogData) return {};
 
-  // Use dynamic OG if preview is missing
-  const ogImageUrl = blogData.previewImageSrc 
+  const ogImageUrl = blogData.previewImageSrc
     ? `${siteMetadata.siteUrl}${blogData.previewImageSrc}`
-    : `${siteMetadata.siteUrl}/api/og?title=${encodeURIComponent(blogData.title)}&readingTime=${encodeURIComponent(blogData.readingTime)}`;
+    : `${siteMetadata.siteUrl}/api/og?title=${encodeURIComponent(
+        blogData.title
+      )}&readingTime=${encodeURIComponent(blogData.readingTime)}`;
 
   return {
     title: blogData.title,
@@ -56,7 +82,9 @@ export async function generateMetadata({ params, searchParams }) {
       locale: siteMetadata.locale,
       type: "article",
       publishedTime: new Date(blogData.createdAt).toISOString(),
-      modifiedTime: new Date(blogData.updatedAt || blogData.createdAt).toISOString(),
+      modifiedTime: new Date(
+        blogData.updatedAt || blogData.createdAt
+      ).toISOString(),
       images: [{ url: ogImageUrl }],
       authors: [siteMetadata.author],
     },
@@ -72,22 +100,26 @@ export async function generateMetadata({ params, searchParams }) {
   };
 }
 
-import { notFound } from "next/navigation";
-import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvider";
-
-// Main blog post page
 export default async function Post({ params, searchParams }) {
   const { slug: slugParam } = params;
-  // Join all segments to form the full permalink (e.g. "parent/child")
   const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
-  const isPreview = searchParams?.preview === 'true';
+  const isPreview = searchParams?.preview === "true";
 
-  const blogData = await blogService.getPostBySlug(slug, { includeUnpublished: isPreview });
+  const blogData = await blogService.getPostBySlug(slug, {
+    includeUnpublished: isPreview,
+  });
   if (!blogData) notFound();
-  
+
+  const isDev = process.env.NODE_ENV === "development";
+  const allBlogsData = await blogService.getAllPosts({
+    includeUnpublished: isDev || isPreview,
+  });
+
   const parentSeriesSlug = blogData.series || blogData.slug;
-  const allBlogsData = await blogService.getAllPosts();
-  const seriesChildren = allBlogsData.filter(p => p.series === parentSeriesSlug).sort((a,b) => a.seriesOrder - b.seriesOrder);
+  const seriesChildren = allBlogsData
+    .filter((p) => p.series === parentSeriesSlug)
+    .sort((a, b) => (Number(a.seriesOrder) || 0) - (Number(b.seriesOrder) || 0));
+
   const isSeries = seriesChildren.length > 0;
   let seriesParentData = null;
   if (isSeries) {
@@ -98,8 +130,40 @@ export default async function Post({ params, searchParams }) {
     }
   }
 
-  const content = blogData.content;
-  const tableOfContent = null; // TOC is now generated dynamically if needed, kept null here for StickyBar
+  // Build ordered series list to compute series position and next/prev
+  let seriesAllParts = [];
+  let currentPartIndex = -1;
+  if (seriesParentData || isSeries) {
+    const parentObj = seriesParentData || (blogData.series ? null : blogData);
+    if (parentObj) {
+      seriesAllParts = [parentObj, ...seriesChildren];
+      currentPartIndex = seriesAllParts.findIndex(
+        (p) => p.slug === blogData.slug
+      );
+    }
+  }
+
+  // Determine previous and next posts
+  let prevPost = null;
+  let nextPost = null;
+  if (seriesAllParts.length > 1 && currentPartIndex !== -1) {
+    prevPost = seriesAllParts[currentPartIndex - 1] || null;
+    nextPost = seriesAllParts[currentPartIndex + 1] || null;
+  } else {
+    const currentIndex = allBlogsData.findIndex(
+      (p) => p.slug === blogData.slug
+    );
+    if (currentIndex !== -1) {
+      prevPost = allBlogsData[currentIndex - 1] || null;
+      nextPost = allBlogsData[currentIndex + 1] || null;
+    }
+  }
+
+  const { categories } = buildBlogIndexData(allBlogsData);
+  const headings = extractHeadings(blogData.content);
+  const formattedDate = blogData.createdAt
+    ? dayjs(blogData.createdAt).format("MMMM YYYY")
+    : "";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -127,7 +191,7 @@ export default async function Post({ params, searchParams }) {
     keywords: blogData.tags
       .map((t) => (typeof t === "string" ? t : t.name))
       .join(", "),
-    wordCount: content.split(/\s+/).length,
+    wordCount: (blogData.content || "").split(/\s+/).length,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `${siteMetadata.siteUrl}/blogs/${blogData.permalink}`,
@@ -158,6 +222,7 @@ export default async function Post({ params, searchParams }) {
       },
     ],
   };
+
   return (
     <BlogMetricsProvider
       id={blogData.id}
@@ -174,98 +239,127 @@ export default async function Post({ params, searchParams }) {
       />
       <ScrollProgressBar />
 
-      <article className="relative mx-auto max-w-5xl px-6 py-12 md:px-12 lg:px-20">
-        {/* Cover Image */}
-        {blogData.previewImageSrc && (
-          <div className="mb-12 w-full overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-<img 
-              src={blogData.previewImageSrc} 
-              alt={blogData.title}
-              className="w-full object-cover"
-              style={{ maxHeight: '500px' }}
-            />
-          </div>
-        )}
+      <BlogPostLayout
+        categories={categories}
+        tableOfContents={headings}
+        currentSlug={blogData.slug}
+      >
+        <article className="blog-post-content learning-note">
+          {/* Back link */}
+          <Link href="/blogs" className="back-to-blog">
+            &larr; All posts
+          </Link>
 
-        {/* Hero */}
-        <BlogHero
-          title={blogData.title}
-          tags={blogData.tags}
-          date={blogData.createdAt}
-          readingTime={blogData.readingTime}
-        />
+          {/* Series Navigation Breadcrumb */}
+          {seriesParentData && (
+            <div className="post-series-nav">
+              <Link href={`/blogs/${seriesParentData.permalink || seriesParentData.slug}`}>
+                {seriesParentData.title}
+              </Link>
+              <span>&middot;</span>
+              <span>
+                {currentPartIndex > 0
+                  ? `Part ${currentPartIndex + 1}: ${blogData.title}`
+                  : "Overview"}
+              </span>
+            </div>
+          )}
 
-        <Separator className="my-16" />
+          {/* Article Header */}
+          <h1>{blogData.title}</h1>
+          <p className="post-meta">
+            {formattedDate && <span>{formattedDate} &middot; </span>}
+            <span>{blogData.readingTime || "5 min read"}</span>
+          </p>
 
-        {isSeries && (
-          <SeriesNavigation 
-            parent={seriesParentData} 
-            seriesParts={seriesChildren} 
-            currentSlug={slug} 
-          />
-        )}
+          {/* Cover Image */}
+          {blogData.previewImageSrc && (
+            <div className="mb-10 w-full overflow-hidden rounded-xl border border-line bg-card shadow-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={blogData.previewImageSrc}
+                alt={blogData.title}
+                className="w-full object-cover max-h-[480px]"
+              />
+            </div>
+          )}
 
-        {/* Blog Content */}
-        <section className="mx-auto w-full max-w-[65ch] prose prose-sm prose-neutral dark:prose-invert md:prose-base lg:prose-lg">
-          <MDXRemote
-            source={content}
-            options={{
-              mdxOptions: {
-                remarkPlugins: [remarkGfm, remarkMath],
-                rehypePlugins: [
-                  rehypeKatex,
-                  rehypeSlug,
-                  [
-                    rehypeAutolinkHeadings,
-                    {
-                      properties: {
-                        className: ["anchor"],
-                        ariaLabel: "Link to section",
+          {/* Series Overview Callout / Links if this is a series parent */}
+          {isSeries && (
+            <div className="mb-10">
+              <SeriesNavigation
+                parent={seriesParentData || blogData}
+                seriesParts={seriesChildren}
+                currentSlug={slug}
+              />
+            </div>
+          )}
+
+          {/* Blog Content */}
+          <section className="prose prose-neutral dark:prose-invert max-w-none">
+            <MDXRemote
+              source={blogData.content}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm, remarkMath],
+                  rehypePlugins: [
+                    rehypeKatex,
+                    rehypeSlug,
+                    [
+                      rehypeAutolinkHeadings,
+                      {
+                        properties: {
+                          className: ["anchor"],
+                          ariaLabel: "Link to section",
+                        },
                       },
-                    },
+                    ],
+                    [rehypePrettyCode, prettyCodeOptions],
                   ],
-                  [rehypePrettyCode, prettyCodeOptions],
-                ],
-              },
-            }}
-            components={getMDXComponents()}
+                },
+              }}
+              components={getMDXComponents()}
+            />
+          </section>
+
+          {/* Previous / Next Post Navigation */}
+          <BlogReadingNavigation prevPost={prevPost} nextPost={nextPost} />
+
+          <Separator className="my-14" />
+
+          {/* Author Bio */}
+          <AuthorBio />
+
+          {/* Related Posts */}
+          <RelatedPosts
+            currentSlug={blogData.slug}
+            currentTags={blogData.tags}
+            allBlogs={allBlogsData}
           />
-        </section>
 
-        <AuthorBio />
+          <Separator className="my-14" />
 
-        {/* Sticky TOC / Like-Share bar */}
-        <StickyBar blogSlug={blogData.permalink} title={blogData.title} tableOfContent={tableOfContent} />
+          {/* Newsletter Form */}
+          <NewsletterForm />
 
-        {/* Related Posts */}
-        <RelatedPosts
-          currentSlug={blogData.slug}
-          currentTags={blogData.tags}
-          allBlogs={allBlogsData}
-        />
+          {/* Share Bar */}
+          {siteMetadata.features?.socialShare && (
+            <ShareBar
+              className="my-10"
+              shareUrl={`${siteMetadata.siteUrl}/blogs/${blogData.permalink}`}
+              title={blogData.title}
+            />
+          )}
 
-        <Separator className="my-16" />
-
-        <NewsletterForm />
-
-        {/* Share Bar */}
-        {siteMetadata.features.socialShare && (
-          <ShareBar
-            className="mb-10"
-            shareUrl={`${siteMetadata.siteUrl}/blogs/${blogData.permalink}`}
-            title={blogData.title}
-          />
-        )}
-
-        {/* Fun Footer */}
-        <div className="flex flex-col space-y-6">
-          <div className="flex justify-center">
-            <Doodle classData="h-20 w-20" />
+          {/* Comments Section */}
+          <div className="flex flex-col space-y-6 pt-6">
+            <div className="flex justify-center">
+              <Doodle classData="h-16 w-16" />
+            </div>
+            <CommentsSection blogId={blogData.slug} />
           </div>
-          <CommentsSection blogId={blogData.slug} />
-        </div>
-      </article>
+        </article>
+      </BlogPostLayout>
     </BlogMetricsProvider>
   );
 }

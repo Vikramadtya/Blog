@@ -3,17 +3,36 @@
         "id": "00000000-0000-0000-0000-000000000000",
         "name": "all",
         "color": "#3498db",
-        "count": 9,
+        "count": 14,
         "blogs": [
+            "78c1c32f-575b-4638-be04-5684789e26f1",
+            "498406da-85f7-4a33-8baa-3bd817389923",
+            "0fe45e96-35fc-4a43-9dd8-ed210040f3b1",
+            "6e02d7ea-4fc1-4b1e-abc2-e44a28c0f879",
             "ea87ad8b-6f27-4332-9b91-0ca97d28c739",
             "f8b34c36-0716-4cb2-8fee-3ed013a68260",
             "720c7148-719a-4e99-a35e-892114cb3b80",
+            "30673b9b-6880-4027-a02f-191f0053f26c",
             "f54a0dd9-654e-40ae-a2af-af5416e77f83",
             "9a29bcf1-14a8-475d-a61e-60a318d74d2c",
             "98efed8c-5dcf-4a0e-b708-3b9b6e6f3599",
             "f941b6f2-bac7-4b58-a9c6-313278c55928",
             "fec4e9df-fb93-4bb5-a7b5-ed792cca31e1",
             "9aecebee-4b11-4014-a6aa-8c11aac01dd1"
+        ]
+    },
+    {
+        "id": "6dedbab8-4bb7-43bc-91c7-1f424adcbf43",
+        "name": "blog",
+        "color": "#cca0e9",
+        "count": 6,
+        "blogs": [
+            "78c1c32f-575b-4638-be04-5684789e26f1",
+            "498406da-85f7-4a33-8baa-3bd817389923",
+            "0fe45e96-35fc-4a43-9dd8-ed210040f3b1",
+            "6e02d7ea-4fc1-4b1e-abc2-e44a28c0f879",
+            "30673b9b-6880-4027-a02f-191f0053f26c",
+            "f54a0dd9-654e-40ae-a2af-af5416e77f83"
         ]
     },
     {
@@ -87,15 +106,6 @@
         "count": 1,
         "blogs": [
             "720c7148-719a-4e99-a35e-892114cb3b80"
-        ]
-    },
-    {
-        "id": "6dedbab8-4bb7-43bc-91c7-1f424adcbf43",
-        "name": "blog",
-        "color": "#cca0e9",
-        "count": 1,
-        "blogs": [
-            "f54a0dd9-654e-40ae-a2af-af5416e77f83"
         ]
     },
     {

@@ -18,33 +18,68 @@ First analyse my submission & complexity , tell me where i can improve. If there
 
 Problem Link :
 
-https://takeuforward.org/practice/dsa/maximum-consecutive-ones?category=fundamentals&source=strivers-a2z-dsa-sheet
+https://leetcode.com/problems/string-to-integer-atoi/description/
 
 Problem Statement:
 
-Given a binary array nums, return the maximum number of consecutive 1s in the array.
+Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer.
 
-A binary array is an array that contains only 0s and 1s.
+The algorithm for myAtoi(string s) is as follows:
+
+Whitespace: Ignore any leading whitespace (" ").
+Signedness: Determine the sign by checking if the next character is '-' or '+', assuming positivity if neither present.
+Conversion: Read the integer by skipping leading zeros until a non-digit character is encountered or the end of the string is reached. If no digits were read, then the result is 0.
+Rounding: If the integer is out of the 32-bit signed integer range [-231, 231 - 1], then round the integer to remain in the range. Specifically, integers less than -231 should be rounded to -231, and integers greater than 231 - 1 should be rounded to 231 - 1.
+Return the integer as the final result.
+
+Note:​​​​​​​ You must not use any built-in library function that converts a string to a number (for example, atoi, stoi, Integer.parseInt, int(), parseInt, Number()). Perform the conversion manually.
+
+
+
+
+
+
 
 Candidate Solution:
 
 ```java
 class Solution {
-    public int findMaxConsecutiveOnes(int[] nums) {
-        if(nums == null || nums.length == 0) return -0;
+    public int myAtoi(String s) {
 
-        int count = 0, max = 0;
-        
-        for(int i = 0; i < nums.length; ++i) {
-            if(nums[i] == 1) {
-                count++;
-                max = Math.max(count,max);
-            } else {
-                count = 0;
-            }
+        // remove all whitespace
+        s = s.trim();
+
+        if (s.length() == 0)
+            return 0;
+
+        int i = 0, sign = 1;
+
+        if (s.charAt(i) == '-') {
+            sign = -1;
+            i++;
+        } else if (s.charAt(i) == '+') {
+            i++;
         }
 
-        return max;
+        long result = 0;
+        while (i < s.length()) {
+            char c = s.charAt(i);
+
+            if (!Character.isDigit(s.charAt(i)))
+                break;
+
+            result = result * 10 + (c - '0') * sign;
+
+            if (result > Integer.MAX_VALUE)
+                return Integer.MAX_VALUE;
+            if (result < Integer.MIN_VALUE)
+                return Integer.MIN_VALUE;
+
+            i++;
+
+        }
+
+        return (int) result;
     }
 }
 ```

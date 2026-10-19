@@ -48,6 +48,11 @@ const nextConfig = {
         destination: "/home",
         permanent: true,
       },
+      {
+        source: "/blog",
+        destination: "/blogs",
+        permanent: true,
+      },
     ];
   },
   webpack: (config) => {

@@ -109,9 +109,19 @@ export function getMDXComponents(components) {
       </li>
     ),
     blockquote: ({ className, children }) => (
-      <blockquote className={cn("mt-8 border-l-4 border-indigo-500 bg-indigo-500/5 py-4 pr-4 pl-6 text-muted-foreground dark:bg-indigo-500/10 [&>p]:italic [&>p:first-child]:mt-0 [&>p:last-child]:mb-0 [&_code]:not-italic [&_pre]:not-italic", className)}>
+      <blockquote className={cn("note-callout my-6 text-muted-foreground [&>p]:italic [&>p:first-child]:mt-0 [&>p:last-child]:mb-0 [&_code]:not-italic [&_pre]:not-italic", className)}>
         {children}
       </blockquote>
+    ),
+    details: ({ className, children, ...props }) => (
+      <details className={cn("note-check my-6", className)} {...props}>
+        {children}
+      </details>
+    ),
+    summary: ({ className, children, ...props }) => (
+      <summary className={cn("cursor-pointer font-bold text-ink outline-none select-none", className)} {...props}>
+        {children}
+      </summary>
     ),
     a: ({ className, children, href }) => {
       const isExternal = href?.startsWith("http");
@@ -120,7 +130,7 @@ export function getMDXComponents(components) {
           href={href}
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
-          className={cn("font-medium text-indigo-600 underline underline-offset-4 transition-colors hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300", className)}
+          className={cn("font-medium text-primary underline underline-offset-4 transition-colors hover:opacity-80", className)}
         >
           {children}
         </a>
