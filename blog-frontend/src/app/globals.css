@@ -163,12 +163,11 @@ span[data-highlighted-line] {
 }
 
 pre[data-theme*=" "] {
-  border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
+  border: none !important;
+  background-color: transparent !important;
   font-family: "JetBrains Mono", monospace !important;
   font-size: 0.86rem !important;
   color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
 }
 
 pre[data-theme*=" "] span {
@@ -176,8 +175,9 @@ pre[data-theme*=" "] span {
 }
 
 html.dark pre[data-theme*=" "] {
+  border: none !important;
+  background-color: transparent !important;
   color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
 }
 
 html.dark pre[data-theme*=" "] span {
@@ -198,39 +198,60 @@ html.dark pre[data-theme*=" "] span {
   border-radius: 4px;
 }
 
-/* Table Styling & KaTeX alignment */
+/* Clean GitBook Table Styling */
 .prose table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  margin: 1.5rem 0 !important;
 }
 
-.prose table thead th {
-  padding: 0.85rem 1.5rem !important;
-  font-weight: 600 !important;
-  color: var(--ink) !important;
-  border-bottom: 1px solid var(--line) !important;
-  border-right: 1px solid var(--line) !important;
-}
-
-.prose table thead th:last-child {
-  border-right: none !important;
-}
-
-.prose table tbody td {
-  padding: 0.95rem 1.5rem !important;
-  color: var(--ink) !important;
-  border-bottom: 1px solid var(--line) !important;
-  border-right: 1px solid var(--line) !important;
-  vertical-align: middle !important;
-}
-
-.prose table tbody tr:last-child td {
+.prose thead {
+  background: #f3f4f6 !important;
   border-bottom: none !important;
 }
 
-.prose table tbody td:last-child {
-  border-right: none !important;
+html.dark .prose thead {
+  background: #27272a !important;
+}
+
+.prose thead th {
+  padding: 0.65rem 1.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: var(--ink) !important;
+  border: none !important;
+  vertical-align: middle !important;
+}
+
+.prose thead th:first-child {
+  border-top-left-radius: 0.5rem !important;
+  border-bottom-left-radius: 0.5rem !important;
+}
+
+.prose thead th:last-child {
+  border-top-right-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+}
+
+.prose tbody tr {
+  border: none !important;
+  background: transparent !important;
+}
+
+.prose tbody td {
+  padding: 0.85rem 1.5rem !important;
+  font-size: 0.9rem !important;
+  color: var(--ink) !important;
+  border: none !important;
+  vertical-align: middle !important;
+}
+
+.prose tbody td:not(:first-child) {
+  border-left: 1px solid var(--line) !important;
 }
 
 /* KaTeX table cell display math reset: prevents 1em vertical gap & awkward centering */
@@ -244,5 +265,21 @@ table .katex-display {
 .prose table .katex,
 table .katex {
   font-size: 1.05em;
+  color: var(--ink);
+}
+
+/* Anchor link styling for headings */
+.anchor-link {
+  text-decoration: none !important;
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+html.dark .anchor-link {
+  color: #64748b !important;
+}
+
+.anchor-link:hover {
+  color: #3b82f6 !important;
 }
 

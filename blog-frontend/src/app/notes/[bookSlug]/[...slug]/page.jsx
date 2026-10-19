@@ -24,8 +24,9 @@ export async function generateMetadata({ params }) {
 }
 
 import Link from "next/link";
+import NotesToc from "@/presentation/note/NotesToc";
 import notesConfig from "../../../../../config/notes.json";
-import { getNotesTree,  } from "@/core";
+import { getNotesTree } from "@/core";
 
 function extractHeadings(markdown) {
   if (!markdown) return [];
@@ -81,8 +82,14 @@ export default async function NotePage({ params }) {
         [
           rehypeAutolinkHeadings,
           {
-            behavior: "wrap",
-            properties: { className: ["anchor"] },
+            behavior: "prepend",
+            properties: { className: ["anchor-link"] },
+            content: {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["anchor-icon"] },
+              children: [{ type: "text", value: "# " }],
+            },
           },
         ],
       ],
@@ -90,8 +97,8 @@ export default async function NotePage({ params }) {
   };
 
   return (
-    <div className="flex gap-10">
-      <div className="flex-1 min-w-0 max-w-3xl xl:max-w-4xl pt-2 pb-12">
+    <div className="flex gap-8 xl:gap-12 justify-between">
+      <div className="flex-1 min-w-0 max-w-3xl pt-2 pb-12">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
           <Link href={`/notes/${bookSlug}`} className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors font-medium">
@@ -141,29 +148,7 @@ export default async function NotePage({ params }) {
       </div>
 
       {/* On This Page TOC */}
-      {headings.length > 0 && (
-        <aside className="hidden xl:block w-52 flex-shrink-0 sticky top-24 self-start pl-4">
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
-            ON THIS PAGE
-          </div>
-          <nav className="space-y-2.5">
-            {headings.map((h, i) => (
-              <a
-                key={i}
-                href={`#${h.slug}`}
-                className={`block text-sm transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                  h.level === 3 ? "pl-3 text-xs text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
-                {h.heading}
-              </a>
-            ))}
-          </nav>
-        </aside>
-      )}
+      <NotesToc headings={headings} />
     </div>
   );
 }

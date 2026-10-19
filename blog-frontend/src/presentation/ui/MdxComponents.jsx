@@ -40,15 +40,16 @@ export function getMDXComponents(components) {
       }
 
       return (
-        <div className="group relative my-8 overflow-hidden rounded-xl border border-border shadow-sm">
-          <div className="absolute right-3 top-3 z-20 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="group relative my-8 overflow-hidden rounded-2xl border border-gray-200/90 dark:border-zinc-800 bg-[#fcfcfd] dark:bg-[#121614] shadow-sm">
+          <div className="absolute right-3.5 top-3.5 z-20 opacity-0 transition-opacity group-hover:opacity-100">
             <CopyButton text={rawText} />
           </div>
           <pre
             className={cn(
-              "overflow-x-auto p-4 text-[13px] leading-relaxed selection:bg-indigo-500/30",
+              "overflow-x-auto p-6 font-mono text-[13.5px] leading-relaxed selection:bg-blue-500/20",
               className
             )}
+            style={{ margin: 0, border: "none", background: "transparent" }}
             {...props}
           >
             {children}
@@ -64,7 +65,7 @@ export function getMDXComponents(components) {
         <code
           className={cn(
             !isBlockCode && "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[13px] font-semibold text-foreground",
-            isBlockCode && "bg-transparent font-mono text-[13px]",
+            isBlockCode && "bg-transparent font-mono text-[13.5px]",
             className
           )}
           {...props}
@@ -74,17 +75,17 @@ export function getMDXComponents(components) {
       );
     },
     h1: ({ id, className, children }) => (
-      <h1 id={id} className={cn("mt-14 scroll-m-20 pb-4 text-4xl font-extrabold tracking-tight text-foreground lg:text-5xl", className)}>
+      <h1 id={id} className={cn("mt-14 scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground", className)}>
         {children}
       </h1>
     ),
     h2: ({ id, className, children }) => (
-      <h2 id={id} className={cn("mt-16 scroll-m-20 border-b border-border pb-3 text-3xl font-semibold tracking-tight text-foreground transition-colors", className)}>
+      <h2 id={id} className={cn("group mt-12 scroll-m-20 text-2xl sm:text-3xl font-bold tracking-tight text-foreground transition-colors flex items-center", className)}>
         {children}
       </h2>
     ),
     h3: ({ id, className, children }) => (
-      <h3 id={id} className={cn("mt-10 scroll-m-20 text-2xl font-semibold tracking-tight text-foreground", className)}>
+      <h3 id={id} className={cn("group mt-8 scroll-m-20 text-xl font-bold tracking-tight text-foreground flex items-center", className)}>
         {children}
       </h3>
     ),
@@ -115,6 +116,17 @@ export function getMDXComponents(components) {
     ),
     a: ({ className, children, href }) => {
       const isExternal = href?.startsWith("http");
+      if (className?.includes("anchor-link")) {
+        return (
+          <a
+            href={href}
+            aria-label="Section anchor"
+            className="no-underline text-gray-400 hover:text-blue-500 dark:text-zinc-600 dark:hover:text-blue-400 transition-colors select-none mr-2 font-normal"
+          >
+            {children}
+          </a>
+        );
+      }
       return (
         <a
           href={href}
@@ -130,23 +142,25 @@ export function getMDXComponents(components) {
       <hr className={cn("my-12 border-t border-border", className)} />
     ),
     table: ({ className, children }) => (
-      <div className="my-8 w-full overflow-x-auto rounded-xl border border-border shadow-sm bg-card">
+      <div className="my-6 w-full overflow-x-auto">
         <table className={cn("w-full border-collapse text-left text-sm", className)}>{children}</table>
       </div>
     ),
     thead: ({ className, children }) => (
-      <thead className={cn("bg-muted/80 border-b border-border", className)}>{children}</thead>
+      <thead className={cn("bg-gray-100/90 dark:bg-zinc-800/80 rounded-lg", className)}>
+        {children}
+      </thead>
     ),
     tr: ({ className, children }) => (
-      <tr className={cn("border-b border-border/60 last:border-b-0 transition-colors hover:bg-muted/30", className)}>{children}</tr>
+      <tr className={cn("border-none", className)}>{children}</tr>
     ),
     th: ({ className, children }) => (
-      <th className={cn("!px-6 !py-3.5 text-sm font-semibold text-foreground tracking-wide border-r border-border/50 last:border-r-0", className)}>
+      <th className={cn("px-6 py-2.5 text-sm font-medium text-gray-800 dark:text-gray-200 first:rounded-l-lg last:rounded-r-lg border-none", className)}>
         {children}
       </th>
     ),
     td: ({ className, children }) => (
-      <td className={cn("!px-6 !py-3.5 text-sm text-foreground/90 border-r border-border/50 last:border-r-0 align-middle", className)}>
+      <td className={cn("px-6 py-3.5 text-sm text-gray-800 dark:text-gray-200 align-middle border-none [&:not(:first-child)]:border-l [&:not(:first-child)]:border-gray-200 dark:[&:not(:first-child)]:border-zinc-700", className)}>
         {children}
       </td>
     ),
