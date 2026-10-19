@@ -97,8 +97,11 @@ export class MarkdownNoteRepository {
         }
       }
 
-      // Sort nodes based on sno first, then alphabetically by original name
+      // Sort nodes based on type first (files before directories), then sno, then alphabetically by original name
       nodes.sort((a, b) => {
+        if (a.type !== b.type) {
+          return a.type === "file" ? -1 : 1;
+        }
         if (a.sno !== b.sno) {
           return a.sno - b.sno;
         }
@@ -146,6 +149,15 @@ export class MarkdownNoteRepository {
           });
         }
       }
+
+      // Sort nodes: files before directories, then alphabetically
+      nodes.sort((a, b) => {
+        if (a.type !== b.type) {
+          return a.type === "file" ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name, undefined, { numeric: true });
+      });
+
       return nodes;
     };
 

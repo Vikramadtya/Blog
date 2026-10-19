@@ -83,9 +83,14 @@ export default function NotesAdminTab() {
   };
 
   const renderTree = (nodes, level = 0, parentPath = "") => {
+    const sortedNodes = [...(nodes || [])].sort((a, b) => {
+      if (a.type !== b.type) return a.type === "file" ? -1 : 1;
+      return a.name.localeCompare(b.name, undefined, { numeric: true });
+    });
+
     return (
       <ul className="space-y-1">
-        {nodes.map((node) => {
+        {sortedNodes.map((node) => {
           if (node.type === "directory") {
             const isExpanded = !!expandedDirs[node.path];
             return (

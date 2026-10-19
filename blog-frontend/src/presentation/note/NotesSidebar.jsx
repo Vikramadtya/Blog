@@ -31,6 +31,11 @@ function TreeNode({ node, bookSlug, level = 0 }) {
   }
 
   // Directory node (renders as an all-caps section header)
+  const sortedChildren = [...(node.children || [])].sort((a, b) => {
+    if (a.type !== b.type) return a.type === "file" ? -1 : 1;
+    return 0;
+  });
+
   return (
     <div className="mt-8 mb-2">
       <div className="text-xs font-bold tracking-wider text-gray-900 dark:text-gray-300 uppercase mb-3">
@@ -38,7 +43,7 @@ function TreeNode({ node, bookSlug, level = 0 }) {
       </div>
       
       <div className="space-y-1">
-        {node.children.map((child, idx) => (
+        {sortedChildren.map((child, idx) => (
           <TreeNode key={idx} node={child} bookSlug={bookSlug} level={level + 1} />
         ))}
       </div>
@@ -53,6 +58,11 @@ export default function NotesSidebar({ tree, bookSlug, allBooks }) {
     const newSlug = e.target.value;
     router.push(`/notes/${newSlug}`);
   };
+
+  const sortedTree = [...(tree || [])].sort((a, b) => {
+    if (a.type !== b.type) return a.type === "file" ? -1 : 1;
+    return 0;
+  });
 
   return (
     <aside className="w-full lg:w-64 flex-shrink-0 lg:border-r border-gray-100 dark:border-zinc-800 h-auto lg:h-[calc(100vh-4rem)] lg:sticky top-16 overflow-y-auto py-6 pr-6 hidden lg:block">
@@ -80,7 +90,7 @@ export default function NotesSidebar({ tree, bookSlug, allBooks }) {
       </div>
       
       <nav>
-        {tree.map((node, idx) => (
+        {sortedTree.map((node, idx) => (
           <TreeNode key={idx} node={node} bookSlug={bookSlug} level={0} />
         ))}
       </nav>
