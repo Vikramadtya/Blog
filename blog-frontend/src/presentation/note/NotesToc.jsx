@@ -16,19 +16,18 @@ export default function NotesToc({ headings }) {
         }))
         .filter((item) => item.element !== null);
 
-      const scrollPosition = window.scrollY + 120;
+      if (headingElements.length === 0) return;
 
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const item = headingElements[i];
-        if (item.element.offsetTop <= scrollPosition) {
-          setActiveSlug(item.slug);
-          return;
+      let currentSlug = headingElements[0].slug;
+      for (const item of headingElements) {
+        const rect = item.element.getBoundingClientRect();
+        if (rect.top <= 140) {
+          currentSlug = item.slug;
+        } else {
+          break;
         }
       }
-
-      if (headingElements.length > 0) {
-        setActiveSlug(headingElements[0].slug);
-      }
+      setActiveSlug(currentSlug);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -42,28 +41,45 @@ export default function NotesToc({ headings }) {
   if (!headings || headings.length === 0) return null;
 
   return (
-    <aside className="hidden lg:block w-44 xl:w-52 flex-shrink-0 sticky top-24 self-start pl-4 py-2">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3.5 flex items-center gap-1.5 select-none">
-        <svg className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" viewBox="0 0 16 16" fill="currentColor">
-          <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h10.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H2.75A.75.75 0 012 8zm0 4.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-        </svg>
-        ON THIS PAGE
+    <aside className="hidden lg:block w-48 xl:w-60 flex-shrink-0 sticky top-24 self-start pl-4 py-1 border-l-2 border-gray-200/80 dark:border-zinc-800">
+      <div className="text-sm font-bold uppercase tracking-wider text-gray-900 dark:text-gray-100 mb-3 select-none">
+        CONTENTS
       </div>
-      <nav className="space-y-2">
+      <nav className="space-y-1.5">
         {headings.map((h, i) => {
           const isActive = activeSlug === h.slug;
           return (
             <a
               key={i}
               href={`#${h.slug}`}
-              onClick={() => setActiveSlug(h.slug)}
-              className={`block text-sm transition-colors ${
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveSlug(h.slug);
+                const el = document.getElementById(h.slug);
+                if (el) {
+                  const yOffset = -90;
+                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                  window.scrollTo({ top: y, behavior: "smooth" });
+                  window.history.pushState(null, "", `#${h.slug}`);
+                }
+              }}
+              className={`group flex items-start text-sm transition-colors ${
+                h.level === 3 ? "pl-4" : ""
+              } ${
                 isActive
-                  ? "text-blue-600 dark:text-blue-400 font-medium"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
-              } ${h.level === 3 ? "pl-3 text-xs" : ""}`}
+                  ? "text-[#4596bd] dark:text-[#58a6cf] font-bold"
+                  : "text-gray-800 hover:text-gray-950 dark:text-gray-300 dark:hover:text-white font-normal"
+              }`}
             >
-              {h.heading}
+              <span
+                className={`w-[2px] h-[14px] rounded-full mr-2.5 flex-shrink-0 mt-1 transition-colors ${
+                  isActive
+                    ? "bg-[#ec3882]"
+                    : "bg-[#4596bd] group-hover:bg-[#34789b]"
+                }`}
+                aria-hidden="true"
+              />
+              <span className="leading-snug">{h.heading}</span>
             </a>
           );
         })}
