@@ -1,20 +1,15 @@
 import { checkAdminAuth } from "@/lib/auth";
+import { BLOGS_DIR, resolveBlogFile } from "@/lib/paths";
 import { NextResponse } from "next/server";
+import { syncTags } from "@/lib/syncTags";
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
-import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req) {
   // Only allow this endpoint in local development for security!
   const authError = checkAdminAuth(req);
   if (authError) return authError;
-  if (false) {
-    return NextResponse.json(
-      { error: "This endpoint is only available in local development." },
-      { status: 403 }
-    );
-  }
 
   try {
     const data = await req.json();
@@ -27,8 +22,7 @@ export async function POST(req) {
       );
     }
 
-    const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
-    const filePath = path.join(BLOGS_DIR, `${slug}.md`);
+    const filePath = resolveBlogFile(`${slug}.md`);
 
     // Check if it already exists
     try {
@@ -47,7 +41,7 @@ export async function POST(req) {
       : (tags || ["blog"]);
 
     const metadata = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       title,
       slug,
       createdAt: new Date().toISOString(),
@@ -73,19 +67,13 @@ export async function POST(req) {
     await fs.writeFile(filePath, fileContent, "utf8");
 
     // Auto-sync tags
-    try {
-      await fetch(new URL("/api/admin/tags", req.url), { method: "POST" });
-    } catch (e) {
-      console.warn("Failed to auto-sync tags after creation", e);
-    }
+    await syncTags().catch((e) => console.warn("Failed to auto-sync tags after creation", e));
 
     return NextResponse.json({ success: true, filePath, metadata });
 
   } catch (error) {
+    if (error.status === 400) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to create post:", error);
-    return NextResponse.json(
-      { error: "Internal server error: " + error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

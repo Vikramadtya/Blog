@@ -1,15 +1,17 @@
-import { checkAdminAuth } from "@/lib/auth";
+import { checkAdminAuth, errorResponse } from "@/lib/auth";
 import { noteService } from "@/core";
 import { NextResponse } from "next/server";
 export async function POST(request) {
+  const authError = checkAdminAuth(request);
+  if (authError) return authError;
   try {
     const body = await request.json();
     const { type, name, parentPath } = body;
     if (!type || !name) return NextResponse.json({ success: false, error: "Missing type or name" }, { status: 400 });
 
     if (type === "book") {
-      await noteService.createBook(name);
-      return NextResponse.json({ success: true, targetPath: name });
+      const targetPath = await noteService.createBook(name);
+      return NextResponse.json({ success: true, targetPath });
     } else if (type === "category") {
       const targetPath = parentPath ? `${parentPath}/${name}` : name;
       await noteService.createCategory(targetPath);
@@ -30,6 +32,6 @@ Start writing...`;
     
     return NextResponse.json({ success: false, error: "Invalid type" }, { status: 400 });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return errorResponse(error);
   }
 }

@@ -1,68 +1,94 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
+import { eq } from 'drizzle-orm';
 import { getDb } from '../db';
 import { subscribers } from '../db/schema';
 import type { Bindings } from '../index';
 import { adminAuth } from '../middleware/auth';
+import { rateLimit } from '../middleware/rateLimit';
+import { notifyDiscord } from '../lib/discord';
 
 const subscribe = new Hono<{ Bindings: Bindings }>();
 
-// Strict validation schema for the subscriber payload
 const subscribeSchema = z.object({
-  email: z.string().email('Invalid email address').max(255, 'Email is too long'),
+  email: z.string().trim().toLowerCase().email('Invalid email address').max(255, 'Email is too long'),
 });
 
-/**
- * POST /subscribe
- * Securely adds a new email to the newsletter subscribers table.
- * Enforces email uniqueness and triggers a Discord webhook notification.
- */
-subscribe.post('/', zValidator('json', subscribeSchema), async (c) => {
+/** POST /subscribe — adds a (normalised) email to the newsletter list. */
+subscribe.post('/', rateLimit('subscribe', 5, 60_000), zValidator('json', subscribeSchema), async (c) => {
+  const { email } = c.req.valid('json');
   try {
     const db = getDb(c.env.DATABASE_URL);
-    const { email } = c.req.valid('json');
-
-    // 1. Insert into Postgres DB
     await db.insert(subscribers).values({ id: crypto.randomUUID(), email });
-    
-    // 2. Send Discord Notification
-    const discordWebhookUrl = c.env.DISCORD_SUBSCRIBE_WEBHOOK_URL || c.env.DISCORD_WEBHOOK_URL;
-    if (discordWebhookUrl) {
-      await fetch(discordWebhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: `🎉 **New Subscriber!**\n**Email:** ${email}`
-        })
-      }).catch(err => console.error("[Subscribe API] Discord Webhook Failed:", err));
-    }
 
+    c.executionCtx.waitUntil(
+      notifyDiscord(
+        c.env.DISCORD_SUBSCRIBE_WEBHOOK_URL || c.env.DISCORD_WEBHOOK_URL,
+        `🎉 **New Subscriber!**\n**Email:** ${email}`,
+      ),
+    );
     return c.json({ success: true });
   } catch (error: any) {
-    // 23505 is the Postgres error code for unique_violation
-    if (error.code === '23505') {
-      console.warn(`[Subscribe API] Duplicate subscription attempt for: ${c.req.valid('json').email}`);
-      return c.json({ error: 'Already subscribed' }, 400);
+    // 23505 = unique_violation
+    if (error?.code === '23505') {
+      return c.json({ error: 'Already subscribed' }, 409);
     }
-    
-    console.error("[Subscribe API] Failed to subscribe user:", error);
+    console.error('[Subscribe API] failed:', error);
     return c.json({ error: 'Failed to subscribe' }, 500);
   }
 });
 
-/**
- * GET /subscribe
- * Retrieves all subscribers for the admin dashboard.
- */
+/** GET /subscribe — admin only. */
 subscribe.get('/', adminAuth, async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
-    const allSubscribers = await db.select().from(subscribers);
-    return c.json({ success: true, data: allSubscribers });
+    return c.json({ success: true, data: await db.select().from(subscribers) });
   } catch (error) {
-    console.error("[Subscribe API] Failed to fetch subscribers:", error);
+    console.error('[Subscribe API] list failed:', error);
     return c.json({ error: 'Failed to fetch subscribers' }, 500);
+  }
+});
+
+/** HMAC-SHA256(email) keyed with ADMIN_SECRET; the frontend signs the unsubscribe links it emails out. */
+export async function unsubscribeToken(email: string, secret: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(email));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+const page = (message: string) =>
+  `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Newsletter</title>` +
+  `<body style="font-family:system-ui,sans-serif;max-width:32rem;margin:20vh auto;padding:0 1rem;text-align:center"><p>${message}</p></body>`;
+
+/** GET /subscribe/unsubscribe?email=…&token=… — one-click unsubscribe from newsletter emails. */
+subscribe.get('/unsubscribe', rateLimit('unsubscribe', 10, 60_000), async (c) => {
+  const email = (c.req.query('email') ?? '').trim().toLowerCase();
+  const token = c.req.query('token') ?? '';
+  const secret = c.env.ADMIN_SECRET;
+  if (!email || !secret) return c.html(page('Invalid unsubscribe link.'), 400);
+
+  const expected = await unsubscribeToken(email, secret);
+  // Compare hashes of both values so timing doesn't leak the expected token
+  const [a, b] = await Promise.all(
+    [expected, token].map(async (v) => new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)))),
+  );
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  if (diff !== 0) return c.html(page('Invalid unsubscribe link.'), 400);
+
+  try {
+    await getDb(c.env.DATABASE_URL).delete(subscribers).where(eq(subscribers.email, email));
+    return c.html(page("You've been unsubscribed. Sorry to see you go!"));
+  } catch (error) {
+    console.error('[Subscribe API] unsubscribe failed:', error);
+    return c.html(page('Something went wrong. Please try again later.'), 500);
   }
 });
 

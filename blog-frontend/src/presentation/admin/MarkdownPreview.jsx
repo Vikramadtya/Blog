@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import Mermaid from "@/presentation/components/Mermaid";
+import Mermaid from "@/presentation/components/LazyMermaid";
 
 export default function MarkdownPreview({ content }) {
   return (
@@ -32,7 +32,7 @@ export default function MarkdownPreview({ content }) {
           img: ({node, ...props}) => (
             // For relative paths like /notes-assets/img.png it works out of the box
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img {...props} className="rounded-lg shadow-sm max-w-full" />
+            <img alt="" {...props} className="rounded-lg shadow-sm max-w-full" />
           )
         }}
       >

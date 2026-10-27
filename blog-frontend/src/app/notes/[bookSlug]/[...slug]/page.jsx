@@ -1,55 +1,39 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { noteService } from "@/core";
-import { MDXRemote } from "next-mdx-remote/rsc";
-import { getMDXComponents } from "@/presentation/ui/MdxComponents";
-import { rehypePrettyCode } from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { prettyCodeOptions } from "@/lib/markdownConstants";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
+import { extractHeadings } from "@/lib/headings";
+import Markdown from "@/presentation/ui/Markdown";
+import { internalBookSlugs } from "@/lib/books";
+
+// Build every note page at build time (new notes still render on demand).
+export async function generateStaticParams() {
+  const perBook = await Promise.all(
+    internalBookSlugs.map(async (bookSlug) =>
+      noteService
+        .flattenTree(await noteService.getNoteTree(bookSlug))
+        .map((node) => ({ bookSlug, slug: node.path })),
+    ),
+  );
+  return perBook.flat();
+}
 
 export async function generateMetadata({ params }) {
-  const { bookSlug, slug } = params;
+  const { bookSlug, slug } = await params;
   const noteData = await noteService.getNote(bookSlug, slug);
   if (!noteData) return {};
 
   return {
     title: noteData.title,
-    description: noteData.metadata?.description || noteData.title,
+    description: noteData.title,
   };
 }
 
 import Link from "next/link";
 import NotesToc from "@/presentation/note/NotesToc";
 import notesConfig from "../../../../../config/notes.json";
-import { getNotesTree } from "@/core";
-
-function extractHeadings(markdown) {
-  if (!markdown) return [];
-  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
-  const headings = [];
-  let match;
-  while ((match = headingRegex.exec(markdown)) !== null) {
-    const level = match[1].length;
-    const rawText = match[2].trim();
-    const text = rawText
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/[*_`]/g, "");
-    const headingSlug = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
-    headings.push({ level, heading: text, slug: headingSlug });
-  }
-  return headings;
-}
 
 export default async function NotePage({ params }) {
-  const { bookSlug, slug } = params;
+  const { bookSlug, slug } = await params;
   
   const noteData = await noteService.getNote(bookSlug, slug);
   
@@ -57,7 +41,7 @@ export default async function NotePage({ params }) {
     notFound();
   }
 
-  const bookConfig = notesConfig.find(b => b.link.endsWith(bookSlug));
+  const bookConfig = notesConfig.find(b => b.link === `/notes/${bookSlug}`);
   const bookTitle = bookConfig ? bookConfig.title : bookSlug.replace(/-/g, " ");
 
   const tree = await noteService.getNoteTree(bookSlug);
@@ -69,32 +53,7 @@ export default async function NotePage({ params }) {
   const prevNode = currentIndex > 0 ? flatTree[currentIndex - 1] : null;
   const nextNode = currentIndex !== -1 && currentIndex < flatTree.length - 1 ? flatTree[currentIndex + 1] : null;
 
-  const headings = extractHeadings(noteData.content);
-
-  // Next-mdx-remote options
-  const options = {
-    mdxOptions: {
-      remarkPlugins: [remarkGfm, remarkMath],
-      rehypePlugins: [
-        rehypeKatex,
-        [rehypePrettyCode, prettyCodeOptions],
-        rehypeSlug,
-        [
-          rehypeAutolinkHeadings,
-          {
-            behavior: "prepend",
-            properties: { className: ["anchor-link"] },
-            content: {
-              type: "element",
-              tagName: "span",
-              properties: { className: ["anchor-icon"] },
-              children: [{ type: "text", value: "# " }],
-            },
-          },
-        ],
-      ],
-    },
-  };
+  const headings = extractHeadings(noteData.content, { minLevel: 2, maxLevel: 3 });
 
   return (
     <div className="flex gap-8 xl:gap-12 justify-between">
@@ -118,11 +77,7 @@ export default async function NotePage({ params }) {
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-8">
             {noteData.title}
           </h1>
-          <MDXRemote
-            source={noteData.content}
-            components={getMDXComponents()}
-            options={options}
-          />
+          <Markdown source={noteData.content} variant="note" />
         </article>
 
         {/* Pagination */}

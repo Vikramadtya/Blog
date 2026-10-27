@@ -14,7 +14,7 @@ export async function generateMetadata() {
 }
 
 export default async function SearchPage() {
-  const blogs = (await blogService.getAllPosts()).map(b => JSON.parse(JSON.stringify(b)));
+  const blogs = (await blogService.getAllPosts()).map((p) => p.toSummary());
 
   return (
     <main className="relative z-10 flex min-h-screen flex-col">

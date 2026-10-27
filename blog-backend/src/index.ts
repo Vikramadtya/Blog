@@ -20,7 +20,7 @@ export type Bindings = {
   ADMIN_SECRET?: string;
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
+export const app = new Hono<{ Bindings: Bindings }>();
 
 // Global Middleware
 app.use('*', logger());

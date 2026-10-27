@@ -1,13 +1,13 @@
-import { checkAdminAuth } from "@/lib/auth";
+import { checkAdminAuth, errorResponse } from "@/lib/auth";
 import { noteService } from "@/core";
 import { NextResponse } from "next/server";
+
 export async function GET(req) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
   try {
-    const tree = await noteService.getAdminRawTree();
-    return NextResponse.json({ success: true, tree });
+    return NextResponse.json({ success: true, tree: await noteService.getAdminRawTree() });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return errorResponse(error);
   }
 }

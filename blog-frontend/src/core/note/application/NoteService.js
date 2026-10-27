@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { CACHE_TTL_MS } from "../../../lib/constants.js";
-import { InfrastructureError } from "../../shared/errors.js";
+import { InfrastructureError, NotFoundError, ValidationError } from "../../shared/errors.js";
 
 /**
  * Application Service for Notes.
@@ -36,7 +36,12 @@ export class NoteService {
   }
 
   async getNote(bookSlug, slugArray) {
-    return await this.repository.getNoteBySlug(bookSlug, slugArray);
+    try {
+      return await this.repository.getNoteBySlug(bookSlug, slugArray);
+    } catch (err) {
+      if (err instanceof NotFoundError) return null;
+      throw err;
+    }
   }
 
   async getAdminRawTree() {
@@ -63,29 +68,25 @@ export class NoteService {
   }
 
   async createBook(bookName) {
-    // 1. Create the directory
-    await this.repository.createDirectory(bookName);
-    
-    // 2. Update notes.json config so it appears in the sidebar
+    // Book folders are addressed by slug everywhere (routes, sidebar), so create the folder as the slug.
+    const bookSlug = this.repository._toSlug(bookName);
+    if (!bookSlug) throw new ValidationError("Invalid book name");
+    await this.repository.createDirectory(bookSlug);
+
     try {
-      const configData = await fs.readFile(this.configPath, "utf-8");
-      const config = JSON.parse(configData);
-      
-      const bookSlug = this.repository._toSlug(bookName);
-      const exists = config.books.some(b => b.slug === bookSlug);
-      
-      if (!exists) {
-        config.books.push({
-          title: bookName,
-          slug: bookSlug
-        });
-        await fs.writeFile(this.configPath, JSON.stringify(config, null, 2), "utf-8");
+      // notes.json is an array of { category, title, description?, link }
+      const config = JSON.parse(await fs.readFile(this.configPath, "utf-8"));
+      const link = `/notes/${bookSlug}`;
+      if (!config.some((b) => b.link === link)) {
+        config.push({ category: "BOOK", title: bookName, link });
+        await fs.writeFile(this.configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
       }
     } catch (err) {
       throw new InfrastructureError("Failed to update notes.json config", err);
     }
-    
+
     this.cache.clear();
+    return bookSlug;
   }
 
   flattenTree(nodes, flattened = []) {

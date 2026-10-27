@@ -1,10 +1,11 @@
 import { checkAdminAuth } from "@/lib/auth";
+import { BLOGS_DIR, resolveBlogFile } from "@/lib/paths";
 import { NextResponse } from "next/server";
+import { syncTags } from "@/lib/syncTags";
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 
-const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
 
 export async function GET(req) {
   const authError = checkAdminAuth(req);
@@ -14,7 +15,7 @@ export async function GET(req) {
   if (!filename) return NextResponse.json({ error: "Filename is required" }, { status: 400 });
 
   try {
-    const filePath = path.join(BLOGS_DIR, filename);
+    const filePath = resolveBlogFile(filename);
     const fileContent = await fs.readFile(filePath, "utf8");
     const { data, content } = matter(fileContent);
 
@@ -31,9 +32,8 @@ export async function GET(req) {
 }
 
 export async function PUT(req) {
-  if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
-  }
+  const authError = checkAdminAuth(req);
+  if (authError) return authError;
 
   try {
     const body = await req.json();
@@ -41,7 +41,7 @@ export async function PUT(req) {
     
     if (!filename) return NextResponse.json({ error: "Filename is required" }, { status: 400 });
 
-    const filePath = path.join(BLOGS_DIR, filename);
+    const filePath = resolveBlogFile(filename);
 
     // Make sure we preserve existing metadata that wasn't edited
     let existingData = {};
@@ -81,11 +81,7 @@ export async function PUT(req) {
     await fs.writeFile(filePath, fileContent, "utf8");
 
     // Auto-sync tags just in case tags were modified
-    try {
-      await fetch(new URL("/api/admin/tags", req.url), { method: "POST" });
-    } catch (e) {
-      console.warn("Failed to auto-sync tags after edit", e);
-    }
+    await syncTags().catch((e) => console.warn("Failed to auto-sync tags after edit", e));
 
     return NextResponse.json({ success: true });
   } catch (error) {

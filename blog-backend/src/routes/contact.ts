@@ -5,12 +5,14 @@ import { getDb } from '../db';
 import { supportContacts } from '../db/schema';
 import type { Bindings } from '../index';
 import { adminAuth } from '../middleware/auth';
+import { rateLimit } from '../middleware/rateLimit';
+import { notifyDiscord } from '../lib/discord';
 
 const contact = new Hono<{ Bindings: Bindings }>();
 
 // Strict validation schema for the contact payload
 const contactSchema = z.object({
-  email: z.string().email('Invalid email address').max(255, 'Email is too long'),
+  email: z.string().trim().toLowerCase().email('Invalid email address').max(255, 'Email is too long'),
   message: z.string().min(10, 'Message must be at least 10 characters long').max(2000, 'Message is too long'),
 });
 
@@ -19,7 +21,7 @@ const contactSchema = z.object({
  * Securely saves a user support/contact message to the database.
  * Triggers a Discord webhook notification for immediate visibility.
  */
-contact.post('/', zValidator('json', contactSchema), async (c) => {
+contact.post('/', rateLimit('contact', 3, 60_000), zValidator('json', contactSchema), async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
     const { email, message } = c.req.valid('json');
@@ -31,17 +33,13 @@ contact.post('/', zValidator('json', contactSchema), async (c) => {
       message,
     });
 
-    // 2. Send Discord Notification (if configured)
-    const discordWebhookUrl = c.env.DISCORD_WEBHOOK_URL;
-    if (discordWebhookUrl) {
-      await fetch(discordWebhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: `🚨 **New Support Request**\n**From:** ${email}\n**Message:**\n> ${message}`
-        })
-      }).catch(err => console.error("[Contact API] Discord Webhook Failed:", err));
-    }
+    // 2. Notify (never blocks or fails the request)
+    c.executionCtx.waitUntil(
+      notifyDiscord(
+        c.env.DISCORD_WEBHOOK_URL,
+        `🚨 **New Support Request**\n**From:** ${email}\n**Message:**\n> ${message}`,
+      ),
+    );
 
     return c.json({ success: true });
   } catch (error: any) {

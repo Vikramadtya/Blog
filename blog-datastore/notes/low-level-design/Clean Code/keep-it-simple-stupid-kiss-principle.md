@@ -5,7 +5,7 @@
 A design Software should be designed to be easy to understand, modify, and extend, rather than complex and convoluted.\
 
 
-<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.13.34 PM.png" alt="" /><figcaption></figcaption></figure>
+<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.13.34 PM.png" alt="" /><figcaption></figcaption></figure>
 
 ### Key benefits of KISS
 

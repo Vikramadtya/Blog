@@ -18,76 +18,80 @@ First analyse my submission & complexity , tell me where i can improve. If there
 
 Problem Link :
 
-https://leetcode.com/problems/string-to-integer-atoi/description/
+https://takeuforward.org/practice/dsa/m-coloring-problem?category=faqs-hard&source=strivers-a2z-dsa-sheet
 
 Problem Statement:
 
-Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer.
+Given an integer M and an undirected graph with N vertices (zero indexed) and E edges. The goal is to determine whether the graph can be coloured with a maximum of M colors so that no two of its adjacent vertices have the same colour applied to them.
 
-The algorithm for myAtoi(string s) is as follows:
-
-Whitespace: Ignore any leading whitespace (" ").
-Signedness: Determine the sign by checking if the next character is '-' or '+', assuming positivity if neither present.
-Conversion: Read the integer by skipping leading zeros until a non-digit character is encountered or the end of the string is reached. If no digits were read, then the result is 0.
-Rounding: If the integer is out of the 32-bit signed integer range [-231, 231 - 1], then round the integer to remain in the range. Specifically, integers less than -231 should be rounded to -231, and integers greater than 231 - 1 should be rounded to 231 - 1.
-Return the integer as the final result.
-
-Note:​​​​​​​ You must not use any built-in library function that converts a string to a number (for example, atoi, stoi, Integer.parseInt, int(), parseInt, Number()). Perform the conversion manually.
-
-
-
-
-
+In this context, colouring a graph refers to giving each vertex a different colour. If the colouring of vertices is possible then return true, otherwise return false.
 
 
 Candidate Solution:
 
 ```java
 class Solution {
-    public int myAtoi(String s) {
+    boolean[] colorInNeighbour;
+    boolean graphColoring(int[][] edges, int m, int n) {
+        
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for(int i = 0; i < n; ++i) graph.put(i, new ArrayList<>());
 
-        // remove all whitespace
-        s = s.trim();
-
-        if (s.length() == 0)
-            return 0;
-
-        int i = 0, sign = 1;
-
-        if (s.charAt(i) == '-') {
-            sign = -1;
-            i++;
-        } else if (s.charAt(i) == '+') {
-            i++;
+        for(int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
         }
 
-        long result = 0;
-        while (i < s.length()) {
-            char c = s.charAt(i);
+        int[] colors = new int[n];
+        colorInNeighbour = new boolean[m];
 
-            if (!Character.isDigit(s.charAt(i)))
+        Arrays.fill(colors,-1);
+        Arrays.fill(colorInNeighbour,false);
+        
+        for(int i = 0; i < n ; ++i) {
+            if(colors[i] == -1) {
+                if(!dfs(graph,colors, m, i)) return false;
+            }
+        }
+        
+        return true;
+    }
+
+
+    boolean dfs(Map<Integer, List<Integer>> graph, int[] color, int M, int index) {
+        
+        if(color[index] != -1) return true;
+
+        Arrays.fill(colorInNeighbour,false);
+        for(int nbr : graph.get(index)) {
+            if(color[nbr] != -1) {
+                colorInNeighbour[color[nbr]] = true;
+            }
+        }
+
+        for(int i = 0; i < M; ++i) {
+            if(!colorInNeighbour[i]) {
+                color[index] = i;
                 break;
-
-            result = result * 10 + (c - '0') * sign;
-
-            if (result > Integer.MAX_VALUE)
-                return Integer.MAX_VALUE;
-            if (result < Integer.MIN_VALUE)
-                return Integer.MIN_VALUE;
-
-            i++;
-
+            }
         }
 
-        return (int) result;
+
+        if(color[index] == -1) return false;
+
+        for(int nbr : graph.get(index)) {
+            if(!dfs(graph,color,M,nbr)) return false;
+        }
+
+        return true;
     }
 }
 ```
 
 Claimed Complexity:
 
-Space Complexity : O(1)
-Time Complexity : O(n)
+Space Complexity : O(n)
+Time Complexity : O(n*e)
 
 ---
 

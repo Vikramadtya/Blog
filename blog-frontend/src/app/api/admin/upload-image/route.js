@@ -6,9 +6,6 @@ import path from "path";
 export async function POST(req) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
-  if (false) {
-    return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
-  }
 
   try {
     const formData = await req.formData();

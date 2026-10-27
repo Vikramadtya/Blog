@@ -1,17 +1,12 @@
 import { checkAdminAuth } from "@/lib/auth";
+import { BLOGS_DIR, resolveBlogFile } from "@/lib/paths";
 import { NextResponse } from "next/server";
+import { syncTags } from "@/lib/syncTags";
+import { calculateReadingTime } from "@/lib/readingTime";
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 
-const BLOGS_DIR = path.join(process.cwd(), "../blog-datastore/blogs");
-
-function calculateReadingTime(content) {
-  const wordsPerMinute = 200;
-  const words = content.trim().split(/\s+/).length;
-  const minutes = Math.ceil(words / wordsPerMinute);
-  return `${minutes} min read`;
-}
 
 export async function GET(req) {
   const authError = checkAdminAuth(req);
@@ -49,15 +44,12 @@ export async function GET(req) {
 export async function PUT(req) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
-  if (false) {
-    return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
-  }
 
   try {
     const { filename, publish } = await req.json();
     if (!filename) return NextResponse.json({ error: "Filename is required" }, { status: 400 });
 
-    const filePath = path.join(BLOGS_DIR, filename);
+    const filePath = resolveBlogFile(filename);
     const fileContent = await fs.readFile(filePath, "utf8");
     const { data, content } = matter(fileContent);
 
@@ -75,11 +67,7 @@ export async function PUT(req) {
     // We don't await the tag sync here to keep the response fast,
     // the frontend can call /api/admin/tags independently, 
     // or we can just fetch it internally.
-    try {
-      await fetch(new URL("/api/admin/tags", req.url), { method: "POST" });
-    } catch (e) {
-      console.warn("Failed to auto-sync tags after update", e);
-    }
+    await syncTags().catch((e) => console.warn("Failed to auto-sync tags after update", e));
 
     return NextResponse.json({ success: true, readingTime: data.readingTime });
   } catch (error) {
@@ -90,23 +78,16 @@ export async function PUT(req) {
 export async function DELETE(req) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
-  if (false) {
-    return NextResponse.json({ error: "Only available in local development." }, { status: 403 });
-  }
 
   try {
     const { searchParams } = new URL(req.url);
     const filename = searchParams.get("filename");
     if (!filename) return NextResponse.json({ error: "Filename is required" }, { status: 400 });
 
-    const filePath = path.join(BLOGS_DIR, filename);
+    const filePath = resolveBlogFile(filename);
     await fs.unlink(filePath);
     
-    try {
-      await fetch(new URL("/api/admin/tags", req.url), { method: "POST" });
-    } catch (e) {
-      console.warn("Failed to auto-sync tags after deletion", e);
-    }
+    await syncTags().catch((e) => console.warn("Failed to auto-sync tags after deletion", e));
 
     return NextResponse.json({ success: true });
   } catch (error) {

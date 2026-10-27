@@ -4,7 +4,7 @@
 
 This principle is about avoiding over-engineering and focusing strictly on the present requirements. By adding unnecessary features or over-engineering solutions, we incur additional complexity, which slow down development, increase the likelihood of bugs, and make the codebase harder to maintain.
 
-<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.14.27 PM.png" alt="" /><figcaption></figcaption></figure>
+<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.14.27 PM.png" alt="" /><figcaption></figcaption></figure>
 
 \
 

@@ -4,7 +4,7 @@ import NotesSidebar from "@/presentation/note/NotesSidebar";
 import notesConfig from "../../../../config/notes.json";
 
 export default async function NotesLayout({ children, params }) {
-  const { bookSlug } = params;
+  const { bookSlug } = await params;
   
   // Find the book title from config
   const bookConfig = notesConfig.find(b => {

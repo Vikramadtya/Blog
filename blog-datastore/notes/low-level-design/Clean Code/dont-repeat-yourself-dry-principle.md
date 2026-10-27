@@ -8,7 +8,7 @@ The DRY principle – **"Don't Repeat Yourself"** is one of the fundamental prin
 
 
 
-<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.16.40 PM.png" alt="" /><figcaption></figcaption></figure>
+<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.16.40 PM.png" alt="" /><figcaption></figcaption></figure>
 
 ### **Key Benefits of the DRY Principle**
 
