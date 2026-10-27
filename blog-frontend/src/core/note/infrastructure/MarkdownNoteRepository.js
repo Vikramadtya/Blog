@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
+import { resolveInside } from "../../../lib/paths.js";
 import { InfrastructureError, NotFoundError, ValidationError } from "../../shared/errors.js";
 
 export class MarkdownNoteRepository {
@@ -15,6 +16,17 @@ export class MarkdownNoteRepository {
       .replace(/\.md$/, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+  }
+
+  // First finite numeric value among the supported ordering keys, else null (avoids "NaN. Title")
+  _frontmatterSno(data) {
+    for (const key of ["s.no", "sno", "order", "id"]) {
+      if (data[key] !== undefined && data[key] !== "") {
+        const n = Number(data[key]);
+        if (Number.isFinite(n)) return n;
+      }
+    }
+    return null;
   }
 
   _toTitleCase(str) {
@@ -81,10 +93,8 @@ export class MarkdownNoteRepository {
              else if (parsed.data.name) title = String(parsed.data.name).trim();
              
              // Check various possible frontmatter keys for sorting
-             if (parsed.data['s.no'] !== undefined) sno = Number(parsed.data['s.no']);
-             else if (parsed.data.sno !== undefined) sno = Number(parsed.data.sno);
-             else if (parsed.data.order !== undefined) sno = Number(parsed.data.order);
-             else if (parsed.data.id !== undefined) sno = Number(parsed.data.id);
+             const fmSno = this._frontmatterSno(parsed.data);
+             if (fmSno !== null) sno = fmSno;
 
              // If no frontmatter title, extract the first H1 in markdown content
              if (!title) {
@@ -259,12 +269,7 @@ export class MarkdownNoteRepository {
     // Check if filename or frontmatter has problem number prefix
     const numMatch = baseFileName.match(/^([0-9]+)(?:[\.\-\s]|$)/);
     let problemNum = numMatch ? parseInt(numMatch[1], 10) : null;
-    if (!problemNum) {
-      if (data["s.no"] !== undefined) problemNum = Number(data["s.no"]);
-      else if (data.sno !== undefined) problemNum = Number(data.sno);
-      else if (data.order !== undefined) problemNum = Number(data.order);
-      else if (data.id !== undefined) problemNum = Number(data.id);
-    }
+    if (!problemNum) problemNum = this._frontmatterSno(data);
 
     if (problemNum && !title.match(new RegExp(`^${problemNum}(?:[.\\s-]|$)`))) {
       title = `${problemNum}. ${title}`;
@@ -282,11 +287,8 @@ export class MarkdownNoteRepository {
   }
 
   async getNoteByRawPath(relativePath) {
-    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
-    const absolutePath = path.join(this.rootPath, normalizedPath);
-    if (!absolutePath.startsWith(this.rootPath)) {
-      throw new ValidationError("Invalid path traversal");
-    }
+    const absolutePath = resolveInside(this.rootPath, relativePath);
+    const normalizedPath = path.relative(this.rootPath, absolutePath);
 
     try {
       const content = await fs.readFile(absolutePath, "utf-8");
@@ -298,11 +300,8 @@ export class MarkdownNoteRepository {
   }
 
   async saveNoteRawPath(relativePath, content) {
-    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
-    const absolutePath = path.join(this.rootPath, normalizedPath);
-    if (!absolutePath.startsWith(this.rootPath)) {
-      throw new ValidationError("Invalid path traversal");
-    }
+    const absolutePath = resolveInside(this.rootPath, relativePath);
+    const normalizedPath = path.relative(this.rootPath, absolutePath);
 
     try {
       await fs.writeFile(absolutePath, content, "utf-8");
@@ -312,11 +311,8 @@ export class MarkdownNoteRepository {
   }
 
   async deleteRawPath(relativePath) {
-    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
-    const absolutePath = path.join(this.rootPath, normalizedPath);
-    if (!absolutePath.startsWith(this.rootPath)) {
-      throw new ValidationError("Invalid path traversal");
-    }
+    const absolutePath = resolveInside(this.rootPath, relativePath);
+    const normalizedPath = path.relative(this.rootPath, absolutePath);
 
     try {
       const stat = await fs.stat(absolutePath);
@@ -333,11 +329,8 @@ export class MarkdownNoteRepository {
   }
 
   async createDirectory(relativePath) {
-    const normalizedPath = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
-    const absolutePath = path.join(this.rootPath, normalizedPath);
-    if (!absolutePath.startsWith(this.rootPath)) {
-      throw new ValidationError("Invalid path traversal");
-    }
+    const absolutePath = resolveInside(this.rootPath, relativePath);
+    const normalizedPath = path.relative(this.rootPath, absolutePath);
     
     try {
       await fs.mkdir(absolutePath, { recursive: true });

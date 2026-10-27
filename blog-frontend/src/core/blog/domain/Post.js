@@ -1,4 +1,5 @@
 import { ValidationError } from "../../shared/errors.js";
+import { calculateReadingTime } from "../../../lib/readingTime.js";
 
 export class Post {
   constructor({
@@ -19,6 +20,7 @@ export class Post {
     series,
     seriesOrder,
     demo,
+    readingTime,
     content,
   }) {
     if (!id) throw new ValidationError("Post must have an ID");
@@ -44,6 +46,7 @@ export class Post {
       repository: demo?.repository || null,
     };
     this.content = content || "";
+    this.readingTime = readingTime || calculateReadingTime(this.content);
   }
 
   get permalink() {
@@ -70,6 +73,12 @@ export class Post {
     this.likes += 1;
   }
 
+  /** Serializable shape for list pages and client components: everything except the (large) markdown body. */
+  toSummary() {
+    const { content, ...summary } = this.toJSON();
+    return summary;
+  }
+
   toJSON() {
     return {
       id: this.id,
@@ -90,6 +99,7 @@ export class Post {
       series: this.series,
       seriesOrder: this.seriesOrder,
       demo: this.demo,
+      readingTime: this.readingTime,
       content: this.content,
     };
   }

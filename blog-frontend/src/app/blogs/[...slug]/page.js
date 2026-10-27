@@ -24,28 +24,9 @@ import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
 import { getMDXComponents } from "@/presentation/ui/MdxComponents";
 import { prettyCodeOptions } from "@/lib/markdownConstants";
 import { blogService } from "@/core";
+import { extractHeadings } from "@/lib/headings";
 import { siteMetadata } from "../../../../site.config.mjs";
 import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvider";
-
-function extractHeadings(markdown) {
-  if (!markdown) return [];
-  const headingRegex = /^(#{1,3})\s+(.+)$/gm;
-  const headings = [];
-  let match;
-  while ((match = headingRegex.exec(markdown)) !== null) {
-    const level = match[1].length;
-    const rawText = match[2].trim();
-    const text = rawText
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/[*_`]/g, "");
-    const slug = text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
-    headings.push({ level, heading: text, slug });
-  }
-  return headings;
-}
 
 // Static params for SSG
 export async function generateStaticParams() {
@@ -54,14 +35,11 @@ export async function generateStaticParams() {
 }
 
 // SEO metadata generation
-export async function generateMetadata({ params, searchParams }) {
+export async function generateMetadata({ params }) {
   const slugParam = params.slug;
   // Join all segments to form the full permalink (e.g. "parent/child")
   const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
-  const isPreview = searchParams?.preview === "true";
-  const blogData = await blogService.getPostBySlug(slug, {
-    includeUnpublished: isPreview,
-  });
+  const blogData = await blogService.getPostBySlug(slug);
   if (!blogData) return {};
 
   // Use dynamic OG if preview is missing
@@ -101,15 +79,12 @@ export async function generateMetadata({ params, searchParams }) {
 }
 
 // Main blog post page
-export default async function Post({ params, searchParams }) {
+export default async function Post({ params }) {
   const { slug: slugParam } = params;
   // Join all segments to form the full permalink (e.g. "parent/child")
   const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
-  const isPreview = searchParams?.preview === "true";
 
-  const blogData = await blogService.getPostBySlug(slug, {
-    includeUnpublished: isPreview,
-  });
+  const blogData = await blogService.getPostBySlug(slug);
   if (!blogData) notFound();
 
   const parentSeriesSlug = blogData.series || blogData.slug;
@@ -303,7 +278,7 @@ export default async function Post({ params, searchParams }) {
           <div className="flex justify-center">
             <Doodle classData="h-20 w-20" />
           </div>
-          <CommentsSection blogId={blogData.slug} />
+          <CommentsSection blogId={blogData.id} />
         </div>
       </article>
     </BlogMetricsProvider>

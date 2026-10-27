@@ -1,5 +1,6 @@
 import { Post } from "../domain/Post.js";
 import { CACHE_TTL_MS } from "../../../lib/constants.js";
+import { NotFoundError } from "../../shared/errors.js";
 
 /**
  * Application Service for Blogs.
@@ -29,7 +30,8 @@ export class BlogService {
     const allTags = await this.getAllTags();
     const hydratedTags = post.tags.map(tagStr => {
       if (typeof tagStr === 'object') return tagStr;
-      const found = allTags.find(t => t.id === tagStr);
+      const needle = String(tagStr).toLowerCase();
+      const found = allTags.find(t => t.id === tagStr || t.name?.toLowerCase() === needle);
       return found ? found : { id: tagStr, name: tagStr, color: "gray" };
     });
     
@@ -84,13 +86,19 @@ export class BlogService {
     let post = this._getCached(cacheKey);
 
     if (!post) {
-      const rawPost = await this.repository.findBySlug(slug);
+      let rawPost;
+      try {
+        rawPost = await this.repository.findBySlug(slug);
+      } catch (err) {
+        if (err instanceof NotFoundError) return null;
+        throw err;
+      }
       post = await this._hydratePost(rawPost);
-      
-      if (!wantsAll && !post.isPublished()) {
+
+      if (!post || (!wantsAll && !post.isPublished())) {
         return null;
       }
-      
+
       this._setCache(cacheKey, post);
     }
 

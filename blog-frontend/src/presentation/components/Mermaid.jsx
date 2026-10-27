@@ -13,7 +13,7 @@ export default function Mermaid({ chart }) {
     mermaid.initialize({
       startOnLoad: false,
       theme: resolvedTheme === 'dark' ? 'dark' : 'default',
-      securityLevel: 'loose',
+      securityLevel: 'strict',
     });
 
     const renderChart = async () => {

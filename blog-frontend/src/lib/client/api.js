@@ -3,8 +3,6 @@
  * Handles dynamic runtime interactions (likes, views, subscriptions).
  */
 
-import { siteMetadata } from "../../../site.config.mjs";
-import { consola } from "consola";
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 const MAX_GET_RETRIES = 1;
@@ -45,7 +43,7 @@ async function get(url) {
     try {
       return await fetcher(url);
     } catch (e) {
-      lastError = e; console.warn("API retry failed:", e);
+      lastError = e;
     }
   }
   throw lastError;
@@ -57,10 +55,6 @@ async function post(url, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-}
-
-function unwrap(res, fallback = []) {
-  return res?.success ? res.data : fallback;
 }
 
 const MICROSERVICE_URL =
@@ -101,23 +95,6 @@ export async function contactSupport(email, message) {
   return await post(url, { email, message });
 }
 
-export async function fetchSubscribers() {
-  const url = `${MICROSERVICE_URL}/subscribe`;
-  const res = await get(url);
-  return unwrap(res, []);
-}
-
-export async function fetchContacts() {
-  const url = `${MICROSERVICE_URL}/contact`;
-  const res = await get(url);
-  return unwrap(res, []);
-}
-
-export async function fetchAnalytics() {
-  const url = `${MICROSERVICE_URL}/analytics`;
-  return await get(url);
-}
-
 export async function fetchComments(blogId) {
   const url = `${MICROSERVICE_URL}/comments/${blogId}`;
   const res = await get(url);
@@ -127,9 +104,4 @@ export async function fetchComments(blogId) {
 export async function postComment(blogId, data) {
   const url = `${MICROSERVICE_URL}/comments/${blogId}`;
   return await post(url, data);
-}
-
-export async function deleteComment(id) {
-  const url = `${MICROSERVICE_URL}/comments/${id}`;
-  return fetcher(url, { method: "DELETE" });
 }

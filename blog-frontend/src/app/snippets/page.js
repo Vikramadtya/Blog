@@ -40,7 +40,7 @@ export default async function Snippets() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: `${siteMetadata.siteUrl}/home`,
+        item: `${siteMetadata.siteUrl}`,
       },
       {
         "@type": "ListItem",

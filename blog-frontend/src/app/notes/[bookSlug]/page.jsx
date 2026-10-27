@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
 import { noteService } from "@/core";
+import { internalBookSlugs } from "@/lib/books";
+
+export function generateStaticParams() {
+  return internalBookSlugs.map((bookSlug) => ({ bookSlug }));
+}
 
 export default async function BookIndexPage({ params }) {
   const { bookSlug } = params;

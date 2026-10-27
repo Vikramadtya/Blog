@@ -36,7 +36,7 @@ export default async function TagsPage() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: `${siteMetadata.siteUrl}/home`,
+        item: `${siteMetadata.siteUrl}`,
       },
       {
         "@type": "ListItem",

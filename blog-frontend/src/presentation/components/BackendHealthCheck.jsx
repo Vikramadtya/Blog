@@ -3,13 +3,14 @@
 import { useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://blog-microservice.neuralcook.workers.dev";
+const API_BASE_URL = process.env.NEXT_PUBLIC_MICROSERVICE_URL || "http://localhost:8787";
+const ENABLED = process.env.NODE_ENV === "development";
 
 export default function BackendHealthCheck() {
   const isChecking = useRef(false);
 
   useEffect(() => {
-    if (isChecking.current) return;
+    if (!ENABLED || isChecking.current) return;
     isChecking.current = true;
 
     const TOAST_ID = "backend-health-toast";
@@ -57,6 +58,8 @@ export default function BackendHealthCheck() {
       toast.dismiss(TOAST_ID);
     };
   }, []);
+
+  if (!ENABLED) return null;
 
   return (
     <Toaster 

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import MarkdownPreview from "@/presentation/admin/MarkdownPreview";
+import { uploadImage } from "@/lib/client/adminApi";
 
 export default function EditPostPage({ params }) {
   const filename = decodeURIComponent(params.filename).replace(/^(\.\.\/|\.\.\\|\/|\\)+/, "");
@@ -189,31 +190,17 @@ export default function EditPostPage({ params }) {
 
   const handleImageUpload = async (file) => {
     if (!file || !file.type.startsWith("image/")) return;
-    
+
     setIsUploading(true);
     const placeholder = `![Uploading ${file.name}...]()\n`;
     insertAtCursor(placeholder);
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const res = await fetch("/api/admin/upload-image", {
-        method: "POST",
-        body: formData
-      });
-      const data = await res.json();
-      
-      if (res.ok) {
-        const imageMarkdown = `![${file.name}](${data.url})\n`;
-        setContent(prev => prev.replace(placeholder, imageMarkdown));
-      } else {
-        alert("Upload failed: " + data.error);
-        setContent(prev => prev.replace(placeholder, ""));
-      }
+      const url = await uploadImage(file);
+      setContent((prev) => prev.replace(placeholder, `![${file.name}](${url})\n`));
     } catch (err) {
       alert("Upload failed: " + err.message);
-      setContent(prev => prev.replace(placeholder, ""));
+      setContent((prev) => prev.replace(placeholder, ""));
     }
     setIsUploading(false);
   };
@@ -221,23 +208,11 @@ export default function EditPostPage({ params }) {
   const handleCoverUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
-    
-    setIsUploadingCover(true);
-    const formDataBody = new FormData();
-    formDataBody.append("file", file);
 
+    setIsUploadingCover(true);
     try {
-      const res = await fetch("/api/admin/upload-image", {
-        method: "POST",
-        body: formDataBody
-      });
-      const data = await res.json();
-      
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, previewImageSrc: data.url }));
-      } else {
-        alert("Upload failed: " + data.error);
-      }
+      const url = await uploadImage(file);
+      setFormData((prev) => ({ ...prev, previewImageSrc: url }));
     } catch (err) {
       alert("Upload failed: " + err.message);
     }

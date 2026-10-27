@@ -23,7 +23,7 @@ export default async function Blog() {
 
   // Only show top-level posts. Sub-pages (those with a `series` field pointing
   // to another post's slug) are shown inside the parent series page, not here.
-  const blogs = allBlogs.filter((b) => !b.series);
+  const blogs = allBlogs.filter((b) => !b.series).map((p) => p.toSummary());
 
   // Build a set of slugs that have children (i.e. are a series parent)
   const seriesParentSlugs = new Set(
@@ -51,7 +51,7 @@ export default async function Blog() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: `${siteMetadata.siteUrl}/home`,
+        item: `${siteMetadata.siteUrl}`,
       },
       {
         "@type": "ListItem",

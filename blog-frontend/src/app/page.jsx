@@ -10,7 +10,7 @@ import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
 import FeaturedSection from "@/presentation/blog/FeaturedSection";
 import Search from "@/presentation/blog/Search";
-import { siteMetadata } from "../../../site.config.mjs";
+import { siteMetadata } from "../../site.config.mjs";
 import HeroSection from "@/presentation/blog/HeroSection";
 
 const { content } = siteMetadata;
@@ -20,16 +20,16 @@ export async function generateMetadata() {
     title: siteMetadata.title,
     description: siteMetadata.description,
     alternates: {
-      canonical: `${siteMetadata.siteUrl}/home`,
+      canonical: `${siteMetadata.siteUrl}`,
     },
   };
 }
 
 export default async function Home() {
   const [latestBlog, snippets, blogs] = await Promise.all([
-    blogService.getPublishedBlogs().then(blogs => blogs.map(b => JSON.parse(JSON.stringify(b)))),
-    blogService.getPublishedSnippets().then(blogs => blogs.map(b => JSON.parse(JSON.stringify(b)))),
-    blogService.getAllPosts().then(blogs => blogs.map(b => JSON.parse(JSON.stringify(b)))),
+    blogService.getPublishedBlogs().then(posts => posts.map(p => p.toSummary())),
+    blogService.getPublishedSnippets().then(posts => posts.map(p => p.toSummary())),
+    blogService.getAllPosts().then(posts => posts.map(p => p.toSummary())),
   ]);
 
   const blogIdToMetadata = blogs.reduce((acc, data) => {
@@ -63,7 +63,7 @@ export default async function Home() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: `${siteMetadata.siteUrl}/home`,
+        item: `${siteMetadata.siteUrl}`,
       },
     ],
   };

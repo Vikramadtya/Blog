@@ -56,29 +56,22 @@ export class MarkdownBlogRepository {
     return posts;
   }
 
-  async findBySlug(slug) {
-    // slug may be:
-    //   - a plain slug:     "github-spec-kit"
-    //   - a full permalink: "spec-driven-development/github-spec-kit"
-    // We always resolve to the leaf slug for file lookup.
-    const leafSlug = slug.includes("/") ? slug.split("/").pop() : slug;
+  async findBySlug(permalink) {
+    // permalink is either a plain slug ("github-spec-kit") or "series/slug".
+    // Resolution is exact so that /blogs/<anything>/<slug> cannot alias a post.
+    const leafSlug = permalink.split("/").pop();
+    const matches = (p) => p.permalink === permalink;
 
-    // Fast path: try direct filename match on the leaf slug
+    // Fast path: filename normally equals the slug
     try {
-      const directPost = await this._readFile(`${leafSlug}.md`);
-      if (directPost.slug === leafSlug || directPost.slug === slug) return directPost;
-    } catch (err) {
-      // Not found directly by filename, fallback to scanning
+      const direct = await this._readFile(`${leafSlug}.md`);
+      if (matches(direct)) return direct;
+    } catch {
+      // fall through to scan
     }
 
-    // Fallback: scan all posts matching by slug or by permalink (series/slug)
-    const allPosts = await this.findAll();
-    const post = allPosts.find(p =>
-      p.slug === leafSlug ||
-      p.slug === slug ||
-      (p.series ? `${p.series}/${p.slug}` : p.slug) === slug
-    );
-    if (!post) throw new NotFoundError("Post", slug);
+    const post = (await this.findAll()).find(matches);
+    if (!post) throw new NotFoundError("Post", permalink);
     return post;
   }
 

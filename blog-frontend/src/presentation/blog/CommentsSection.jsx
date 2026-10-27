@@ -90,6 +90,17 @@ export default function CommentsSection({ blogId }) {
             />
           </div>
         </div>
+        {/* Honeypot: hidden from people, bots fill it in */}
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="hidden"
+          value={formData.website || ""}
+          onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+        />
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
             Comment *
