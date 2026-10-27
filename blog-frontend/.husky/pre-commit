@@ -1,0 +1,1 @@
+cd blog-frontend && npx lint-staged

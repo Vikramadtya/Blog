@@ -1,11 +1,3 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
-import { rehypePrettyCode } from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -21,8 +13,7 @@ import AuthorBio from "@/presentation/blog/AuthorBio";
 import NewsletterForm from "@/presentation/blog/NewsletterForm";
 import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
 
-import { getMDXComponents } from "@/presentation/ui/MdxComponents";
-import { prettyCodeOptions } from "@/lib/markdownConstants";
+import Markdown from "@/presentation/ui/Markdown";
 import { blogService } from "@/core";
 import { extractHeadings } from "@/lib/headings";
 import { siteMetadata } from "../../../../site.config.mjs";
@@ -219,29 +210,7 @@ export default async function Post({ params }) {
 
         {/* Blog Content */}
         <section className="mx-auto w-full max-w-[65ch] prose prose-sm prose-neutral dark:prose-invert md:prose-base lg:prose-lg">
-          <MDXRemote
-            source={content}
-            options={{
-              mdxOptions: {
-                remarkPlugins: [remarkGfm, remarkMath],
-                rehypePlugins: [
-                  rehypeKatex,
-                  rehypeSlug,
-                  [
-                    rehypeAutolinkHeadings,
-                    {
-                      properties: {
-                        className: ["anchor"],
-                        ariaLabel: "Link to section",
-                      },
-                    },
-                  ],
-                  [rehypePrettyCode, prettyCodeOptions],
-                ],
-              },
-            }}
-            components={getMDXComponents()}
-          />
+          <Markdown source={content} variant="blog" />
         </section>
 
         <AuthorBio />

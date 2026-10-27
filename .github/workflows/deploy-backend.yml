@@ -36,6 +36,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Test
+        run: npm test
+
       - name: Deploy to Cloudflare Workers
         if: github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
