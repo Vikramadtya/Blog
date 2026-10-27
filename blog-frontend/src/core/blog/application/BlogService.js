@@ -1,27 +1,26 @@
 import { Post } from "../domain/Post.js";
-import { CACHE_TTL_MS } from "../../../lib/constants.js";
 import { NotFoundError } from "../../shared/errors.js";
 
 /**
  * Application Service for Blogs.
- * Orchestrates use cases and handles caching to prevent constant disk IO.
+ * Orchestrates use cases and memoises disk reads in production.
  */
 export class BlogService {
   constructor(blogRepository) {
     this.repository = blogRepository;
     this.cache = new Map();
+    this.useCache = process.env.NODE_ENV !== "development";
   }
 
+  // Content only changes via edits on disk. In dev always re-read; in production
+  // (build / long-lived server) memoise, since the content is immutable per deploy.
   _getCached(key) {
-    const entry = this.cache.get(key);
-    if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) return entry.data;
-    return null;
+    return this.useCache ? this.cache.get(key) ?? null : null;
   }
 
   _setCache(key, data) {
-    this.cache.set(key, { data, timestamp: Date.now() });
+    if (this.useCache) this.cache.set(key, data);
   }
-
 
   async _hydratePost(post) {
     if (!post) return null;
@@ -65,7 +64,7 @@ export class BlogService {
       this._setCache(cacheKey, posts);
     }
 
-    return posts.map(p => new Post(p.toJSON())); // Clone to prevent mutation
+    return [...posts]; // fresh array so callers can sort/filter freely
   }
 
   async getPublishedBlogs() {
@@ -102,7 +101,7 @@ export class BlogService {
       this._setCache(cacheKey, post);
     }
 
-    return post ? new Post(post.toJSON()) : null; // Clone to prevent mutation
+    return post ?? null;
   }
 
   async getAllTags() {
