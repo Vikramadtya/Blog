@@ -2,10 +2,11 @@
   "name": "blog-microservice",
   "version": "1.0.0",
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push:pg",
+    "typecheck": "tsc --noEmit",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

@@ -3,50 +3,38 @@ import type { Bindings } from '../index';
 import { adminAuth } from '../middleware/auth';
 import { blogMetrics, subscribers, comments } from "../db/schema";
 import { getDb } from "../db";
-import { sql } from "drizzle-orm";
+import { sql, desc } from "drizzle-orm";
 
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.get("/", adminAuth, async (c) => {
-  const db = getDb(c.env.DATABASE_URL);
-
   try {
-    // Total Views and Likes
-    const totals = await db
-      .select({
-        totalViews: sql<number>`sum(${blogMetrics.views})`,
-        totalLikes: sql<number>`sum(${blogMetrics.likes})`,
-      })
-      .from(blogMetrics);
+    const db = getDb(c.env.DATABASE_URL);
 
-    // Total Subscribers
-    const subs = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(subscribers);
-      
-    // Total Comments
-    const comms = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(comments);
-
-    // Leaderboard
-    const topPosts = await db
-      .select()
-      .from(blogMetrics)
-      .orderBy(sql`${blogMetrics.views} desc`)
-      .limit(10);
+    const [totals, subs, comms, topPosts] = await Promise.all([
+      db
+        .select({
+          totalViews: sql<number>`coalesce(sum(${blogMetrics.views}), 0)::int`,
+          totalLikes: sql<number>`coalesce(sum(${blogMetrics.likes}), 0)::int`,
+        })
+        .from(blogMetrics),
+      db.select({ count: sql<number>`count(*)::int` }).from(subscribers),
+      db.select({ count: sql<number>`count(*)::int` }).from(comments),
+      db.select().from(blogMetrics).orderBy(desc(blogMetrics.views)).limit(10),
+    ]);
 
     return c.json({
       totals: {
-        views: totals[0]?.totalViews || 0,
-        likes: totals[0]?.totalLikes || 0,
-        subscribers: subs[0]?.count || 0,
-        comments: comms[0]?.count || 0,
+        views: totals[0]?.totalViews ?? 0,
+        likes: totals[0]?.totalLikes ?? 0,
+        subscribers: subs[0]?.count ?? 0,
+        comments: comms[0]?.count ?? 0,
       },
       topPosts,
     });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 500);
+  } catch (error) {
+    console.error("[Analytics API] failed:", error);
+    return c.json({ error: 'Failed to load analytics' }, 500);
   }
 });
 
