@@ -87,7 +87,7 @@ To create a new blog post or technical note, we have built a custom frictionless
 3. Access the **Blog Editor** or **Note Editor**.
 4. You can draft, preview, and save Markdown directly from the browser. The files are securely saved back to the `blog-datastore/` directory locally.
 
-*(Note: This admin interface is strictly locked down to local development for security and will not function in production).*
+*(The admin UI and `/api/admin/*` only exist in `next dev`; in production they return 404. To see subscribers/contacts/analytics in the dashboard, set the same `ADMIN_SECRET` in `blog-frontend/.env.local` and in the backend's `.dev.vars` / `wrangler secret`.)*
 
 ## Deployment & CI/CD
 

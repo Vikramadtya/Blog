@@ -6,9 +6,11 @@ on:
       - main
     paths:
       - 'blog-frontend/**'
+      - 'blog-datastore/**'
   pull_request:
     paths:
       - 'blog-frontend/**'
+      - 'blog-datastore/**'
 
 jobs:
   build-and-test:
@@ -30,6 +32,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
 
       - name: Build Next.js App
         # This acts as a CI check to ensure the project compiles successfully.
