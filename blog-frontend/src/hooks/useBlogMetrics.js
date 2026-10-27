@@ -107,7 +107,9 @@ export function useBlogMetrics(
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [id, autoIncrementViews]); // intentionally omitting initialLikes/initialViews to prevent refetch loops
+  // intentionally omitting initialLikes/initialViews to prevent refetch loops
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, autoIncrementViews]);
 
   // Handle Like action
   const toggleLike = useCallback(async () => {

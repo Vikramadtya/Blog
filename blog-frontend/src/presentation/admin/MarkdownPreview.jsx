@@ -32,7 +32,7 @@ export default function MarkdownPreview({ content }) {
           img: ({node, ...props}) => (
             // For relative paths like /notes-assets/img.png it works out of the box
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img {...props} className="rounded-lg shadow-sm max-w-full" />
+            <img alt="" {...props} className="rounded-lg shadow-sm max-w-full" />
           )
         }}
       >

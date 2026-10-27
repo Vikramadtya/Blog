@@ -104,6 +104,7 @@ export async function GET(request) {
             {/* Fallback avatar using ui-avatars since we don't have local image path resolution in edge easy */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
 <img
+              alt=""
               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(siteMetadata.author)}&background=4f46e5&color=fff&size=128`}
               width="64"
               height="64"
