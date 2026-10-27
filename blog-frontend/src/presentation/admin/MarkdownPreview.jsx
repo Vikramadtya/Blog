@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import Mermaid from "@/presentation/components/Mermaid";
+import Mermaid from "@/presentation/components/LazyMermaid";
 
 export default function MarkdownPreview({ content }) {
   return (

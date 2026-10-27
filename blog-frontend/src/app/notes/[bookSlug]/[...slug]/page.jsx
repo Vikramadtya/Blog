@@ -67,6 +67,8 @@ export default async function NotePage({ params }) {
   // Next-mdx-remote options
   const options = {
     mdxOptions: {
+      // Notes are plain markdown: `{`, `<` and `&` must not be parsed as JSX.
+      format: "md",
       remarkPlugins: [remarkGfm, remarkMath],
       rehypePlugins: [
         rehypeKatex,

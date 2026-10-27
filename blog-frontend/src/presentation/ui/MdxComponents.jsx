@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import CopyButton from '@/presentation/ui/CopyButton';
-import Mermaid from '@/presentation/components/Mermaid';
+import Mermaid from '@/presentation/components/LazyMermaid';
 
 export function getMDXComponents(components) {
   return {
