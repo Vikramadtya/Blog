@@ -7,7 +7,7 @@ export function generateStaticParams() {
 }
 
 export default async function BookIndexPage({ params }) {
-  const { bookSlug } = params;
+  const { bookSlug } = await params;
   
   const tree = await noteService.getNoteTree(bookSlug);
   const flat = noteService.flattenTree(tree);

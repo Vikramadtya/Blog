@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const { bookSlug, slug } = params;
+  const { bookSlug, slug } = await params;
   const noteData = await noteService.getNote(bookSlug, slug);
   if (!noteData) return {};
 
@@ -33,7 +33,7 @@ import NotesToc from "@/presentation/note/NotesToc";
 import notesConfig from "../../../../../config/notes.json";
 
 export default async function NotePage({ params }) {
-  const { bookSlug, slug } = params;
+  const { bookSlug, slug } = await params;
   
   const noteData = await noteService.getNote(bookSlug, slug);
   

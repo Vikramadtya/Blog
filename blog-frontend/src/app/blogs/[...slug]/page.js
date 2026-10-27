@@ -27,7 +27,7 @@ export async function generateStaticParams() {
 
 // SEO metadata generation
 export async function generateMetadata({ params }) {
-  const slugParam = params.slug;
+  const slugParam = (await params).slug;
   // Join all segments to form the full permalink (e.g. "parent/child")
   const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
   const blogData = await blogService.getPostBySlug(slug);
@@ -71,7 +71,7 @@ export async function generateMetadata({ params }) {
 
 // Main blog post page
 export default async function Post({ params }) {
-  const { slug: slugParam } = params;
+  const { slug: slugParam } = await params;
   // Join all segments to form the full permalink (e.g. "parent/child")
   const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam;
 

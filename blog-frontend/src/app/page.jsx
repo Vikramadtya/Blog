@@ -1,11 +1,6 @@
 import React from "react";
 import LatestPost from "@/presentation/blog/LatestPost";
-import dynamic from "next/dynamic";
-
-const BackGroundParticle = dynamic(
-  () => import("@/presentation/ui/BackgroundParticle"),
-  { ssr: false },
-);
+import BackGroundParticle from "@/presentation/ui/LazyBackgroundParticle";
 import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
 import FeaturedSection from "@/presentation/blog/FeaturedSection";

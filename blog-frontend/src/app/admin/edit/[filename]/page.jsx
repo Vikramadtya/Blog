@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { use, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import MarkdownPreview from "@/presentation/admin/MarkdownPreview";
@@ -9,7 +9,7 @@ import FormattingToolbar from "@/presentation/admin/FormattingToolbar";
 import SubPagesPanel from "@/presentation/admin/SubPagesPanel";
 
 export default function EditPostPage({ params }) {
-  const filename = decodeURIComponent(params.filename).replace(/^(\.\.\/|\.\.\\|\/|\\)+/, "");
+  const filename = decodeURIComponent(use(params).filename).replace(/^(\.\.\/|\.\.\\|\/|\\)+/, "");
   const router = useRouter();
 
   const [formData, setFormData] = useState({

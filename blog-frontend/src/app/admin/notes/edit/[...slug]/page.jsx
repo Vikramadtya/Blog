@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MarkdownPreview from "@/presentation/admin/MarkdownPreview";
@@ -8,7 +8,7 @@ import MarkdownPreview from "@/presentation/admin/MarkdownPreview";
 export default function EditNotePage({ params }) {
   const router = useRouter();
   // slug is an array of path parts. Next.js might pass them URL-encoded.
-  const slugArray = params.slug || [];
+  const slugArray = use(params).slug || [];
   const notePath = slugArray.map(decodeURIComponent).join("/");
   
   const [content, setContent] = useState("");
