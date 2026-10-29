@@ -57,30 +57,23 @@ const nextConfig = {
     return config;
   },
   output: "standalone",
-  experimental: {
-    instrumentationHook: true,
-    outputFileTracingRoot: path.join(__dirname, '../'),
-    outputFileTracingIncludes: {
-      '/*': ['../blog-datastore/**/*'],
-      '/api/**/*': ['../blog-datastore/**/*'],
-      '/blogs/**/*': ['../blog-datastore/**/*'],
-      '/notes/**/*': ['../blog-datastore/**/*'],
-      '/admin/**/*': ['../blog-datastore/**/*'],
-    },
-    serverComponentsExternalPackages: [
-      "shiki",
-      "rehype-pretty-code",
-      "gray-matter",
-    ],
-    outputFileTracingExcludes: {
-      "*": [
-        "node_modules/@swc/core-linux-x64-gnu",
-        "node_modules/@swc/core-linux-x64-musl",
-        ".next/cache/**/*",
-        "public/images/**/*",
-      ],
-    },
+  outputFileTracingRoot: path.join(__dirname, "../"),
+  outputFileTracingIncludes: {
+    "/*": ["../blog-datastore/**/*"],
+    "/api/**/*": ["../blog-datastore/**/*"],
+    "/blogs/**/*": ["../blog-datastore/**/*"],
+    "/notes/**/*": ["../blog-datastore/**/*"],
+    "/admin/**/*": ["../blog-datastore/**/*"],
   },
+  outputFileTracingExcludes: {
+    "*": [
+      "node_modules/@swc/core-linux-x64-gnu",
+      "node_modules/@swc/core-linux-x64-musl",
+      ".next/cache/**/*",
+      "public/images/**/*",
+    ],
+  },
+  serverExternalPackages: ["shiki", "rehype-pretty-code", "gray-matter"],
 };
 
 export default nextConfig;

@@ -4,11 +4,13 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import remarkDirective from "remark-directive";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
 import { getMDXComponents } from "@/presentation/ui/MdxComponents";
 import { prettyCodeOptions } from "@/lib/markdownConstants";
+import { preprocessAdmonitions, remarkAdmonitions } from "@/lib/admonitions";
 
 const autolinkByVariant = {
   blog: {
@@ -33,12 +35,17 @@ const autolinkByVariant = {
 export default function Markdown({ source, variant = "blog" }) {
   return (
     <MDXRemote
-      source={source}
+      source={preprocessAdmonitions(source)}
       components={getMDXComponents()}
       options={{
         mdxOptions: {
           format: variant === "note" ? "md" : "mdx",
-          remarkPlugins: [remarkGfm, remarkMath],
+          remarkPlugins: [
+            remarkGfm,
+            remarkMath,
+            remarkDirective,
+            remarkAdmonitions,
+          ],
           rehypePlugins: [
             rehypeKatex,
             rehypeSlug,

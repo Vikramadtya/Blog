@@ -1,3 +1,4 @@
+import { jsonLdString } from "@/lib/utils";
 import React from "react";
 import { blogService } from "@/core";
 import Link from "next/link";
@@ -51,11 +52,11 @@ export default async function TagsPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(collectionJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbsJsonLd) }}
       />
       <main className="relative z-10 flex min-h-screen flex-col">
         <div className="container mx-auto max-w-4xl px-6 pt-32 md:px-10 lg:px-16">

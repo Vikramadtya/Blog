@@ -14,7 +14,10 @@ export type Bindings = {
   DATABASE_URL: string;
   DISCORD_WEBHOOK_URL: string;
   DISCORD_SUBSCRIBE_WEBHOOK_URL: string;
+  /** Comma-separated list of origins allowed by CORS */
   ALLOWED_ORIGIN: string;
+  /** Signs unsubscribe links; falls back to ADMIN_SECRET so already-sent links keep working */
+  UNSUBSCRIBE_SECRET?: string;
   OTEL_EXPORTER_OTLP_ENDPOINT?: string;
   OTEL_EXPORTER_OTLP_HEADERS?: string;
   ADMIN_SECRET?: string;
@@ -27,9 +30,12 @@ app.use('*', logger());
 
 // Dynamic CORS based on environment variable
 app.use('*', async (c, next) => {
-  const allowedOrigin = c.env.ALLOWED_ORIGIN || 'http://localhost:3000';
+  const allowedOrigins = (c.env.ALLOWED_ORIGIN || 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
   const corsMiddleware = cors({
-    origin: allowedOrigin,
+    origin: (origin) => (allowedOrigins.includes(origin) ? origin : allowedOrigins[0]),
     allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'traceparent', 'tracestate', 'Authorization'],
   });

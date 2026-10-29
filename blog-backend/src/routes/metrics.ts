@@ -23,6 +23,10 @@ const paramSchema = z.object({
   blogId: z.string().min(1, 'Blog ID is required').max(255, 'Blog ID is too long'),
 });
 
+// Only posts (identified by the UUID in their frontmatter) can be counted, so arbitrary
+// ids can't be used to fill the table with junk rows.
+const incrementParamSchema = z.object({ blogId: z.string().uuid('Invalid blog ID') });
+
 /** Atomically +1 on a metrics column, creating the row on first use. */
 async function increment(databaseUrl: string, blogId: string, field: Field) {
   const db = getDb(databaseUrl);
@@ -55,7 +59,7 @@ for (const field of ['views', 'likes'] as const) {
   metrics.post(
     `/:blogId/${field}`,
     rateLimit(`metrics-${field}`, field === 'likes' ? 10 : 30, 60_000),
-    zValidator('param', paramSchema),
+    zValidator('param', incrementParamSchema),
     async (c) => {
       const { blogId } = c.req.valid('param');
       try {

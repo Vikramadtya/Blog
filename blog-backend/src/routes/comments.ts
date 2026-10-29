@@ -12,6 +12,8 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 const blogIdParam = z.object({ blogId: z.string().min(1).max(255) });
 
+const COMMENTS_PAGE_SIZE = 200;
+
 const commentSchema = z.object({
   authorName: z.string().trim().min(1).max(100),
   authorEmail: z.string().email().optional().or(z.literal("")),
@@ -35,7 +37,8 @@ app.get("/:blogId", zValidator("param", blogIdParam), async (c) => {
       })
       .from(comments)
       .where(and(eq(comments.blogId, blogId), eq(comments.approved, true)))
-      .orderBy(desc(comments.createdAt));
+      .orderBy(desc(comments.createdAt))
+      .limit(COMMENTS_PAGE_SIZE);
 
     return c.json({ comments: postComments });
   } catch (error) {
@@ -47,7 +50,7 @@ app.get("/:blogId", zValidator("param", blogIdParam), async (c) => {
 app.post(
   "/:blogId",
   rateLimit('comment', 5, 60_000),
-  zValidator("param", blogIdParam),
+  zValidator("param", z.object({ blogId: z.string().uuid() })),
   zValidator("json", commentSchema),
   async (c) => {
     try {
@@ -74,10 +77,10 @@ app.post(
 );
 
 // Moderation: delete by comment id (admin only)
-app.delete("/:id", adminAuth, async (c) => {
+app.delete("/:id", adminAuth, zValidator("param", z.object({ id: z.string().min(1).max(255) })), async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
-    await db.delete(comments).where(eq(comments.id, c.req.param("id") as string));
+    await db.delete(comments).where(eq(comments.id, c.req.valid("param").id));
     return c.json({ success: true });
   } catch (error) {
     console.error("[Comments API] delete failed:", error);

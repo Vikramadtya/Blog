@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { getDb } from '../db';
 import { subscribers } from '../db/schema';
 import type { Bindings } from '../index';
@@ -43,14 +43,14 @@ subscribe.post('/', rateLimit('subscribe', 5, 60_000), zValidator('json', subscr
 subscribe.get('/', adminAuth, async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
-    return c.json({ success: true, data: await db.select().from(subscribers) });
+    return c.json({ success: true, data: await db.select().from(subscribers).orderBy(desc(subscribers.createdAt)) });
   } catch (error) {
     console.error('[Subscribe API] list failed:', error);
     return c.json({ error: 'Failed to fetch subscribers' }, 500);
   }
 });
 
-/** HMAC-SHA256(email) keyed with ADMIN_SECRET; the frontend signs the unsubscribe links it emails out. */
+/** HMAC-SHA256(email) keyed with UNSUBSCRIBE_SECRET (or ADMIN_SECRET if unset); the frontend signs the unsubscribe links it emails out. */
 export async function unsubscribeToken(email: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     'raw',
@@ -71,7 +71,7 @@ const page = (message: string) =>
 subscribe.get('/unsubscribe', rateLimit('unsubscribe', 10, 60_000), async (c) => {
   const email = (c.req.query('email') ?? '').trim().toLowerCase();
   const token = c.req.query('token') ?? '';
-  const secret = c.env.ADMIN_SECRET;
+  const secret = c.env.UNSUBSCRIBE_SECRET || c.env.ADMIN_SECRET;
   if (!email || !secret) return c.html(page('Invalid unsubscribe link.'), 400);
 
   const expected = await unsubscribeToken(email, secret);

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
+import { desc } from 'drizzle-orm';
 import { getDb } from '../db';
 import { supportContacts } from '../db/schema';
 import type { Bindings } from '../index';
@@ -55,7 +56,7 @@ contact.post('/', rateLimit('contact', 3, 60_000), zValidator('json', contactSch
 contact.get('/', adminAuth, async (c) => {
   try {
     const db = getDb(c.env.DATABASE_URL);
-    const allContacts = await db.select().from(supportContacts);
+    const allContacts = await db.select().from(supportContacts).orderBy(desc(supportContacts.createdAt));
     return c.json({ success: true, data: allContacts });
   } catch (error) {
     console.error("[Contact API] Failed to fetch contacts:", error);

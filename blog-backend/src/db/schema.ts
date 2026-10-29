@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, boolean, index } from "drizzle-orm/pg-core";
 
 export const blogMetrics = pgTable("blog_metrics", {
   id: text("id").primaryKey(),
@@ -19,12 +19,16 @@ export const supportContacts = pgTable("support_contacts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const comments = pgTable("comments", {
-  id: text("id").primaryKey(),
-  blogId: text("blog_id").notNull(),
-  authorName: text("author_name").notNull(),
-  authorEmail: text("author_email"),
-  content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  approved: boolean("approved").default(true).notNull(),
-});
+export const comments = pgTable(
+  "comments",
+  {
+    id: text("id").primaryKey(),
+    blogId: text("blog_id").notNull(),
+    authorName: text("author_name").notNull(),
+    authorEmail: text("author_email"),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    approved: boolean("approved").default(true).notNull(),
+  },
+  (t) => [index("comments_blog_id_idx").on(t.blogId)],
+);

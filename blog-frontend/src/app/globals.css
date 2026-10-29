@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -76,13 +76,28 @@
   body {
     font-family: "Manrope", sans-serif;
     color: var(--ink);
-    background: radial-gradient(circle at 8% 12%, #ffe7cc 0, transparent 32%), radial-gradient(circle at 92% 82%, #dff8ef 0, transparent 30%), var(--bg);
+    background:
+      radial-gradient(circle at 8% 12%, #ffe7cc 0, transparent 32%),
+      radial-gradient(circle at 92% 82%, #dff8ef 0, transparent 30%), var(--bg);
     min-height: 100vh;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 
   .dark body {
-    background: radial-gradient(circle at 8% 12%, rgba(255, 107, 53, 0.05) 0, transparent 32%), radial-gradient(circle at 92% 82%, rgba(16, 185, 129, 0.07) 0, transparent 30%), var(--bg);
+    background:
+      radial-gradient(
+        circle at 8% 12%,
+        rgba(255, 107, 53, 0.05) 0,
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 92% 82%,
+        rgba(16, 185, 129, 0.07) 0,
+        transparent 30%
+      ),
+      var(--bg);
   }
 
   html {
@@ -94,11 +109,16 @@
     color: var(--ink);
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     line-height: 1.15;
   }
 
-  .prose h1, .prose h2, .prose h3 {
+  .prose h1,
+  .prose h2,
+  .prose h3 {
     font-family: "Syne", sans-serif;
   }
 }
@@ -283,3 +303,43 @@ html.dark .anchor-link {
   color: #3b82f6 !important;
 }
 
+/* MkDocs-style admonitions (!!! info "Title" / ??? tip "Title") */
+.admonition {
+  --admonition: #3b82f6;
+  margin: 1.6rem 0;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--admonition) 35%, transparent);
+  border-left: 4px solid var(--admonition);
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--admonition) 8%, transparent);
+}
+.admonition-note {
+  --admonition: var(--brand);
+}
+.admonition-tip {
+  --admonition: #10b981;
+}
+.admonition-warning {
+  --admonition: #f59e0b;
+}
+.admonition-danger {
+  --admonition: #ef4444;
+}
+.admonition > :first-child {
+  margin-top: 0;
+}
+.admonition > :last-child {
+  margin-bottom: 0;
+}
+.admonition > .admonition-title {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  color: var(--admonition);
+}
+details.admonition > summary.admonition-title {
+  margin: 0;
+  cursor: pointer;
+}
+details.admonition[open] > summary.admonition-title {
+  margin-bottom: 0.5rem;
+}
