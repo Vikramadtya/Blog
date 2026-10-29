@@ -1,3 +1,4 @@
+import { jsonLdString } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }) {
   const ogImageUrl = blogData.previewImageSrc
     ? `${siteMetadata.siteUrl}${blogData.previewImageSrc}`
     : `${siteMetadata.siteUrl}/api/og?title=${encodeURIComponent(
-        blogData.title
+        blogData.title,
       )}&readingTime=${encodeURIComponent(blogData.readingTime)}`;
 
   return {
@@ -52,7 +53,7 @@ export async function generateMetadata({ params }) {
       type: "article",
       publishedTime: new Date(blogData.createdAt).toISOString(),
       modifiedTime: new Date(
-        blogData.updatedAt || blogData.createdAt
+        blogData.updatedAt || blogData.createdAt,
       ).toISOString(),
       images: [{ url: ogImageUrl }],
       authors: [siteMetadata.author],
@@ -82,7 +83,9 @@ export default async function Post({ params }) {
   const allBlogsData = await blogService.getAllPosts();
   const seriesChildren = allBlogsData
     .filter((p) => p.series === parentSeriesSlug)
-    .sort((a, b) => (Number(a.seriesOrder) || 0) - (Number(b.seriesOrder) || 0));
+    .sort(
+      (a, b) => (Number(a.seriesOrder) || 0) - (Number(b.seriesOrder) || 0),
+    );
   const isSeries = seriesChildren.length > 0;
   let seriesParentData = null;
   if (isSeries) {
@@ -162,18 +165,18 @@ export default async function Post({ params }) {
     >
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbsJsonLd) }}
       />
       <ScrollProgressBar />
 
       <article className="relative mx-auto max-w-5xl px-6 py-12 md:px-12 lg:px-20">
         <Link
           href="/blogs"
-          className="mb-8 inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-primary transition-opacity hover:opacity-80 hover:underline"
+          className="mb-8 inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-primary transition-opacity hover:underline hover:opacity-80"
         >
           &larr; All posts
         </Link>
@@ -209,7 +212,7 @@ export default async function Post({ params }) {
         )}
 
         {/* Blog Content */}
-        <section className="mx-auto w-full max-w-[65ch] prose prose-sm prose-neutral dark:prose-invert md:prose-base lg:prose-lg">
+        <section className="prose prose-sm prose-neutral mx-auto w-full max-w-[65ch] dark:prose-invert md:prose-base lg:prose-lg">
           <Markdown source={content} variant="blog" />
         </section>
 

@@ -5,7 +5,11 @@ import React, { useState, useEffect } from "react";
 export default function CommentsSection({ blogId }) {
   const [comments, setComments] = useState([]);
   const [status, setStatus] = useState("loading"); // loading, idle, submitting, error
-  const [formData, setFormData] = useState({ authorName: "", authorEmail: "", content: "" });
+  const [formData, setFormData] = useState({
+    authorName: "",
+    authorEmail: "",
+    content: "",
+  });
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
@@ -16,7 +20,7 @@ export default function CommentsSection({ blogId }) {
         setComments(data || []);
         setStatus("idle");
       } catch (err) {
-        console.error("Failed to load comments:", err);
+        console.warn("Failed to load comments:", err);
         setStatus("idle");
       }
     };
@@ -33,7 +37,7 @@ export default function CommentsSection({ blogId }) {
     try {
       const { postComment } = await import("@/lib/client/api");
       const res = await postComment(blogId, formData);
-      
+
       if (res.success) {
         // Optimistic update
         const newComment = {
@@ -55,15 +59,18 @@ export default function CommentsSection({ blogId }) {
   };
 
   return (
-    <div className="mt-16 pt-10 border-t border-border">
-      <h3 className="text-2xl font-bold text-foreground mb-8">
+    <div className="mt-16 border-t border-border pt-10">
+      <h3 className="mb-8 text-2xl font-bold text-foreground">
         Comments ({comments.length})
       </h3>
 
       <form onSubmit={handleSubmit} className="mb-12 space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="authorName" className="block text-sm font-medium text-foreground mb-1">
+            <label
+              htmlFor="authorName"
+              className="mb-1 block text-sm font-medium text-foreground"
+            >
               Name *
             </label>
             <input
@@ -71,21 +78,31 @@ export default function CommentsSection({ blogId }) {
               id="authorName"
               required
               value={formData.authorName}
-              onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
-              className="w-full rounded-md border p-2 text-sm bg-background"
+              onChange={(e) =>
+                setFormData({ ...formData, authorName: e.target.value })
+              }
+              className="w-full rounded-md border bg-background p-2 text-sm"
               placeholder="John Doe"
             />
           </div>
           <div>
-            <label htmlFor="authorEmail" className="block text-sm font-medium text-foreground mb-1">
-              Email <span className="text-muted-foreground text-xs">(optional, for avatar)</span>
+            <label
+              htmlFor="authorEmail"
+              className="mb-1 block text-sm font-medium text-foreground"
+            >
+              Email{" "}
+              <span className="text-xs text-muted-foreground">
+                (optional, for avatar)
+              </span>
             </label>
             <input
               type="email"
               id="authorEmail"
               value={formData.authorEmail}
-              onChange={(e) => setFormData({ ...formData, authorEmail: e.target.value })}
-              className="w-full rounded-md border p-2 text-sm bg-background"
+              onChange={(e) =>
+                setFormData({ ...formData, authorEmail: e.target.value })
+              }
+              className="w-full rounded-md border bg-background p-2 text-sm"
               placeholder="john@example.com"
             />
           </div>
@@ -99,10 +116,15 @@ export default function CommentsSection({ blogId }) {
           aria-hidden="true"
           className="hidden"
           value={formData.website || ""}
-          onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, website: e.target.value })
+          }
         />
         <div>
-          <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
+          <label
+            htmlFor="content"
+            className="mb-1 block text-sm font-medium text-foreground"
+          >
             Comment *
           </label>
           <textarea
@@ -110,25 +132,29 @@ export default function CommentsSection({ blogId }) {
             required
             rows={4}
             value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            className="w-full rounded-md border p-2 text-sm bg-background resize-y"
+            onChange={(e) =>
+              setFormData({ ...formData, content: e.target.value })
+            }
+            className="w-full resize-y rounded-md border bg-background p-2 text-sm"
             placeholder="What are your thoughts?"
           />
         </div>
-        
+
         {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
 
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="rounded-md bg-foreground px-4 py-2 text-sm font-semibold text-background hover:bg-foreground/90 disabled:opacity-50 transition-colors"
+          className="rounded-md bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/90 disabled:opacity-50"
         >
           {status === "submitting" ? "Posting..." : "Post Comment"}
         </button>
       </form>
 
       <div className="space-y-8">
-        {status === "loading" && <p className="text-muted-foreground">Loading comments...</p>}
+        {status === "loading" && (
+          <p className="text-muted-foreground">Loading comments...</p>
+        )}
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
             <div className="flex-shrink-0">
@@ -140,20 +166,26 @@ export default function CommentsSection({ blogId }) {
               />
             </div>
             <div>
-              <div className="flex items-baseline gap-2 mb-1">
-                <h4 className="font-semibold text-foreground">{comment.authorName}</h4>
+              <div className="mb-1 flex items-baseline gap-2">
+                <h4 className="font-semibold text-foreground">
+                  {comment.authorName}
+                </h4>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(comment.createdAt).toLocaleDateString(undefined, { 
-                    year: 'numeric', month: 'short', day: 'numeric' 
+                  {new Date(comment.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
                   })}
                 </span>
               </div>
-              <p className="text-foreground text-sm whitespace-pre-wrap">{comment.content}</p>
+              <p className="whitespace-pre-wrap text-sm text-foreground">
+                {comment.content}
+              </p>
             </div>
           </div>
         ))}
         {status === "idle" && comments.length === 0 && (
-          <p className="text-muted-foreground text-center py-8 bg-muted/30 rounded-lg">
+          <p className="rounded-lg bg-muted/30 py-8 text-center text-muted-foreground">
             Be the first to share your thoughts!
           </p>
         )}

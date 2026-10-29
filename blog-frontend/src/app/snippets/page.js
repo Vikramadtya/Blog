@@ -1,3 +1,4 @@
+import { jsonLdString } from "@/lib/utils";
 import React from "react";
 import { blogService } from "@/core";
 import { BLOG_TYPES } from "@/lib/constants";
@@ -55,11 +56,11 @@ export default async function Snippets() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(collectionJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbsJsonLd) }}
       />
       <main className="min-h-screen w-full bg-background px-6 pt-20 md:px-12 lg:px-24 xl:px-32">
         {/* Header Section */}

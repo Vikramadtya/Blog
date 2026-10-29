@@ -1,3 +1,4 @@
+import { jsonLdString } from "@/lib/utils";
 import React from "react";
 import LatestPost from "@/presentation/blog/LatestPost";
 import BackGroundParticle from "@/presentation/ui/LazyBackgroundParticle";
@@ -22,9 +23,13 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const [latestBlog, snippets, blogs] = await Promise.all([
-    blogService.getPublishedBlogs().then(posts => posts.map(p => p.toSummary())),
-    blogService.getPublishedSnippets().then(posts => posts.map(p => p.toSummary())),
-    blogService.getAllPosts().then(posts => posts.map(p => p.toSummary())),
+    blogService
+      .getPublishedBlogs()
+      .then((posts) => posts.map((p) => p.toSummary())),
+    blogService
+      .getPublishedSnippets()
+      .then((posts) => posts.map((p) => p.toSummary())),
+    blogService.getAllPosts().then((posts) => posts.map((p) => p.toSummary())),
   ]);
 
   const blogIdToMetadata = blogs.reduce((acc, data) => {
@@ -67,11 +72,11 @@ export default async function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(websiteJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbsJsonLd) }}
       />
       {/* Background FX */}
       <BackGroundParticle />
@@ -98,7 +103,6 @@ export default async function Home() {
               blogIdToMetadata={blogIdToMetadata}
             />
           </section>
-
         </div>
       </main>
     </>

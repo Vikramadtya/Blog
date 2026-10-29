@@ -1,3 +1,4 @@
+import { jsonLdString } from "@/lib/utils";
 import React from "react";
 import ContentGrid from "@/presentation/ui/ContentGrid";
 import { blogService } from "@/core";
@@ -27,7 +28,7 @@ export default async function Blog() {
 
   // Build a set of slugs that have children (i.e. are a series parent)
   const seriesParentSlugs = new Set(
-    allBlogs.filter((b) => b.series).map((b) => b.series)
+    allBlogs.filter((b) => b.series).map((b) => b.series),
   );
 
   const blogIdToMetadata = blogs.reduce((acc, data) => {
@@ -66,27 +67,29 @@ export default async function Blog() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(collectionJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbsJsonLd) }}
       />
       <main className="min-h-screen w-full bg-background px-6 pt-16 md:px-12 lg:px-24 xl:px-32">
         {/* Header Section with Editorial & Terminal Aesthetic */}
         <section className="mx-auto mb-12 w-full max-w-5xl border-b border-dashed border-border pb-8">
-          <p className="mb-2 text-xs font-mono text-muted-foreground">
-            <span className="text-primary font-semibold">$ cd ~/blog</span>
+          <p className="mb-2 font-mono text-xs text-muted-foreground">
+            <span className="font-semibold text-primary">$ cd ~/blog</span>
           </p>
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground">
+          <h1 className="font-serif text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             {content.blogs.title || "Notes from the lab."}
           </h1>
-          <p className="mt-3 text-lg leading-relaxed text-muted-foreground font-sans max-w-3xl">
+          <p className="mt-3 max-w-3xl font-sans text-lg leading-relaxed text-muted-foreground">
             {content.blogs.description}
           </p>
-          <p className="mt-4 text-xs font-mono text-muted-foreground">
+          <p className="mt-4 font-mono text-xs text-muted-foreground">
             [{blogs.length} posts
-            {seriesParentSlugs.size > 0 && ` · ${seriesParentSlugs.size} series`}]
+            {seriesParentSlugs.size > 0 &&
+              ` · ${seriesParentSlugs.size} series`}
+            ]
           </p>
         </section>
 

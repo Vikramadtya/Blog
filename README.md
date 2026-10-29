@@ -33,7 +33,7 @@ All technical notes, blog posts, and snippets are stored as local Markdown files
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
+- Node.js 24.x
 - A Postgres database connection string (e.g., from Neon.tech)
 
 ### 1. Setup the Backend

@@ -7,41 +7,66 @@ import { backendAdminFetch } from "@/lib/backend";
 import { siteMetadata } from "../../../../../site.config.mjs";
 
 const BATCH_SIZE = 100; // Resend batch limit
-const BACKEND_URL = process.env.NEXT_PUBLIC_MICROSERVICE_URL || "http://localhost:8787";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_MICROSERVICE_URL || "http://localhost:8787";
 
 // Must match unsubscribeToken() in blog-backend/src/routes/subscribe.ts
 const unsubscribeUrl = (email) => {
-  const token = createHmac("sha256", process.env.ADMIN_SECRET).update(email).digest("hex");
+  const token = createHmac(
+    "sha256",
+    process.env.UNSUBSCRIBE_SECRET || process.env.ADMIN_SECRET,
+  )
+    .update(email)
+    .digest("hex");
   return `${BACKEND_URL}/subscribe/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`;
 };
 
 const escapeHtml = (s = "") =>
-  String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
 
 export async function POST(req) {
   const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   if (!process.env.RESEND_API_KEY) {
-    return NextResponse.json({ error: "RESEND_API_KEY is not configured" }, { status: 400 });
+    return NextResponse.json(
+      { error: "RESEND_API_KEY is not configured" },
+      { status: 400 },
+    );
   }
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
     const { filename } = await req.json();
-    if (!filename) return NextResponse.json({ error: "Filename required" }, { status: 400 });
+    if (!filename)
+      return NextResponse.json({ error: "Filename required" }, { status: 400 });
 
     const { data: subscribers = [] } = await backendAdminFetch("/subscribe");
     if (subscribers.length === 0) {
-      return NextResponse.json({ error: "No subscribers found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No subscribers found" },
+        { status: 400 },
+      );
     }
 
     // The post id is the filename without extension
     const id = String(filename).replace(/\.md$/, "");
-    const blog = (await blogService.getAllPosts({ includeUnpublished: true })).find((p) => p.id === id);
-    if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    const blog = (
+      await blogService.getAllPosts({ includeUnpublished: true })
+    ).find((p) => p.id === id);
+    if (!blog)
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     if (!blog.isPublished()) {
-      return NextResponse.json({ error: "Publish the post before broadcasting it" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Publish the post before broadcasting it" },
+        { status: 400 },
+      );
     }
 
     const postUrl = `${siteMetadata.siteUrl}/blogs/${blog.permalink}`;
@@ -79,7 +104,10 @@ export async function POST(req) {
       const chunk = emails.slice(i, i + BATCH_SIZE);
       const { error } = await resend.batch.send(chunk);
       if (error) {
-        return NextResponse.json({ error: error.message, sent }, { status: 400 });
+        return NextResponse.json(
+          { error: error.message, sent },
+          { status: 400 },
+        );
       }
       sent += chunk.length;
     }

@@ -95,7 +95,7 @@ export function useBlogMetrics(
           initialized.current = id;
         }
       } catch (err) {
-        console.error(`[useBlogMetrics] Failed for ${id}:`, err);
+        console.warn(`[useBlogMetrics] Failed for ${id}:`, err);
       }
     };
 
@@ -107,8 +107,8 @@ export function useBlogMetrics(
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  // intentionally omitting initialLikes/initialViews to prevent refetch loops
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // intentionally omitting initialLikes/initialViews to prevent refetch loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, autoIncrementViews]);
 
   // Handle Like action
@@ -138,7 +138,7 @@ export function useBlogMetrics(
         throw new Error("API returned failure");
       }
     } catch (err) {
-      console.error("[useBlogMetrics] Like failed:", err);
+      console.warn("[useBlogMetrics] Like failed:", err);
       setMetrics((prev) => ({ ...prev, likes: prev.likes - 1 }));
       setHasLiked(false);
     } finally {

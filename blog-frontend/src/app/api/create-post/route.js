@@ -3,7 +3,6 @@ import { BLOGS_DIR, resolveBlogFile } from "@/lib/paths";
 import { NextResponse } from "next/server";
 import { syncTags } from "@/lib/syncTags";
 import fs from "fs/promises";
-import path from "path";
 import matter from "gray-matter";
 
 export async function POST(req) {
@@ -13,12 +12,21 @@ export async function POST(req) {
 
   try {
     const data = await req.json();
-    const { title, slug, summary, tags, type, previewImageSrc, series, seriesOrder } = data;
+    const {
+      title,
+      slug,
+      summary,
+      tags,
+      type,
+      previewImageSrc,
+      series,
+      seriesOrder,
+    } = data;
 
     if (!title || !slug) {
       return NextResponse.json(
         { error: "Title and slug are required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,16 +37,20 @@ export async function POST(req) {
       await fs.access(filePath);
       return NextResponse.json(
         { error: `A blog post with the slug "${slug}" already exists.` },
-        { status: 409 }
+        { status: 409 },
       );
     } catch {
       // File doesn't exist, we can proceed
     }
 
     // Process tags
-    const tagsArray = typeof tags === "string" 
-      ? tags.split(",").map(t => t.trim()).filter(Boolean)
-      : (tags || ["blog"]);
+    const tagsArray =
+      typeof tags === "string"
+        ? tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : tags || ["blog"];
 
     const metadata = {
       id: crypto.randomUUID(),
@@ -50,7 +62,7 @@ export async function POST(req) {
       publish: false,
       type: type || "blog",
       summary: summary || "",
-      previewImageSrc: previewImageSrc || ""
+      previewImageSrc: previewImageSrc || "",
     };
 
     // Only add series fields when actually provided — undefined/empty values crash js-yaml
@@ -67,13 +79,18 @@ export async function POST(req) {
     await fs.writeFile(filePath, fileContent, "utf8");
 
     // Auto-sync tags
-    await syncTags().catch((e) => console.warn("Failed to auto-sync tags after creation", e));
+    await syncTags().catch((e) =>
+      console.warn("Failed to auto-sync tags after creation", e),
+    );
 
     return NextResponse.json({ success: true, filePath, metadata });
-
   } catch (error) {
-    if (error.status === 400) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error.status === 400)
+      return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to create post:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
