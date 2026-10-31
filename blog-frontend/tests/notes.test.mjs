@@ -44,3 +44,13 @@ test("createBook makes a slug-named folder and registers it in notes.json", asyn
   await svc.createBook("My New Book"); // idempotent
   assert.equal(JSON.parse(await fs.readFile(config, "utf8")).length, 1);
 });
+
+test("applySections groups listed notes and leaves the rest at the top level", async () => {
+  const { applySections } = await import("../src/core/note/domain/sections.js");
+  const file = (slug) => ({ type: "file", title: slug, slug, path: [slug] });
+  const tree = [file("about"), file("a"), file("b"), file("c")];
+  const out = applySections(tree, [{ title: "Group", notes: ["c", "a", "missing"] }]);
+  assert.deepEqual(out.map((n) => n.title), ["about", "b", "Group"]);
+  assert.deepEqual(out[2].children.map((n) => n.slug), ["c", "a"]);
+  assert.equal(applySections(tree, []), tree);
+});

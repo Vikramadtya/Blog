@@ -1,0 +1,43 @@
+{
+  "system-design": [
+    {
+      "title": "Foundations",
+      "description": "Scaling models, trade-offs and the building blocks everything else rests on.",
+      "notes": [
+        "horizontal-vs-vertical-scaling",
+        "scaling-stateless-stateful-applications",
+        "cap",
+        "handling-failure",
+        "id-generation",
+        "kubernetes"
+      ]
+    },
+    {
+      "title": "Networking & APIs",
+      "description": "How requests find, reach and cross into your system.",
+      "notes": ["dns", "load-balancing", "proxy", "api-gateway", "api", "real-time-push"]
+    },
+    {
+      "title": "Data & Storage",
+      "description": "Choosing, indexing and spreading data across machines.",
+      "notes": ["database-selection", "database-scaling", "indexes", "consistent-hashing", "large-files"]
+    },
+    {
+      "title": "Caching & Throughput",
+      "description": "Making reads and writes fast at scale.",
+      "notes": ["cache", "redis", "batching", "scaling-reads", "scaling-writes", "counting-at-scale"]
+    },
+    {
+      "title": "Messaging & Consistency",
+      "description": "Moving events around and keeping replicas in agreement.",
+      "notes": ["kafka", "event-sourcing", "cqrs", "crdt"]
+    }
+  ],
+  "low-level-design": [
+    {
+      "title": "Fundamentals",
+      "description": "Object-oriented basics to build the rest on.",
+      "notes": ["object-oriented-basics", "composition", "locking"]
+    }
+  ]
+}

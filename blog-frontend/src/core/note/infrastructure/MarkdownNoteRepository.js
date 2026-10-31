@@ -2,7 +2,11 @@ import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 import { resolveInside } from "../../../lib/paths.js";
-import { InfrastructureError, NotFoundError, ValidationError } from "../../shared/errors.js";
+import {
+  InfrastructureError,
+  NotFoundError,
+  ValidationError,
+} from "../../shared/errors.js";
 
 export class MarkdownNoteRepository {
   constructor(notesDatastorePath) {
@@ -34,7 +38,12 @@ export class MarkdownNoteRepository {
       .replace(/[-_]+/g, " ")
       .replace(/\s+/g, " ")
       .trim()
-      .replace(/\b\w/g, c => c.toUpperCase());
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  // Folders named in plain lowercase ("linked-list") read better as "Linked List"
+  _folderTitle(name) {
+    return /[A-Z]/.test(name) ? name : this._toTitleCase(name);
   }
 
   async getTree(bookSlug) {
@@ -70,12 +79,12 @@ export class MarkdownNoteRepository {
 
             nodes.push({
               type: "directory",
-              title: entry.name.replace(/^[0-9.-]+\s*/, ""), 
+              title: this._folderTitle(entry.name.replace(/^[0-9.-]+\s*/, "")),
               slug,
               path: nodePath,
               children,
               sno,
-              originalName: entry.name
+              originalName: entry.name,
             });
           }
         } else {
@@ -85,26 +94,26 @@ export class MarkdownNoteRepository {
 
           let title = "";
           try {
-             const content = await fs.readFile(fullPath, 'utf-8');
-             const parsed = matter(content);
-             
-             // Extract title or name from frontmatter
-             if (parsed.data.title) title = String(parsed.data.title).trim();
-             else if (parsed.data.name) title = String(parsed.data.name).trim();
-             
-             // Check various possible frontmatter keys for sorting
-             const fmSno = this._frontmatterSno(parsed.data);
-             if (fmSno !== null) sno = fmSno;
+            const content = await fs.readFile(fullPath, "utf-8");
+            const parsed = matter(content);
 
-             // If no frontmatter title, extract the first H1 in markdown content
-             if (!title) {
-               const headingMatch = parsed.content.match(/^#\s+(.*)/m);
-               if (headingMatch) {
-                 title = headingMatch[1].trim();
-               }
-             }
+            // Extract title or name from frontmatter
+            if (parsed.data.title) title = String(parsed.data.title).trim();
+            else if (parsed.data.name) title = String(parsed.data.name).trim();
+
+            // Check various possible frontmatter keys for sorting
+            const fmSno = this._frontmatterSno(parsed.data);
+            if (fmSno !== null) sno = fmSno;
+
+            // If no frontmatter title, extract the first H1 in markdown content
+            if (!title) {
+              const headingMatch = parsed.content.match(/^#\s+(.*)/m);
+              if (headingMatch) {
+                title = headingMatch[1].trim();
+              }
+            }
           } catch (e) {
-             // Fallback below
+            // Fallback below
           }
 
           const rawBase = entry.name.replace(/\.md$/, "");
@@ -120,7 +129,10 @@ export class MarkdownNoteRepository {
           }
 
           // Prepend problem number / sno from filename if not present in title
-          if (sno !== 999999 && !title.match(new RegExp(`^${sno}(?:[.\\s-]|$)`))) {
+          if (
+            sno !== 999999 &&
+            !title.match(new RegExp(`^${sno}(?:[.\\s-]|$)`))
+          ) {
             title = `${sno}. ${title}`;
           }
 
@@ -130,7 +142,7 @@ export class MarkdownNoteRepository {
             slug,
             path: nodePath,
             sno,
-            originalName: entry.name
+            originalName: entry.name,
           });
         }
       }
@@ -143,7 +155,9 @@ export class MarkdownNoteRepository {
         if (a.sno !== b.sno) {
           return a.sno - b.sno;
         }
-        return a.originalName.localeCompare(b.originalName, undefined, { numeric: true });
+        return a.originalName.localeCompare(b.originalName, undefined, {
+          numeric: true,
+        });
       });
 
       // Cleanup internal fields
@@ -164,11 +178,15 @@ export class MarkdownNoteRepository {
       }
 
       entries = entries.filter((entry) => !entry.name.startsWith("."));
-      entries.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      entries.sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { numeric: true }),
+      );
 
       const nodes = [];
       for (const entry of entries) {
-        const relativePath = parentPath ? `${parentPath}/${entry.name}` : entry.name;
+        const relativePath = parentPath
+          ? `${parentPath}/${entry.name}`
+          : entry.name;
         const fullPath = path.join(dir, entry.name);
 
         if (entry.isDirectory()) {
@@ -207,7 +225,7 @@ export class MarkdownNoteRepository {
 
     const resolve = async (dir, remainingSlugs) => {
       if (remainingSlugs.length === 0) return null;
-      
+
       const targetSlug = remainingSlugs[0];
       const isLast = remainingSlugs.length === 1;
 
@@ -220,9 +238,13 @@ export class MarkdownNoteRepository {
 
       for (const entry of entries) {
         if (entry.name.startsWith(".")) continue;
-        
+
         const entrySlug = this._toSlug(entry.name);
-        if (entrySlug === targetSlug || entry.name === targetSlug || entry.name.replace(/\.md$/, "") === targetSlug) {
+        if (
+          entrySlug === targetSlug ||
+          entry.name === targetSlug ||
+          entry.name.replace(/\.md$/, "") === targetSlug
+        ) {
           if (isLast && entry.isFile() && entry.name.endsWith(".md")) {
             return path.join(dir, entry.name);
           } else if (!isLast && entry.isDirectory()) {
@@ -242,7 +264,7 @@ export class MarkdownNoteRepository {
 
     const content = await fs.readFile(resolvedFilePath, "utf-8");
     const { data, content: markdownContent } = matter(content);
-    
+
     let title = data.title || data.name;
     let finalContent = markdownContent;
 
@@ -282,7 +304,7 @@ export class MarkdownNoteRepository {
       title,
       content: finalContent,
       slug: slugArray.join("/"),
-      bookSlug
+      bookSlug,
     };
   }
 
@@ -294,7 +316,8 @@ export class MarkdownNoteRepository {
       const content = await fs.readFile(absolutePath, "utf-8");
       return { path: normalizedPath, content };
     } catch (err) {
-      if (err.code === "ENOENT") throw new NotFoundError("Note", normalizedPath);
+      if (err.code === "ENOENT")
+        throw new NotFoundError("Note", normalizedPath);
       throw new InfrastructureError("Failed to read note file", err);
     }
   }
@@ -331,7 +354,7 @@ export class MarkdownNoteRepository {
   async createDirectory(relativePath) {
     const absolutePath = resolveInside(this.rootPath, relativePath);
     const normalizedPath = path.relative(this.rootPath, absolutePath);
-    
+
     try {
       await fs.mkdir(absolutePath, { recursive: true });
     } catch (err) {

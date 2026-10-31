@@ -1,15 +1,21 @@
 import fs from "fs/promises";
 import path from "path";
+import { applySections } from "../domain/sections.js";
 import { CACHE_TTL_MS } from "../../../lib/constants.js";
-import { InfrastructureError, NotFoundError, ValidationError } from "../../shared/errors.js";
+import {
+  InfrastructureError,
+  NotFoundError,
+  ValidationError,
+} from "../../shared/errors.js";
 
 /**
  * Application Service for Notes.
  */
 export class NoteService {
-  constructor(noteRepository, configPath) {
+  constructor(noteRepository, configPath, sectionsPath = null) {
     this.repository = noteRepository;
     this.configPath = configPath;
+    this.sectionsPath = sectionsPath;
     this.cache = new Map();
   }
 
@@ -26,13 +32,29 @@ export class NoteService {
   async getNoteTree(bookSlug) {
     const cacheKey = `note_tree_${bookSlug}`;
     let tree = this._getCached(cacheKey);
-    
+
     if (!tree) {
-      tree = await this.repository.getTree(bookSlug);
+      tree = applySections(
+        await this.repository.getTree(bookSlug),
+        await this._getSections(bookSlug),
+      );
       this._setCache(cacheKey, tree);
     }
-    
+
     return tree;
+  }
+
+  async _getSections(bookSlug) {
+    if (!this.sectionsPath) return [];
+    try {
+      return (
+        JSON.parse(await fs.readFile(this.sectionsPath, "utf-8"))[bookSlug] ??
+        []
+      );
+    } catch (err) {
+      if (err.code === "ENOENT") return [];
+      throw new InfrastructureError("Failed to read note-sections.json", err);
+    }
   }
 
   async getNote(bookSlug, slugArray) {
@@ -79,7 +101,11 @@ export class NoteService {
       const link = `/notes/${bookSlug}`;
       if (!config.some((b) => b.link === link)) {
         config.push({ category: "BOOK", title: bookName, link });
-        await fs.writeFile(this.configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+        await fs.writeFile(
+          this.configPath,
+          JSON.stringify(config, null, 2) + "\n",
+          "utf-8",
+        );
       }
     } catch (err) {
       throw new InfrastructureError("Failed to update notes.json config", err);

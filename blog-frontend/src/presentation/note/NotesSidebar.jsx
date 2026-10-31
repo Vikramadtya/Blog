@@ -208,10 +208,34 @@ function NavContent({ tree, bookSlug, allBooks, autoFocusSearch = false }) {
         </div>
       </div>
 
-      <nav
-        aria-label="Notes"
-        className="mt-2 min-h-0 flex-1 overflow-y-auto pb-8"
+      <Link
+        href={`/notes/${bookSlug}`}
+        aria-current={pathname === `/notes/${bookSlug}` ? "page" : undefined}
+        className={cn(
+          "mt-3 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold transition-colors",
+          pathname === `/notes/${bookSlug}`
+            ? "bg-accent text-primary"
+            : "text-foreground hover:bg-muted",
+        )}
       >
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h10"
+          />
+        </svg>
+        Contents
+      </Link>
+
+      <nav aria-label="Notes" className="min-h-0 flex-1 overflow-y-auto pb-8">
         {visible.length ? (
           <Nodes
             nodes={visible}
