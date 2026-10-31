@@ -87,6 +87,9 @@ export class MarkdownNoteRepository {
               originalName: entry.name,
             });
           }
+        } else if (/^(about|index)\.md$/i.test(entry.name)) {
+          // Books open on a generated contents page, so About/index notes are not listed
+          continue;
         } else {
           let sno = 999999;
           const match = entry.name.match(/^([0-9]+)(?:[\.\-\s]|$)/);

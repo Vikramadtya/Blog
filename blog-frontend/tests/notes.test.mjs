@@ -14,7 +14,8 @@ async function setup() {
     "book/2. Second.md": "# Second\nbody",
     "book/1. First.md": "# First\nbody",
     "book/weird.md": "---\nid: not-a-number\n---\n# Weird\nbody",
-    "book/sub/About.md": "# About\nbody",
+    "book/sub/Child.md": "# Child\nbody",
+    "book/About.md": "# About\nbody",
   });
   return { root, config, svc: new NoteService(new MarkdownNoteRepository(root), config) };
 }
@@ -25,6 +26,7 @@ test("tree orders files by number, then folders, with no NaN titles", async () =
   assert.deepEqual(tree.slice(0, 3).map((n) => n.title), ["1. First", "2. Second", "Weird"]);
   assert.equal(JSON.stringify(tree).includes("NaN"), false);
   assert.equal(tree[3].type, "directory");
+  assert.equal(JSON.stringify(tree).includes("About"), false, "About notes are not listed");
 });
 
 test("missing notes return null; traversal is rejected", async () => {
