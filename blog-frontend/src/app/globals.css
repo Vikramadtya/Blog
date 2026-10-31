@@ -343,3 +343,125 @@ details.admonition > summary.admonition-title {
 details.admonition[open] > summary.admonition-title {
   margin-bottom: 0.5rem;
 }
+
+/* ───────── Notes reading experience ───────── */
+.note-article {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 640px) {
+  .note-article {
+    font-size: 1.0625rem;
+  }
+}
+.note-article > :first-child {
+  margin-top: 0;
+}
+
+.note-article p,
+.note-article li {
+  color: hsl(var(--foreground) / 0.86);
+  line-height: 1.8;
+}
+.note-article strong {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+}
+
+.note-article h2,
+.note-article h3,
+.note-article h4 {
+  position: relative;
+  scroll-margin-top: 8.5rem;
+}
+.note-article h2 {
+  margin-top: 3rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+  font-family: theme("fontFamily.display");
+  font-size: 1.5rem;
+}
+@media (min-width: 640px) {
+  .note-article h2 {
+    font-size: 1.75rem;
+  }
+}
+.note-article h3 {
+  margin-top: 2.25rem;
+  font-size: 1.2rem;
+}
+
+/* "#" anchors: only a hover affordance on desktop, hidden on touch layouts */
+.note-article .anchor-link {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .note-article .anchor-link {
+    display: block;
+    position: absolute;
+    left: -1.5rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .note-article h2:hover .anchor-link,
+  .note-article h3:hover .anchor-link,
+  .note-article .anchor-link:focus-visible {
+    opacity: 1;
+  }
+}
+
+.note-article a:not(.anchor-link) {
+  text-decoration-thickness: 1px;
+}
+.note-article ul,
+.note-article ol {
+  margin-left: 1.25rem;
+}
+@media (min-width: 640px) {
+  .note-article ul,
+  .note-article ol {
+    margin-left: 1.5rem;
+  }
+}
+
+.note-article img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.75rem auto;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border) / 0.7);
+  background: hsl(var(--card));
+}
+
+.note-article blockquote {
+  border-radius: 0 0.75rem 0.75rem 0;
+  border-left-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 7%, transparent);
+}
+
+/* Tables scroll sideways on phones instead of squeezing */
+.note-article table {
+  min-width: 28rem;
+}
+.note-article th,
+.note-article td {
+  padding: 0.65rem 0.85rem;
+}
+@media (min-width: 640px) {
+  .note-article th,
+  .note-article td {
+    padding: 0.8rem 1.25rem;
+  }
+}
+
+.note-article pre {
+  padding: 1rem;
+}
+@media (min-width: 640px) {
+  .note-article pre {
+    padding: 1.5rem;
+  }
+}
+.note-article :not(pre) > code {
+  overflow-wrap: anywhere;
+}

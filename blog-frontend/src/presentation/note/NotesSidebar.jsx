@@ -1,77 +1,166 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-function TreeNode({ node, bookSlug, level = 0 }) {
-  const pathname = usePathname();
+const hrefFor = (bookSlug, node) => `/notes/${bookSlug}/${node.path.join("/")}`;
 
-  if (node.type === "file") {
-    const href = `/notes/${bookSlug}/${node.path.join("/")}`;
-    const isActive = pathname === href;
-    const isRoot = level === 0;
-    
-    return (
-      <div className={isRoot ? "mb-2" : "my-0.5"}>
-        <Link 
-          href={href}
-          className={`block text-sm py-1.5 px-3 rounded-lg transition-colors leading-snug ${
-            isActive 
-              ? "bg-blue-50/80 font-semibold text-blue-600 dark:bg-blue-950/40 dark:text-blue-400" 
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/60 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-zinc-800/40"
-          } ${isRoot ? "font-semibold" : ""}`}
-        >
-          {node.title}
-        </Link>
-      </div>
-    );
-  }
+// Files first, then folders, keeping the authored order inside each group
+const sortNodes = (nodes = []) =>
+  [...nodes].sort((a, b) =>
+    a.type === b.type ? 0 : a.type === "file" ? -1 : 1,
+  );
 
-  // Directory node (renders as an all-caps section header)
-  const sortedChildren = [...(node.children || [])].sort((a, b) => {
-    if (a.type !== b.type) return a.type === "file" ? -1 : 1;
-    return 0;
+/** Keeps only files whose title matches `query`, plus the folders that lead to them. */
+function filterTree(nodes, query) {
+  if (!query) return nodes;
+  const q = query.toLowerCase();
+  return nodes.flatMap((node) => {
+    if (node.type === "file")
+      return node.title.toLowerCase().includes(q) ? [node] : [];
+    const children = filterTree(node.children || [], query);
+    return children.length ? [{ ...node, children }] : [];
   });
+}
+
+const containsHref = (node, bookSlug, pathname) =>
+  node.type === "file"
+    ? hrefFor(bookSlug, node) === pathname
+    : (node.children || []).some((child) =>
+        containsHref(child, bookSlug, pathname),
+      );
+
+function Chevron({ open }) {
+  return (
+    <svg
+      className={cn(
+        "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform",
+        open && "rotate-90",
+      )}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function NoteLink({ node, bookSlug, pathname }) {
+  const href = hrefFor(bookSlug, node);
+  const active = pathname === href;
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (active) ref.current?.scrollIntoView({ block: "nearest" });
+  }, [active]);
 
   return (
-    <div className={level === 0 ? "mt-6 mb-2" : "mt-4 mb-2 ml-1 pl-2 border-l border-gray-100 dark:border-zinc-800/60"}>
-      <div className="px-3 text-xs font-bold tracking-wider text-gray-900 dark:text-gray-300 uppercase mb-2">
-        {node.title}
-      </div>
-      
-      <div className="space-y-0.5">
-        {sortedChildren.map((child, idx) => (
-          <TreeNode key={idx} node={child} bookSlug={bookSlug} level={level + 1} />
-        ))}
-      </div>
+    <Link
+      ref={ref}
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "relative block rounded-md py-1.5 pl-3 pr-2 text-[0.9rem] leading-snug transition-colors",
+        active
+          ? "bg-accent font-semibold text-primary before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-primary"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      )}
+    >
+      {node.title}
+    </Link>
+  );
+}
+
+function Folder({ node, bookSlug, pathname, level, forceOpen }) {
+  const hasActive = useMemo(
+    () => containsHref(node, bookSlug, pathname),
+    [node, bookSlug, pathname],
+  );
+  const [open, setOpen] = useState(level === 0 || hasActive);
+
+  // Navigating into a folder (search result, prev/next link) should reveal the page
+  useEffect(() => {
+    if (hasActive) setOpen(true);
+  }, [hasActive]);
+
+  const expanded = open || forceOpen;
+
+  return (
+    <div className={level === 0 ? "mt-5" : "mt-1"}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={expanded}
+        className={cn(
+          "flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-muted",
+          level === 0
+            ? "text-[0.7rem] font-bold uppercase tracking-[0.12em] text-foreground"
+            : "text-[0.9rem] font-semibold text-foreground",
+        )}
+      >
+        <Chevron open={expanded} />
+        <span className="truncate">{node.title}</span>
+      </button>
+      {expanded && (
+        <div className="ml-[0.9rem] mt-0.5 space-y-0.5 border-l border-border pl-2">
+          <Nodes
+            nodes={node.children}
+            bookSlug={bookSlug}
+            pathname={pathname}
+            level={level + 1}
+            forceOpen={forceOpen}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
-export default function NotesSidebar({ tree, bookSlug, allBooks }) {
+function Nodes({ nodes, bookSlug, pathname, level, forceOpen }) {
+  return sortNodes(nodes).map((node, i) =>
+    node.type === "file" ? (
+      <NoteLink
+        key={`${node.title}-${i}`}
+        node={node}
+        bookSlug={bookSlug}
+        pathname={pathname}
+      />
+    ) : (
+      <Folder
+        key={`${node.title}-${i}`}
+        node={node}
+        bookSlug={bookSlug}
+        pathname={pathname}
+        level={level}
+        forceOpen={forceOpen}
+      />
+    ),
+  );
+}
+
+function NavContent({ tree, bookSlug, allBooks, autoFocusSearch = false }) {
   const router = useRouter();
-
-  const handleBookChange = (e) => {
-    const newSlug = e.target.value;
-    router.push(`/notes/${newSlug}`);
-  };
-
-  const sortedTree = [...(tree || [])].sort((a, b) => {
-    if (a.type !== b.type) return a.type === "file" ? -1 : 1;
-    return 0;
-  });
+  const pathname = usePathname();
+  const [query, setQuery] = useState("");
+  const visible = useMemo(
+    () => filterTree(tree || [], query.trim()),
+    [tree, query],
+  );
 
   return (
-    <aside className="w-full lg:w-64 flex-shrink-0 lg:border-r border-gray-100 dark:border-zinc-800 h-auto lg:h-[calc(100vh-4rem)] lg:sticky top-16 overflow-y-auto py-6 pr-6 hidden lg:block">
-      
-      {/* Dropdown for Book Selection */}
-      <div className="mb-8">
+    <div className="flex h-full flex-col">
+      <div className="space-y-3">
         <div className="relative">
           <select
             value={bookSlug}
-            onChange={handleBookChange}
-            className="w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-sm font-medium text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-200"
+            onChange={(e) => router.push(`/notes/${e.target.value}`)}
+            aria-label="Choose a book"
+            className="w-full appearance-none rounded-lg border border-border bg-card px-3.5 py-2.5 pr-9 text-sm font-semibold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             {allBooks?.map((book) => (
               <option key={book.slug} value={book.slug}>
@@ -79,19 +168,174 @@ export default function NotesSidebar({ tree, bookSlug, allBooks }) {
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
+          <svg
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+
+        <div className="relative">
+          <svg
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path strokeLinecap="round" d="M21 21l-4.3-4.3" />
+          </svg>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Filter notes…"
+            aria-label="Filter notes in this book"
+            autoFocus={autoFocusSearch}
+            className="w-full rounded-lg border border-border bg-transparent py-2 pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
         </div>
       </div>
-      
-      <nav>
-        {sortedTree.map((node, idx) => (
-          <TreeNode key={idx} node={node} bookSlug={bookSlug} level={0} />
-        ))}
+
+      <nav
+        aria-label="Notes"
+        className="mt-2 min-h-0 flex-1 overflow-y-auto pb-8"
+      >
+        {visible.length ? (
+          <Nodes
+            nodes={visible}
+            bookSlug={bookSlug}
+            pathname={pathname}
+            level={0}
+            forceOpen={Boolean(query.trim())}
+          />
+        ) : (
+          <p className="px-2 py-6 text-sm text-muted-foreground">
+            No notes match “{query}”.
+          </p>
+        )}
       </nav>
-    </aside>
+    </div>
+  );
+}
+
+export default function NotesSidebar({ tree, bookSlug, allBooks }) {
+  const pathname = usePathname();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const bookTitle =
+    allBooks?.find((b) => b.slug === bookSlug)?.title ?? bookSlug;
+
+  // Close the drawer after navigating
+  useEffect(() => setDrawerOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (e) => e.key === "Escape" && setDrawerOpen(false);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [drawerOpen]);
+
+  return (
+    <>
+      {/* Desktop: sticky sidebar */}
+      <aside className="hidden w-64 shrink-0 self-start border-r border-border py-6 pr-5 lg:sticky lg:top-[4.1rem] lg:block lg:h-[calc(100vh-4.1rem)]">
+        <NavContent tree={tree} bookSlug={bookSlug} allBooks={allBooks} />
+      </aside>
+
+      {/* Mobile: slim bar that opens the same navigation as a drawer */}
+      <div className="sticky top-[4.1rem] z-30 -mx-4 border-b border-border bg-background/90 px-4 py-2 backdrop-blur-md sm:-mx-6 sm:px-6 lg:hidden">
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={drawerOpen}
+          className="flex w-full items-center gap-3 rounded-lg border border-border bg-card px-3.5 py-2 text-left text-sm shadow-sm transition active:scale-[0.99]"
+        >
+          <svg
+            className="h-4 w-4 shrink-0 text-primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 6h16M4 12h10M4 18h16"
+            />
+          </svg>
+          <span className="min-w-0 flex-1 truncate font-semibold text-foreground">
+            {bookTitle}
+          </span>
+          <span className="text-xs font-medium text-muted-foreground">
+            Browse
+          </span>
+        </button>
+      </div>
+
+      {drawerOpen && (
+        <div
+          className="fixed inset-0 z-[60] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Browse notes"
+        >
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setDrawerOpen(false)}
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+          />
+          <div className="absolute inset-y-0 left-0 flex w-[min(21rem,88vw)] flex-col bg-background p-4 shadow-2xl duration-200 animate-in slide-in-from-left">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="font-display text-base font-bold text-foreground">
+                Browse notes
+              </span>
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close menu"
+                className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 6l12 12M18 6L6 18"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="min-h-0 flex-1">
+              <NavContent tree={tree} bookSlug={bookSlug} allBooks={allBooks} />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

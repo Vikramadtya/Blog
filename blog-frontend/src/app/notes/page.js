@@ -12,53 +12,54 @@ export async function generateMetadata() {
 
 export default function Notes() {
   return (
-    <main className="flex flex-col items-center px-6 md:px-16 lg:px-32 xl:px-48">
-      <div className="w-full pb-6 pt-12 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+    <main className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+      <header className="pb-8 pt-12 text-center sm:pt-16">
+        <h1 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
           {content.notes.title}
         </h1>
-        <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           {content.notes.description}
         </p>
-      </div>
+      </header>
 
-      <section className="w-full py-12">
-        <div className="-m-4 flex flex-wrap">
-          {notesData.map((book) => (
-            <div key={book.title} className="w-full p-4 sm:w-1/2 lg:w-1/3">
-              <div className="h-full rounded-lg bg-gray-100 bg-opacity-80 p-8 shadow transition hover:shadow-lg dark:bg-zinc-800">
-                <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-indigo-500">
-                  {book.category}
-                </h2>
-                <h3 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
-                  {book.title}
-                </h3>
-                <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
-                  {book.description}
-                </p>
-                <Link
-                  href={book.link}
-                  target={book.link.startsWith("http") ? "_blank" : undefined}
-                  rel={book.link.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+      <section className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+        {notesData.map((book) => {
+          const external = book.link.startsWith("http");
+          return (
+            <Link
+              key={book.title}
+              href={book.link}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+              className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg sm:p-7"
+            >
+              <span className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-primary">
+                {book.category}
+              </span>
+              <h2 className="mt-3 font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+                {book.title}
+              </h2>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                {book.description}
+              </p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                {content.shared.readLabel}
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
                 >
-                  {content.shared.readLabel}
-                  <svg
-                    className="ml-2 h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+            </Link>
+          );
+        })}
       </section>
     </main>
   );

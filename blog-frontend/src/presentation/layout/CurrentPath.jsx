@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Typed from "typed.js";
-import Icon from '@/presentation/ui/Icon';
+import Icon from "@/presentation/ui/Icon";
 
 const CurrentPath = () => {
   const pathname = usePathname();
@@ -20,7 +20,7 @@ const CurrentPath = () => {
   }, [pathname]);
 
   return (
-    <div className="flex items-center gap-2 text-base font-medium text-zinc-700 dark:text-zinc-200">
+    <div className="hidden items-center gap-2 text-base font-medium text-zinc-700 dark:text-zinc-200 md:flex">
       <Icon kind="location" className="h-5 w-5" />
       <span ref={el} />
     </div>
