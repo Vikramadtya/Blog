@@ -46,6 +46,11 @@
   },
   {
     "category": "BOOK",
+    "title": "Miscellaneous",
+    "link": "/notes/misc"
+  },
+  {
+    "category": "BOOK",
     "title": "Rest API Design",
     "description": "Learn the fundamentals of designing RESTful APIs with detailed examples and best practices.",
     "link": "/notes/rest-api-design"
