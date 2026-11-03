@@ -58,7 +58,7 @@ graph LR
 
 #### The Seq2Seq Processing Lifecycle
 
-![Introduction to Prompt Engineering](/notes-assets/encoder-decoder-flow.png)
+![Introduction to Prompt Engineering](../../images/encoder-decoder-flow.png)
 
 
 1.  **Encoding:** Tokens from the source language are sent to the encoder one at a time, converted to an **embedding vector**, and used to update the internal state.
@@ -90,7 +90,7 @@ Google’s *“Attention Is All You Need”* paper introduced the **Transformer*
 === "The Limitation"
     Unlike RNNs, which could theoretically process infinite text (despite forgetting), the Transformer can only process a **fixed, finite sequence** of inputs and outputs. This is known as the **Context Window**.
 
-![Introduction to Prompt Engineering](/notes-assets/transformer.png)
+![Introduction to Prompt Engineering](../../images/transformer.png)
 
 ---
 

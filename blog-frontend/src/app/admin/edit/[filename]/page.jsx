@@ -9,7 +9,10 @@ import FormattingToolbar from "@/presentation/admin/FormattingToolbar";
 import SubPagesPanel from "@/presentation/admin/SubPagesPanel";
 
 export default function EditPostPage({ params }) {
-  const filename = decodeURIComponent(use(params).filename).replace(/^(\.\.\/|\.\.\\|\/|\\)+/, "");
+  const filename = decodeURIComponent(use(params).filename).replace(
+    /^(\.\.\/|\.\.\\|\/|\\)+/,
+    "",
+  );
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -20,7 +23,7 @@ export default function EditPostPage({ params }) {
     tags: "",
     type: "blog",
     previewImageSrc: "",
-    publishAt: ""
+    publishAt: "",
   });
   const [content, setContent] = useState("");
   const [isPreview, setIsPreview] = useState(false);
@@ -50,7 +53,7 @@ export default function EditPostPage({ params }) {
             tags: data.metadata.tags || "",
             type: data.metadata.type || "blog",
             previewImageSrc: data.metadata.previewImageSrc || "",
-            publishAt: data.metadata.publishAt || ""
+            publishAt: data.metadata.publishAt || "",
           });
           setContent(data.content || "");
           setStatus("idle");
@@ -63,14 +66,14 @@ export default function EditPostPage({ params }) {
             const allData = await allRes.json();
             if (allData.posts) {
               const children = allData.posts
-                .filter(p => p.series === slug)
+                .filter((p) => p.series === slug)
                 .sort((a, b) => (a.seriesOrder || 0) - (b.seriesOrder || 0));
               setSubPages(children);
             }
           } catch (e) {
             console.warn("Failed to fetch sub-pages", e);
           }
-          
+
           // Check for local storage draft
           if (typeof window !== "undefined") {
             const draft = localStorage.getItem(`draft_${filename}`);
@@ -130,7 +133,7 @@ export default function EditPostPage({ params }) {
         body: JSON.stringify({
           filename,
           metadata: formData,
-          content
+          content,
         }),
       });
 
@@ -157,12 +160,12 @@ export default function EditPostPage({ params }) {
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    
+
     const before = content.substring(0, start);
     const after = content.substring(end);
-    
+
     setContent(before + text + after);
-    
+
     // Reset cursor
     setTimeout(() => {
       textarea.selectionStart = textarea.selectionEnd = start + text.length;
@@ -176,13 +179,13 @@ export default function EditPostPage({ params }) {
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    
+
     const before = content.substring(0, start);
     const selected = content.substring(start, end);
     const after = content.substring(end);
-    
+
     setContent(before + prefix + selected + suffix + after);
-    
+
     setTimeout(() => {
       textarea.selectionStart = start + prefix.length;
       textarea.selectionEnd = end + prefix.length;
@@ -198,8 +201,10 @@ export default function EditPostPage({ params }) {
     insertAtCursor(placeholder);
 
     try {
-      const url = await uploadImage(file);
-      setContent((prev) => prev.replace(placeholder, `![${file.name}](${url})\n`));
+      const url = await uploadImage(file, `blogs/${filename}`);
+      setContent((prev) =>
+        prev.replace(placeholder, `![${file.name}](${url})\n`),
+      );
     } catch (err) {
       alert("Upload failed: " + err.message);
       setContent((prev) => prev.replace(placeholder, ""));
@@ -240,17 +245,17 @@ export default function EditPostPage({ params }) {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-24 sm:py-32">
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-foreground">
             Edit Post
             {!isDev && (
-              <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 bg-amber-100 dark:text-amber-400 dark:bg-amber-900/30 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+              <span className="rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-amber-600 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
                 Read-Only Mode
               </span>
             )}
           </h1>
-          <p className="mt-2 text-muted-foreground font-mono text-sm">
+          <p className="mt-2 font-mono text-sm text-muted-foreground">
             {filename}
           </p>
         </div>
@@ -265,7 +270,9 @@ export default function EditPostPage({ params }) {
             onClick={handleSave}
             disabled={status === "saving" || !isDev}
             className={`rounded-md px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors ${
-              !isDev ? "bg-gray-400 cursor-not-allowed opacity-50" : "bg-[#f05a28] hover:bg-[#d94a1b]"
+              !isDev
+                ? "cursor-not-allowed bg-gray-400 opacity-50"
+                : "bg-[#f05a28] hover:bg-[#d94a1b]"
             }`}
           >
             {status === "saving" ? "Saving..." : "Save Changes"}
@@ -274,34 +281,53 @@ export default function EditPostPage({ params }) {
       </div>
 
       {message && (
-        <div className={`mb-6 rounded-md p-4 text-sm font-medium ${
-          status === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
-        }`}>
+        <div
+          className={`mb-6 rounded-md p-4 text-sm font-medium ${
+            status === "error"
+              ? "bg-red-50 text-red-700"
+              : "bg-green-50 text-green-700"
+          }`}
+        >
           {message}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Editor Column */}
-        <div className="lg:col-span-2 space-y-4">
-          
+        <div className="space-y-4 lg:col-span-2">
           {hasUnsavedDraft && (
-            <div className="rounded-md bg-amber-50 dark:bg-amber-900/20 p-4 border border-amber-200 dark:border-amber-800">
-              <div className="flex justify-between items-center">
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 text-amber-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  <svg
+                    className="mr-2 h-5 w-5 text-amber-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
                   </svg>
-                  <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                     You have an unsaved draft in your browser.
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={restoreDraft} className="text-sm font-semibold text-amber-800 dark:text-amber-200 hover:underline">
+                  <button
+                    onClick={restoreDraft}
+                    className="text-sm font-semibold text-amber-800 hover:underline dark:text-amber-200"
+                  >
                     Restore
                   </button>
-                  <span className="text-amber-800 dark:text-amber-200">&middot;</span>
-                  <button onClick={discardDraft} className="text-sm text-amber-700 dark:text-amber-400 hover:underline">
+                  <span className="text-amber-800 dark:text-amber-200">
+                    &middot;
+                  </span>
+                  <button
+                    onClick={discardDraft}
+                    className="text-sm text-amber-700 hover:underline dark:text-amber-400"
+                  >
                     Discard
                   </button>
                 </div>
@@ -311,15 +337,19 @@ export default function EditPostPage({ params }) {
 
           <div className="flex items-center justify-between">
             <div>
-              <label className="block text-sm font-medium text-foreground">Markdown Content</label>
+              <label className="block text-sm font-medium text-foreground">
+                Markdown Content
+              </label>
               <span className="text-xs text-muted-foreground">
-                {isDev ? "Drag & drop or paste images to upload" : "Editor disabled in production"}
+                {isDev
+                  ? "Drag & drop or paste images to upload"
+                  : "Editor disabled in production"}
               </span>
             </div>
-            <button 
+            <button
               type="button"
               onClick={() => setIsPreview(!isPreview)}
-              className="text-xs bg-muted px-3 py-1 rounded-md text-foreground hover:bg-muted/80 transition"
+              className="rounded-md bg-muted px-3 py-1 text-xs text-foreground transition hover:bg-muted/80"
             >
               {isPreview ? "Show Editor" : "Show Preview"}
             </button>
@@ -328,8 +358,8 @@ export default function EditPostPage({ params }) {
           {isDev && !isPreview && <FormattingToolbar onFormat={formatText} />}
 
           {isPreview ? (
-            <div className="w-full h-[600px] overflow-auto rounded-md border bg-card text-foreground shadow-sm">
-              <MarkdownPreview content={content} />
+            <div className="h-[600px] w-full overflow-auto rounded-md border bg-card text-foreground shadow-sm">
+              <MarkdownPreview content={content} baseDir="blogs" />
             </div>
           ) : (
             <textarea
@@ -339,8 +369,8 @@ export default function EditPostPage({ params }) {
               onDrop={isDev ? handleDrop : undefined}
               onPaste={isDev ? handlePaste : undefined}
               onDragOver={(e) => e.preventDefault()}
-              className={`w-full h-[600px] font-mono text-sm p-4 rounded-md border bg-card text-foreground shadow-sm focus:ring-2 focus:ring-[#f05a28] focus:border-transparent outline-none resize-y ${
-                !isDev && "opacity-70 bg-muted cursor-not-allowed"
+              className={`h-[600px] w-full resize-y rounded-md border bg-card p-4 font-mono text-sm text-foreground shadow-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#f05a28] ${
+                !isDev && "cursor-not-allowed bg-muted opacity-70"
               }`}
               placeholder="Write your markdown here..."
               disabled={isUploading || !isDev}
@@ -351,79 +381,91 @@ export default function EditPostPage({ params }) {
         {/* Metadata Column */}
         <div className="space-y-6">
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-            <h3 className="text-lg font-medium mb-4">Frontmatter</h3>
-            
+            <h3 className="mb-4 text-lg font-medium">Frontmatter</h3>
+
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Title</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Title
+                </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   disabled={!isDev}
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                  className="w-full rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Summary</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Summary
+                </label>
                 <textarea
                   name="summary"
                   value={formData.summary}
                   onChange={handleChange}
                   disabled={!isDev}
                   rows={3}
-                  className="w-full rounded-md border p-2 text-sm bg-background resize-none disabled:opacity-50 disabled:bg-muted"
+                  className="w-full resize-none rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
                 />
               </div>
 
               <div>
-              <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Series Slug (Optional)</label>
-                <input
-                  type="text"
-                  name="series"
-                  value={formData.series}
-                  onChange={handleChange}
-                  disabled={!isDev}
-                  placeholder="Parent post slug"
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
-                />
-              </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                    Series Slug (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="series"
+                    value={formData.series}
+                    onChange={handleChange}
+                    disabled={!isDev}
+                    placeholder="Parent post slug"
+                    className="w-full rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Series Order (Optional)</label>
-                <input
-                  type="number"
-                  name="seriesOrder"
-                  value={formData.seriesOrder}
-                  onChange={handleChange}
-                  disabled={!isDev}
-                  placeholder="e.g. 1"
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
-                />
-              </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                    Series Order (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    name="seriesOrder"
+                    value={formData.seriesOrder}
+                    onChange={handleChange}
+                    disabled={!isDev}
+                    placeholder="e.g. 1"
+                    className="w-full rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
+                  />
+                </div>
 
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Tags (comma separated)</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Tags (comma separated)
+                </label>
                 <input
                   type="text"
                   name="tags"
                   value={formData.tags}
                   onChange={handleChange}
                   disabled={!isDev}
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                  className="w-full rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Content Type</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Content Type
+                </label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
                   disabled={!isDev}
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                  className="w-full rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
                 >
                   <option value="blog">Blog</option>
                   <option value="snippet">Snippet</option>
@@ -431,7 +473,9 @@ export default function EditPostPage({ params }) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Preview Image URL</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Preview Image URL
+                </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -440,44 +484,54 @@ export default function EditPostPage({ params }) {
                     onChange={handleChange}
                     disabled={!isDev || isUploadingCover}
                     placeholder="/images/cover.png"
-                    className="flex-1 w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                    className="w-full flex-1 rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
                   />
-                  <label className="cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-md border px-3 py-2 text-sm flex items-center justify-center whitespace-nowrap disabled:opacity-50 transition-colors">
+                  <label className="flex cursor-pointer items-center justify-center whitespace-nowrap rounded-md border bg-blue-600 px-3 py-2 text-sm text-white transition-colors hover:bg-blue-700 disabled:opacity-50">
                     {isUploadingCover ? "..." : "Upload"}
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className="hidden" 
-                      disabled={!isDev || isUploadingCover} 
-                      onChange={handleCoverUpload} 
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!isDev || isUploadingCover}
+                      onChange={handleCoverUpload}
                     />
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1">Scheduled Publish Date (Optional)</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Scheduled Publish Date (Optional)
+                </label>
                 <input
                   type="datetime-local"
                   name="publishAt"
                   value={formData.publishAt}
                   onChange={handleChange}
                   disabled={!isDev}
-                  className="w-full rounded-md border p-2 text-sm bg-background disabled:opacity-50 disabled:bg-muted"
+                  className="w-full rounded-md border bg-background p-2 text-sm disabled:bg-muted disabled:opacity-50"
                 />
               </div>
-                
+
               {formData.previewImageSrc && (
-                <div className="mt-2 aspect-video w-full rounded-md border overflow-hidden relative opacity-80">
+                <div className="relative mt-2 aspect-video w-full overflow-hidden rounded-md border opacity-80">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={formData.previewImageSrc} alt="Preview" className="object-cover w-full h-full" />
+                  <img
+                    src={formData.previewImageSrc}
+                    alt="Preview"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               )}
             </div>
           </div>
 
           {!formData.series && (
-            <SubPagesPanel subPages={subPages} currentSlug={currentSlug} isDev={isDev} />
+            <SubPagesPanel
+              subPages={subPages}
+              currentSlug={currentSlug}
+              isDev={isDev}
+            />
           )}
         </div>
       </div>

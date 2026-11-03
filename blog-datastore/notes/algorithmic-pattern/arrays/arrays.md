@@ -26,8 +26,6 @@ An array is a chunk of contiguous memory that a program can access by using indi
 
 
 
-<figure><img src="/notes-assets/Arrays_in_ds-what-is-array-img1.PNG" alt="" /><figcaption></figcaption></figure>
-
 
 
 ### Finding Items
@@ -126,8 +124,6 @@ $$
 
 &#x20;In a _triangular array_, the values on one side of the diagonal have some default value, such as 0, `null`, or blank.&#x20;
 
-<figure><img src="/notes-assets/image%20(10).png" alt="" /><figcaption></figcaption></figure>
-
 * In an _upper-triangular array_, the real values lie on or above the diagonal.
 * In a _lower-triangular array_, the nondefault values lie on or below the diagonal.&#x20;
 
@@ -164,8 +160,6 @@ One way to implement a sparse array is to make a linked list of linked lists.&#x
 
 * The first list holds information about rows.&#x20;
 * Each item in that list points to another linked list holding information about the array's columns for that row.
-
-<figure><img src="/notes-assets/image%20(11).png" alt="" /><figcaption></figcaption></figure>
 
 * To make it easier to determine when a value is missing from the array, the `ArrayRow` objects are stored in increasing order of `RowNumber`.
 *   &#x20;the `ArrayEntry` objects are stored in increasing order of `ColumnNumber`.

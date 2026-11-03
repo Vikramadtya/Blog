@@ -1,9 +1,13 @@
 import React from "react";
 import Card from "@/presentation/ui/Card";
 
-const ContentGrid = ({ blogs, blogIdToMetadata, seriesParentSlugs = new Set() }) => {
+const ContentGrid = ({
+  blogs,
+  blogIdToMetadata,
+  seriesParentSlugs = new Set(),
+}) => {
   return (
-    <ul className="grid w-full grid-cols-1 items-start gap-6 pb-16 pt-16 md:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid w-full grid-cols-1 items-start gap-6 pb-4 md:grid-cols-2 xl:grid-cols-3">
       {blogs.map((blog) => (
         <li key={blog.id}>
           <Card

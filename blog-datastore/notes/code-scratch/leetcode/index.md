@@ -18,72 +18,72 @@ First analyse my submission & complexity , tell me where i can improve. If there
 
 Problem Link :
 
-https://takeuforward.org/practice/dsa/m-coloring-problem?category=faqs-hard&source=strivers-a2z-dsa-sheet
+https://leetcode.com/problems/number-of-provinces/description/
 
 Problem Statement:
 
-Given an integer M and an undirected graph with N vertices (zero indexed) and E edges. The goal is to determine whether the graph can be coloured with a maximum of M colors so that no two of its adjacent vertices have the same colour applied to them.
+There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, and city b is connected directly with city c, then city a is connected indirectly with city c.
 
-In this context, colouring a graph refers to giving each vertex a different colour. If the colouring of vertices is possible then return true, otherwise return false.
+A province is a group of directly or indirectly connected cities and no other cities outside of the group.
 
+You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith city and the jth city are directly connected, and isConnected[i][j] = 0 otherwise.
+
+Return the total number of provinces.
 
 Candidate Solution:
 
 ```java
 class Solution {
-    boolean[] colorInNeighbour;
-    boolean graphColoring(int[][] edges, int m, int n) {
-        
-        Map<Integer, List<Integer>> graph = new HashMap<>();
-        for(int i = 0; i < n; ++i) graph.put(i, new ArrayList<>());
+    int[] parent;
+    int[] rank;
 
-        for(int[] edge : edges) {
-            graph.get(edge[0]).add(edge[1]);
-            graph.get(edge[1]).add(edge[0]);
+    int find(int x) {
+        if( parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+
+    boolean union(int x, int y) {
+        int pa = find(x);
+        int pb = find(y);
+
+        if (pa == pb)
+            return false;
+
+        if (rank[pa] > rank[pb]) {
+            parent[pb] = pa;
+            rank[pa]++;
+        } else {
+            parent[pa] = pb;
+            rank[pb]++;
         }
 
-        int[] colors = new int[n];
-        colorInNeighbour = new boolean[m];
-
-        Arrays.fill(colors,-1);
-        Arrays.fill(colorInNeighbour,false);
-        
-        for(int i = 0; i < n ; ++i) {
-            if(colors[i] == -1) {
-                if(!dfs(graph,colors, m, i)) return false;
-            }
-        }
-        
         return true;
     }
 
+    public int findCircleNum(int[][] isConnected) {
+        int n = isConnected.length;
+        parent = new int[n];
+        rank = new int[n];
 
-    boolean dfs(Map<Integer, List<Integer>> graph, int[] color, int M, int index) {
-        
-        if(color[index] != -1) return true;
 
-        Arrays.fill(colorInNeighbour,false);
-        for(int nbr : graph.get(index)) {
-            if(color[nbr] != -1) {
-                colorInNeighbour[color[nbr]] = true;
-            }
-        }
+        for(int i = 0; i < n ; ++i) parent[i] = i;
 
-        for(int i = 0; i < M; ++i) {
-            if(!colorInNeighbour[i]) {
-                color[index] = i;
-                break;
+
+        for(int i = 0; i < n; ++i) {
+            for(int j = 0; j < n; ++j) {
+                if(isConnected[i][j] == 1) union(i,j);
             }
         }
 
 
-        if(color[index] == -1) return false;
-
-        for(int nbr : graph.get(index)) {
-            if(!dfs(graph,color,M,nbr)) return false;
+        Set<Integer> p = new HashSet<>();
+        for(int i = 0; i < n; ++i) {
+            p.add(find(i));
         }
 
-        return true;
+        return p.size();
     }
 }
 ```
@@ -91,7 +91,7 @@ class Solution {
 Claimed Complexity:
 
 Space Complexity : O(n)
-Time Complexity : O(n*e)
+Time Complexity : O(n^2)
 
 ---
 

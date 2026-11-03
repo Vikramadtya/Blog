@@ -1,7 +1,5 @@
 # Tree Traversal
 
-<figure><img src="/notes-assets/image%20(2).png" alt="" /><figcaption></figcaption></figure>
-
 ## Depth First Search
 
 

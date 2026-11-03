@@ -21,8 +21,6 @@ description: >-
 
 Traverse from the **left** subtree to the **root** then to the **right** subtree.
 
-<figure><img src="/notes-assets/inorder-visualization.png" alt="" /><figcaption></figcaption></figure>
-
 In the _inorder traversal_, the root is visited after visiting its left subtree but before visiting the right subtree.
 
 ```java
@@ -43,8 +41,6 @@ void inOrderTraversal(Node root)
 ## Pre-order Traversal  (root first)
 
 
-
-<figure><img src="/notes-assets/preorder-visualization.png" alt="" /><figcaption></figcaption></figure>
 
 In the _preorder traversal_, the root is visited before the left and right subtrees are visited (in that order).\
 
@@ -71,8 +67,6 @@ First process all nodes in the left subtree, then process all nodes in the right
 
 
 
-<figure><img src="/notes-assets/postorder-visualization.png" alt="" /><figcaption></figcaption></figure>
-
 
 
 In the _postorder traversal_, the root is visited after visiting the left and right subtrees (in that order).
@@ -98,8 +92,6 @@ void postOrderTraversal(Node root)
 ## Level-order Traversal (BFS)&#x20;
 
 Start by processing the root node, then process all nodes at the first level, second level, and so on.&#x20;
-
-<figure><img src="/notes-assets/level-order-traversal-of-binary-tree.png" alt="" /><figcaption></figcaption></figure>
 
 Explore all nodes at the current level before moving on to nodes at the next level.
 

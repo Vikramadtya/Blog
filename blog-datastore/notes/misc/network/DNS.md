@@ -32,13 +32,13 @@ The DNS database is organized as a hierarchical structure resembling an **invert
 
 DNS’s distributed database is indexed by domain names. Each domain name is essentially just a path in a large inverted tree, called the domain namespace.
 
-![image](/notes-assets/dnsnamespace.png)
+![image](../../../images/dnsnamespace.png)
 
 DNS’s tree can branch any number of ways at each intersection point, or node. The depth of the tree is limited to 127 levels 
 
 Each domain in this hierarchy can be further divided into smaller units called **subdomains**. The responsibility for managing these subdomains can be delegated to different organizations, enabling a distributed and scalable administrative model.
 
-![image](/notes-assets/subdomain.png)
+![image](../../../images/subdomain.png)
 
 For example, delegating authority for **berkeley.edu** to the University of California, Berkeley creates a new administrative unit known as a **zone**. This zone becomes an independently managed portion of the namespace and includes all domain names ending in *berkeley.edu*. Meanwhile, the **edu** domain retains authority only over names that are not part of delegated subdomains.
 
@@ -60,14 +60,14 @@ Domain names serve as **indexes into the DNS database**, with various types of d
 
 A domain is simply a subtree of the domain namespace. The domain name of a domain is the same as the domain name of the node at the very top of the domain.
 
-![image](/notes-assets/domain.png)
+![image](../../../images/domain.png)
 
 A domain encompasses all hosts and subdomains within its portion of the hierarchy—that is, everything contained within its subtree. Any domain name in the subtree is considered a part of the domain.
 
 
 !!! note ""
     Because a domain name can be in many subtrees, a domain name can also be in many domains.
-    ![image](/notes-assets/domains.png)
+    ![image](../../../images/domains.png)
 
 A domain may have several subtrees of its own, called subdomains. A subdomain’s domain name ends with the domain name of its parent domain.
 
@@ -89,7 +89,7 @@ Every host on a network is assigned a **domain name**, which maps to information
 
 Additionally, a host may have one or more **aliases**. These aliases are alternative domain names that point to the host’s primary (canonical) domain name.
 
-![image](/notes-assets/domainalias.png)
+![image](../../../images/domainalias.png)
 
 ----
 

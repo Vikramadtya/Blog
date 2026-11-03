@@ -2,8 +2,6 @@
 
 A linked list is built of objects that are often called nodes.&#x20;
 
-<figure><img src="/notes-assets/image%20(7).png" alt="" /><figcaption></figcaption></figure>
-
 The nodes class contains whatever data the list must store plus a link to another cell.&#x20;
 
 ```
@@ -135,7 +133,7 @@ A _self-organizing linked list_ is a list that uses some sort of heuristic to re
 
 
 
-If numbering the items in the list ![images](/notes-assets/c03-i0012.png)$$1,2,3 .. n$$  and the probability to find item $$i$$ is $$P_i$$, then the expected number of steps to move down the list to find an item is given by the following formula
+If numbering the items in the list $$1,2,3 .. n$$  and the probability to find item $$i$$ is $$P_i$$, then the expected number of steps to move down the list to find an item is given by the following formula
 
 $$
 \text{Expected Search Length} = 1.P_1 + 2.P_2 + 3.P_3 ...... + N.P_n
@@ -211,8 +209,6 @@ For example,&#x20;
 ## Multithreaded Linked Lists <a href="#head-2-68" id="head-2-68"></a>
 
 There's no reason why we can't add other links to a list's nodes to provide other ways to move through the nodes.
-
-<figure><img src="/notes-assets/image%20(6).png" alt="" /><figcaption></figcaption></figure>
 
 It's easy to work with a single thread, thinking of it as a simple linked list, as visualizing all of the threads at the same time can be messy.\
 \

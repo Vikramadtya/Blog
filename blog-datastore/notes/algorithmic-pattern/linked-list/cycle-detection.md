@@ -2,8 +2,6 @@
 
 For the following linked list&#x20;
 
-<figure><img src="/notes-assets/image%20(8).png" alt="" /><figcaption></figcaption></figure>
-
 1. How to tell whether a linked list contains such a loop ?
 2. How to find where the loop starts and break it there to “fix” the list ?&#x20;
 

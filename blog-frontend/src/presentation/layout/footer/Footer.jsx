@@ -1,71 +1,83 @@
 import Link from "next/link";
 import SocialIcon from "@/presentation/ui/SocialIcon";
 import BuildWith from "@/presentation/blog/BuildWith";
+import Logo from "@/presentation/ui/Logo";
 import { siteMetadata } from "../../../../site.config.mjs";
 const { content } = siteMetadata;
 
+const EXPLORE = [
+  { href: "/blogs", label: "All posts" },
+  { href: "/notes", label: "Notes" },
+  { href: "/snippets", label: "Snippets" },
+  { href: "/tags", label: "Tags" },
+  { href: "/feed.xml", label: "RSS feed" },
+];
+
+const SOCIALS = [
+  ["instagram", siteMetadata.instagram],
+  ["twitter", siteMetadata.twitter],
+  ["facebook", siteMetadata.facebook],
+  ["youtube", siteMetadata.youtube],
+  ["linkedin", siteMetadata.linkedin],
+  ["mail", siteMetadata.email && `mailto:${siteMetadata.email}`],
+  ["github", siteMetadata.github],
+].filter(([, href]) => href);
+
 const Footer = () => {
   return (
-    <footer className="z-50">
-      <div className="mt-16 flex flex-col items-center">
-        <div className="mb-3 flex space-x-4">
-          {siteMetadata.instagram && (
-            <SocialIcon
-              kind="instagram"
-              href={siteMetadata.instagram}
-              size={20}
-            />
-          )}
-          {siteMetadata.twitter && (
-            <SocialIcon kind="twitter" href={siteMetadata.twitter} size={20} />
-          )}
-          {siteMetadata.facebook && (
-            <SocialIcon
-              kind="facebook"
-              href={siteMetadata.facebook}
-              size={20}
-            />
-          )}
-          {siteMetadata.youtube && (
-            <SocialIcon kind="youtube" href={siteMetadata.youtube} size={20} />
-          )}
-          {siteMetadata.linkedin && (
-            <SocialIcon
-              kind="linkedin"
-              href={siteMetadata.linkedin}
-              size={20}
-            />
-          )}
-          {siteMetadata.email && (
-            <SocialIcon
-              kind="mail"
-              href={`mailto:${siteMetadata.email}`}
-              size={20}
-            />
-          )}
-          {siteMetadata.github && (
-            <SocialIcon kind="github" href={siteMetadata.github} size={20} />
-          )}
-          <SocialIcon kind="rss" href="/feed.xml" size={20} />
+    <footer className="relative z-10 mt-24 border-t border-border/70 bg-card/40 backdrop-blur-sm">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-[1.6fr_1fr_1fr] md:px-10 lg:px-16">
+        <div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3 text-foreground"
+          >
+            <Logo size={40} />
+            <span className="font-serif text-xl font-semibold tracking-wide">
+              {siteMetadata.headerTitle || siteMetadata.author}
+            </span>
+          </Link>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            {siteMetadata.description}
+          </p>
         </div>
-        <div className="mb-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <div>{`Copyright © ${new Date().getFullYear()} ${content.footer.copyrightText}`}</div>
-          <div>{` • `}</div>
-          <Link href="/">{siteMetadata.title}</Link>
-        </div>
-        <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-          {content.footer.buildWithText}
-          {` `}
-          {siteMetadata.author}
+
+        <nav aria-label="Explore">
+          <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.16em] text-foreground">
+            Explore
+          </h2>
+          <ul className="space-y-2.5 text-sm">
+            {EXPLORE.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.16em] text-foreground">
+            Connect
+          </h2>
+          <div className="flex flex-wrap gap-4 text-muted-foreground">
+            {SOCIALS.map(([kind, href]) => (
+              <SocialIcon key={kind} kind={kind} href={href} size={20} />
+            ))}
+          </div>
         </div>
       </div>
-      <div className="mb-8 ml-10 mr-10 flex flex-col items-center justify-between space-y-4 md:mb-10 md:flex md:flex-row md:space-y-0">
-        <BuildWith />
 
-        <div className="my-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <span>
-            {siteMetadata.title} - {siteMetadata.description}
-          </span>
+      <div className="border-t border-border/70">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-muted-foreground md:flex-row md:px-10 lg:px-16">
+          <p>
+            {`© ${new Date().getFullYear()} ${siteMetadata.title}. ${content.footer.copyrightText}`}
+          </p>
+          <BuildWith />
         </div>
       </div>
     </footer>

@@ -28,3 +28,10 @@ export function extractHeadings(markdown, { minLevel = 1, maxLevel = 3 } = {}) {
   }
   return headings;
 }
+
+/** The page header already shows the post title, so drop a leading "# Title" from the body. */
+export function stripLeadingTitle(markdown) {
+  return typeof markdown === "string"
+    ? markdown.replace(/^\s*#[ \t]+[^\n]*\n+/, "")
+    : markdown;
+}

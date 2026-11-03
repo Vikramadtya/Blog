@@ -16,7 +16,7 @@ import SeriesNavigation from "@/presentation/blog/SeriesNavigation";
 
 import Markdown from "@/presentation/ui/Markdown";
 import { blogService } from "@/core";
-import { extractHeadings } from "@/lib/headings";
+import { extractHeadings, stripLeadingTitle } from "@/lib/headings";
 import { siteMetadata } from "../../../../site.config.mjs";
 import { BlogMetricsProvider } from "@/presentation/providers/BlogMetricsProvider";
 
@@ -96,7 +96,7 @@ export default async function Post({ params }) {
     }
   }
 
-  const content = blogData.content;
+  const content = stripLeadingTitle(blogData.content);
   const tableOfContent = extractHeadings(content);
 
   const jsonLd = {
@@ -212,8 +212,8 @@ export default async function Post({ params }) {
         )}
 
         {/* Blog Content */}
-        <section className="prose prose-sm prose-neutral mx-auto w-full max-w-[65ch] dark:prose-invert md:prose-base lg:prose-lg">
-          <Markdown source={content} variant="blog" />
+        <section className="note-article prose prose-sm prose-neutral mx-auto w-full max-w-[65ch] dark:prose-invert md:prose-base lg:prose-lg">
+          <Markdown source={content} variant="blog" baseDir="blogs" />
         </section>
 
         <AuthorBio />

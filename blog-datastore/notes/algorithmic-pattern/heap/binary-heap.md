@@ -6,7 +6,7 @@ A complete binary tree can be uniquely represented by storing its level order tr
 
 We skip the index zero cell of the array for the convenience of implementation so the the root is the second item in the array.&#x20;
 
-<figure><img src="/notes-assets/image.png" alt="" /><figcaption></figcaption></figure>
+![](../../../images/image.png)
 
 Consider $$k^{\text{th}}$$ element of the array, the
 

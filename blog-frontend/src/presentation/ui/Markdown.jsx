@@ -11,6 +11,7 @@ import "katex/dist/katex.min.css";
 import { getMDXComponents } from "@/presentation/ui/MdxComponents";
 import { prettyCodeOptions } from "@/lib/markdownConstants";
 import { preprocessAdmonitions, remarkAdmonitions } from "@/lib/admonitions";
+import { remarkMedia } from "@/lib/markdownMedia";
 
 const autolinkByVariant = {
   blog: {
@@ -32,7 +33,7 @@ const autolinkByVariant = {
  * The one markdown pipeline for blogs and notes.
  * Blog posts are MDX; notes are plain markdown, so `{`, `<` and `&` stay literal.
  */
-export default function Markdown({ source, variant = "blog" }) {
+export default function Markdown({ source, variant = "blog", baseDir = "" }) {
   return (
     <MDXRemote
       source={preprocessAdmonitions(source)}
@@ -45,6 +46,7 @@ export default function Markdown({ source, variant = "blog" }) {
             remarkMath,
             remarkDirective,
             remarkAdmonitions,
+            [remarkMedia, { baseDir }],
           ],
           rehypePlugins: [
             rehypeKatex,

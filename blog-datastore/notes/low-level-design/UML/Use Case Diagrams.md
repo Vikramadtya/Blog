@@ -1,7 +1,7 @@
 # Use Case Diagrams: Functional Requirement Modeling
 
 
-![image](/notes-assets/summary.jpg)
+![image](../../../images/summary.jpg)
 
 ## 1. Overview and Purpose
 A **Use Case Diagram** is a behavioral UML diagram that describes a set of actions (Use Cases) performed by a system in collaboration with one or more external users (Actors). It serves as a high-level visual representation of a system's functional requirements.
@@ -11,7 +11,7 @@ A **Use Case Diagram** is a behavioral UML diagram that describes a set of actio
 * **Scoping:** It defines the system's "Black Box" behavior. By identifying what is inside the diagram, it simultaneously clarifies the system's boundaries and defines what the system will **NOT** do.
 
 
-![image](/notes-assets/sample_usecase_diagram.png)
+![image](../../../images/sample_usecase_diagram.png)
 
 ---
 

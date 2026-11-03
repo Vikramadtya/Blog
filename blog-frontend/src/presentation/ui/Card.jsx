@@ -35,14 +35,14 @@ const Card = (props) => {
     id,
     initialLikes,
     initialViews,
-    false
+    false,
   );
   const sourceUrl = siteMetadata.siteRepo
     ? `${siteMetadata.siteRepo}/blob/main/blog-datastore/blogs/${slug}.md`
     : null;
 
   return (
-    <div className="relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:border-primary/60 hover:shadow-md">
+    <div className="card-premium group/card relative flex w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
       {previewImageSrc && (
         <div className="relative aspect-video w-full overflow-hidden border-b border-border">
           <Image
@@ -59,7 +59,7 @@ const Card = (props) => {
 
       <div className="flex flex-col justify-between p-5">
         {/* Blog Meta Header */}
-        <div className="mb-2.5 flex items-center justify-between text-xs font-mono text-muted-foreground">
+        <div className="mb-2.5 flex items-center justify-between font-mono text-xs text-muted-foreground">
           <span className="font-semibold text-primary">#{blogNumber}</span>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1" title="Likes">
@@ -79,7 +79,7 @@ const Card = (props) => {
             <h2 className="font-display text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
               {title}
               {isSeries && (
-                <span className="ml-2 inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-mono font-medium text-primary border border-primary/20">
+                <span className="ml-2 inline-flex items-center gap-1 rounded-md border border-primary/20 bg-primary/10 px-2 py-0.5 font-mono text-xs font-medium text-primary">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="10"
@@ -102,12 +102,12 @@ const Card = (props) => {
                 </span>
               )}
               {blog.publish === false && (
-                <span className="ml-2 inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-mono font-medium text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                <span className="ml-2 inline-flex items-center rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 font-mono text-xs font-medium text-amber-700 dark:text-amber-400">
                   Draft
                 </span>
               )}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground font-sans line-clamp-3">
+            <p className="mt-2 line-clamp-3 font-sans text-sm leading-relaxed text-muted-foreground">
               {description}
             </p>
           </div>
@@ -121,10 +121,10 @@ const Card = (props) => {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-xs font-mono text-muted-foreground">
+        <div className="mt-6 flex items-center justify-between border-t border-border pt-4 font-mono text-xs text-muted-foreground">
           {sourceUrl ? (
             <Link href={sourceUrl} passHref>
-              <span className="hover:text-primary transition-colors hover:underline">
+              <span className="transition-colors hover:text-primary hover:underline">
                 View Source
               </span>
             </Link>

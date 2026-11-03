@@ -4,8 +4,6 @@ Hey! Welcome to the coding section where i capture the solutions of the problem 
 
 The log of question solver is [here](https://airtable.com/appd1ErlnOKNxFYlb/shr9duOVejQUlPqsE/tblEQpEg65SCsaz2s) & checkout the [repository](https://github.com/Vikramadtya/code-logs/tree/main/LeetCode) with all solutions
 
-![Leetcode Stats](/notes-assets/vksnh%3Ftheme%3Dlight%26font%3DIBM%20Plex%20Mono)
-
 ### References&#x20;
 
 - [https://neetcode.io](https://neetcode.io)

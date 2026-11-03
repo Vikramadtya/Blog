@@ -2,6 +2,8 @@ import { checkAdminAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { DATASTORE_DIR } from "@/lib/paths";
+import { relativeMediaPath } from "@/lib/media";
 import { createHash } from "crypto";
 
 const ALLOWED_TYPES = new Set([
@@ -59,14 +61,23 @@ export async function POST(req) {
     const hash = createHash("sha256").update(buffer).digest("hex").slice(0, 12);
     const filename = `${hash}-${originalName}`;
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadsDir, { recursive: true });
-    await fs.writeFile(path.join(uploadsDir, filename), buffer);
+    // Images live in blog-datastore/images so they travel with the content
+    const imagesDir = path.join(DATASTORE_DIR, "images");
+    await fs.mkdir(imagesDir, { recursive: true });
+    await fs.writeFile(path.join(imagesDir, filename), buffer);
 
-    // Return the URL path
-    const urlPath = `/uploads/${filename}`;
+    const assetPath = `images/${filename}`;
+    const url = `/media/${assetPath.split("/").map(encodeURIComponent).join("/")}`;
 
-    return NextResponse.json({ success: true, url: urlPath });
+    // When the caller says which file it is editing, also return the link to put in that file:
+    // a relative path works in any markdown editor as well as on the site.
+    const from = formData.get("from");
+    const relative =
+      typeof from === "string" && from.endsWith(".md") && !from.includes("..")
+        ? relativeMediaPath(from, assetPath)
+        : null;
+
+    return NextResponse.json({ success: true, url, relative });
   } catch (error) {
     console.error("Image upload failed:", error);
     return NextResponse.json(

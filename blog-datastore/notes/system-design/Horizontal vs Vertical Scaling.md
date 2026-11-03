@@ -1,6 +1,6 @@
 # Vertical vs Horizontal Scaling
 
-![image](/notes-assets/vertical-scaling-vs-horizontal-scaling-.png)
+![image](../../images/vertical-scaling-vs-horizontal-scaling-.png)
 
 
 | Characteristic            | Scale Up (Vertical)                                                | Scale Out (Horizontal)                                                  |
@@ -19,7 +19,7 @@
 
 Vertical scaling, referred to as “scale up”, means the process of adding more power (CPU, RAM, etc.) to your servers. This approach applies to traditional applications deployed on physical servers or virtual machines as well as containerized applications.
 
-![image](/notes-assets/scale-up.png)
+![image](../../images/scale-up.png)
 
 
 ```mermaid
@@ -66,7 +66,7 @@ Upgrading a vertically scaled system often requires downtime and has physical li
 
 With horizontal scaling, the compute resource limitations from physical hardware are no longer a challenge. This approach works particularly well for software as a service applications with distributed architecture.
 
-![image](/notes-assets/horiontal-scaling.png)
+![image](../../images/horiontal-scaling.png)
 
 ### Advantages of Scaling Out
 

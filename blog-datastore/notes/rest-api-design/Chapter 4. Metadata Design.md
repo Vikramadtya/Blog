@@ -1,6 +1,6 @@
 # Metadata Design: HTTP Headers and Media Types
 
-![image](/notes-assets/c4-summary.jpg)
+![image](../../images/c4-summary.jpg)
 
 ## 1. Metadata and Representation Headers
 Metadata in HTTP serves as the "data about data," conveying essential information through headers. Modern REST architecture distinguishes between **Request/Response headers** (control info) and **Representation headers** (description of the payload).

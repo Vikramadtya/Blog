@@ -1,6 +1,6 @@
 # UML Activity Diagrams: Modeling Process and Workflow
 
-![summary](/notes-assets/summary.jpg)
+![summary](../../../images/summary.jpg)
 
 ## 1. Overview
 An **Activity Diagram** is a behavioral UML diagram used to illustrate the dynamic flow of control within a system. While a Sequence Diagram focuses on object interactions, an Activity Diagram emphasizes the **flow of activities**, logic branching, and concurrent processes.
@@ -9,7 +9,7 @@ An **Activity Diagram** is a behavioral UML diagram used to illustrate the dynam
 * **Use Case Realization:** Frequently used to map out the "Basic Flow" and "Alternative Flows" of a specific Use Case.
 * **Functional Modeling:** Represents the transformation of data (inputs) through a sequence of operations into outputs.
 
-![image](/notes-assets/sample_activity_diagrams.png)
+![image](../../../images/sample_activity_diagrams.png)
 ---
 
 ## 2. Core Components and Notation

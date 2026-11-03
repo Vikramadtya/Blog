@@ -48,7 +48,7 @@ _**Ensuring Fairness**_
     \
 
 
-    <figure><img src="/notes-assets/c02-disp-0006.png" alt="" /><figcaption></figcaption></figure>
+    
 
 
 

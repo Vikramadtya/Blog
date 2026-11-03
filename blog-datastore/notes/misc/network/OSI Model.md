@@ -1,6 +1,6 @@
 # The OSI Reference Model: A Comprehensive Guide
 
-![images](/notes-assets/osi%20summary.jpg)
+![images](../../../images/osi-summary.jpg)
 
 The **Open Systems Interconnection (OSI)** model was developed by the International Organization for Standardization (ISO) in 1984. It serves as a conceptual framework to understand how different networking protocols interact and communicate. While the modern internet primarily runs on the **TCP/IP model**, the OSI model remains the gold standard for troubleshooting and educational purposes.
 

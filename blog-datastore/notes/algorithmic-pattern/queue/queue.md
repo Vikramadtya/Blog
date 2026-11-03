@@ -2,8 +2,6 @@
 
 A queue is a data structure where items are added and removed in first-in-first-out order. Because of this first-in-first-out (FIFO, usually pronounced “fife-oh”) behavior, stacks are sometimes called FIFO lists or FIFOs.
 
-<figure><img src="/notes-assets/Data_Queue.svg" alt="" /><figcaption></figcaption></figure>
-
 The method that adds an item to a queue is called `Enqueue`, and the item that removes an item from a queue is called `Dequeue`.
 
 
@@ -31,13 +29,9 @@ If we simply store items at one end of an array and remove them from the other, 
 
 
 
-<figure><img src="/notes-assets/c05f009.jpg" alt="" width="268" /><figcaption></figcaption></figure>
-
 
 
 A more effective approach is to build a _circular array_, in which we treat the last item as if it were immediately before the first item. Now when `Next` falls off the end of the array, it wraps around to the first position, and the program can store new items there.
-
-<figure><img src="/notes-assets/c05f010.jpg" alt="" /><figcaption></figcaption></figure>
 
 
 

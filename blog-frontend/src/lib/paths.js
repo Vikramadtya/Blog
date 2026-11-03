@@ -14,6 +14,7 @@ export const NOTES_DIR = path.join(
   "blog-datastore",
   "notes",
 );
+export const DATASTORE_DIR = path.join(process.cwd(), "..", "blog-datastore");
 export const NOTES_CONFIG_PATH = path.join(
   process.cwd(),
   "config",

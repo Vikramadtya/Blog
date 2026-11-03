@@ -25,7 +25,7 @@ const BackGroundParticle = () => {
       },
       background: {
         color: {
-          value: theme === "light" ? "#ffffff" : "#000000",
+          value: "transparent", // let the site's tinted body gradient show through
         },
       },
       particles: {

@@ -1,6 +1,6 @@
 # Client-Side Concerns and Infrastructure
 
-![image](/notes-assets/c6-summary.jpg)
+![image](../../images/c6-summary.jpg)
 
 
 A REST API's design must account for the diverse needs of its clients—ranging from bandwidth conservation on mobile devices to the security restrictions of browser-based JavaScript environments.

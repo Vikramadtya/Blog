@@ -3,14 +3,10 @@
 * based on the idea of divide-and-conquer
 * is cache-friendly due to its in-place sorting property and reduced memory accesses.
 
-<figure><img src="/notes-assets/image%20(5).png" alt="" /><figcaption></figcaption></figure>
-
 #### Intuition of quick sort
 
 * partition an unsorted array around some input value (pivot) into two parts such that values in the left part are less than the pivot and values in the right part are greater than the pivot.
 * the pivot will get placed in the correct position in the sorted output after the partition
-
-<figure><img src="/notes-assets/image%20(4).png" alt="" /><figcaption></figcaption></figure>
 
 * if we sort both halves recursively, using the same function, the entire array will get sorted
   * repeat the same process for smaller subarrays until we reach the base case.

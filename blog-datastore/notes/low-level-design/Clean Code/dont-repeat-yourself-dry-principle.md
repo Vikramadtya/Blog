@@ -8,7 +8,7 @@ The DRY principle – **"Don't Repeat Yourself"** is one of the fundamental prin
 
 
 
-<figure><img src="/notes-assets/Screenshot 2024-12-31 at 5.16.40 PM.png" alt="" /><figcaption></figcaption></figure>
+![](../../../images/Screenshot-2024-12-31-at-5.16.40-PM.png)
 
 ### **Key Benefits of the DRY Principle**
 
@@ -23,7 +23,7 @@ The DRY principle – **"Don't Repeat Yourself"** is one of the fundamental prin
 * **Identify Repetitive Code:**  Look for patterns, similar logic, or functionality that appears in multiple places.
 * **Extract Common Functionality:** Extract the common functionality into reusable components, such as functions, classes, or modules.
 
-<figure><img src="/notes-assets/image.png" alt="" width="563" /><figcaption></figcaption></figure>
+![](../../../images/image.png)
 
 * **Use Inheritance and Composition:** By creating a hierarchy of classes or composing objects together, you can avoid duplicating code and promote code reuse.
 * **Leverage Libraries and Frameworks:** Instead of reinventing the wheel, leverage libraries and frameworks to avoid writing repetitive code.&#x20;

@@ -27,3 +27,10 @@ test("extractHeadings matches rehype-slug, dedupes and skips code fences", () =>
   );
   assert.deepEqual(extractHeadings(md, { minLevel: 2 }).map((h) => h.slug), ["b", "b-1"]);
 });
+
+test("stripLeadingTitle removes only a leading H1", async () => {
+  const { stripLeadingTitle } = await import("../src/lib/headings.js");
+  assert.equal(stripLeadingTitle("# Title\n\nBody\n\n# Later"), "Body\n\n# Later");
+  assert.equal(stripLeadingTitle("Intro\n\n# Not first"), "Intro\n\n# Not first");
+  assert.equal(stripLeadingTitle("## Subheading\ntext"), "## Subheading\ntext");
+});

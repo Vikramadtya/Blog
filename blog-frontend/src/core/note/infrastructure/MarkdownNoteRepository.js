@@ -308,6 +308,11 @@ export class MarkdownNoteRepository {
       content: finalContent,
       slug: slugArray.join("/"),
       bookSlug,
+      // Path relative to the notes root, as the admin editor addresses it
+      rawPath: path
+        .relative(this.rootPath, resolvedFilePath)
+        .split(path.sep)
+        .join("/"),
     };
   }
 

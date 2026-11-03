@@ -126,15 +126,27 @@ export default async function NotePage({ params }) {
           <h1 className="font-display text-[2rem] font-extrabold leading-[1.15] tracking-tight text-foreground sm:text-5xl">
             {noteData.title}
           </h1>
-          <p className="mt-4 text-sm text-muted-foreground">
-            {calculateReadingTime(noteData.content)}
-          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <span>{calculateReadingTime(noteData.content)}</span>
+            {process.env.NODE_ENV === "development" && noteData.rawPath && (
+              <Link
+                href={`/admin/notes/edit/${noteData.rawPath.split("/").map(encodeURIComponent).join("/")}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-foreground transition hover:border-primary/50 hover:text-primary"
+              >
+                ✎ Edit this note
+              </Link>
+            )}
+          </div>
         </header>
 
         <MobileToc headings={headings} />
 
         <article className="note-article max-w-none">
-          <Markdown source={noteData.content} variant="note" />
+          <Markdown
+            source={noteData.content}
+            variant="note"
+            baseDir={`notes/${noteData.rawPath.split("/").slice(0, -1).join("/")}`}
+          />
         </article>
 
         <nav

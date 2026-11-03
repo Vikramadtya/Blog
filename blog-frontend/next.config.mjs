@@ -61,6 +61,7 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/*": ["../blog-datastore/**/*"],
     "/api/**/*": ["../blog-datastore/**/*"],
+    "/media/**/*": ["../blog-datastore/**/*"],
     "/blogs/**/*": ["../blog-datastore/**/*"],
     "/notes/**/*": ["../blog-datastore/**/*"],
     "/admin/**/*": ["../blog-datastore/**/*"],

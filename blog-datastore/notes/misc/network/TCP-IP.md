@@ -1,6 +1,6 @@
 # The TCP/IP Stack: The Architecture of the Internet
 
-![images](/notes-assets/tcp-ip%20summary.jpg)
+![images](../../../images/tcp-ip-summary.jpg)
 
 The **TCP/IP Stack** (also known as the Internet Protocol Suite) is the definitive set of rules that enables communication between computers globally. Unlike the theoretical 7-layer OSI model, TCP/IP was built for practical implementation and is the backbone of every "ping," "tweet," and "email" you send.
 

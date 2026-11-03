@@ -25,7 +25,7 @@ int gcd(int m, int n) {
 
 To find the GCD of two numbers using recursion, we will be using the principle $$\text{GCD}(a,b) = \text{GCD}(a,b−a)$$
 
-&lt;figure&gt;<img src="/notes-assets/Screenshot%202024-05-03%20at%205.59.35%E2%80%AFPM.png" alt="" width="375" /&gt;<figcaption></figcaption></figure>
+&lt;figure&gt;</figcaption></figure>
 
 
 

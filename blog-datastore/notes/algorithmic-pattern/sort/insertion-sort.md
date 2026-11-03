@@ -4,4 +4,3 @@ The basic idea is to take an item from the input list and insert it into the pro
 
 
 
-<figure><img src="/notes-assets/01zi2XtjiLXa3LYZh.webp" alt="" /><figcaption></figcaption></figure>

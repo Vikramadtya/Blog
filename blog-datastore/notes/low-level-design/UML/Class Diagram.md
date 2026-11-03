@@ -1,6 +1,6 @@
 # UML Class Diagrams: Static Structure Modeling
 
-![summary](/notes-assets/summary.jpg)
+![summary](../../../images/summary.jpg)
 
 ## 1. Overview
 A **Class Diagram** is a structural UML diagram that describes the static structure of a system. It shows the classes, their attributes, operations (methods), and the relationships among objects.
@@ -8,7 +8,7 @@ A **Class Diagram** is a structural UML diagram that describes the static struct
 * **Code Mapping:** It is the only UML diagram that can be mapped directly to object-oriented (OO) languages (Java, C#, C++, etc.), making it the "blueprints" for software construction.
 * **Purpose:** To visualize the data model and the functional capabilities of the system's components.
 
-![image](/notes-assets/sample_class_diagram.png)
+![image](../../../images/sample_class_diagram.png)
 
 ---
 

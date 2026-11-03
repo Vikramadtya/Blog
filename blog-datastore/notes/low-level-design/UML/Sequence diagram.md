@@ -1,6 +1,6 @@
 # UML Sequence Diagrams: Modeling Dynamic Interactions
 
-![image](/notes-assets/summary.jpg)
+![image](../../../images/summary.jpg)
 
 
 ## 1. Overview
@@ -11,7 +11,7 @@ A **Sequence Diagram** is an interaction diagram that illustrates how objects co
 * **Clarity:** While often described as "self-explanatory," their power lies in their ability to visualize complex logic that would be difficult to follow in raw code.
 
 
-![image](/notes-assets/sample_sequence_diagram.png)
+![image](../../../images/sample_sequence_diagram.png)
 
 ---
 

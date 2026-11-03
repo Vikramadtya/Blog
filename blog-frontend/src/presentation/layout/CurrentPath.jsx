@@ -20,9 +20,9 @@ const CurrentPath = () => {
   }, [pathname]);
 
   return (
-    <div className="hidden items-center gap-2 text-base font-medium text-zinc-700 dark:text-zinc-200 md:flex">
+    <div className="hidden max-w-[16rem] items-center gap-2 overflow-hidden whitespace-nowrap font-mono text-sm font-medium text-muted-foreground xl:flex">
       <Icon kind="location" className="h-5 w-5" />
-      <span ref={el} />
+      <span ref={el} className="truncate" />
     </div>
   );
 };

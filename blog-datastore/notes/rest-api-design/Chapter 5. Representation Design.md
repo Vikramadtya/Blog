@@ -1,6 +1,6 @@
 # Representation Design: Resource State and Hypermedia
 
-![image](/notes-assets/c5-summary.jpg)
+![image](../../images/c5-summary.jpg)
 
 
 In a RESTful architecture, the response body conveys the **representation** of a resource's state. This representation should be decoupled from the internal database schema, focusing instead on a contract that is meaningful to the client.

@@ -88,16 +88,20 @@ export default async function Home() {
           <HeroSection />
 
           {/* Featured Sections */}
-          <section className="mt-20 border-t pt-10">
+          <section className="mt-24">
             <FeaturedSection
+              eyebrow="Latest writing"
+              href="/blogs"
               title={content.home.featuredBlogsTitle}
               blogs={latestBlog}
               blogIdToMetadata={blogIdToMetadata}
             />
           </section>
 
-          <section className="mt-20 border-t pt-10">
+          <section className="mt-24 pb-8">
             <FeaturedSection
+              eyebrow="Quick references"
+              href="/snippets"
               title={content.home.featuredSnippetsTitle}
               blogs={snippets}
               blogIdToMetadata={blogIdToMetadata}

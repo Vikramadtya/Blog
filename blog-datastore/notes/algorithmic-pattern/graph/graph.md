@@ -1,12 +1,10 @@
 # Graph
 
-<figure><img src="/notes-assets/image%20(1)%20(1)%20(1).png" alt="" /><figcaption></figcaption></figure>
-
 ## Directed Acyclic Graph
 
 * It is simply a directed graph which contains no cycles - it is impossible to start at one vertex, move along a sequence of arcs and end up in the same vertex
 
-<figure><img src="/notes-assets/image%20(1)%20(1)%20(1)%20(1).png" alt="" width="343" /><figcaption><p>Directed Acyclic Graph</p></figcaption></figure>
+*Directed Acyclic Graph*
 
 * Every DAG has at least one Topological Ordering.
 
@@ -45,3 +43,5 @@
 
 
 
+
+![Dijkstra’s Algorithm_ Visual Guide](../../../images/Dijkstra-s-Algorithm_-Visual-Guide.png)

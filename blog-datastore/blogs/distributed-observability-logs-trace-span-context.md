@@ -205,7 +205,7 @@ Most tracing backends visualize traces as a **waterfall**.
 - The width represents duration.
 - The nesting in the trace represents parent-child relationships.
 
-![waterfall-trace.svg](/uploads/1789120755925-67270389-waterfall-trace.svg)
+![waterfall-trace.svg](../images/1789120755925-67270389-waterfall-trace.svg)
 
 
 This allows to visually identify
@@ -253,7 +253,7 @@ For tracing, the important pieces include:
 
 The context has to cross a process and network boundary. **Context propagation** is the mechanism that moves context from one service or process to another.
 
-![context-propagation-example.svg](/uploads/1789120679119-923954648-context-propagation-example.svg)
+![context-propagation-example.svg](../images/1789120679119-923954648-context-propagation-example.svg)
 
 
 > OpenTelemetry uses **propagators** to serialize and deserialize this context when it is injected into or extracted from messages.

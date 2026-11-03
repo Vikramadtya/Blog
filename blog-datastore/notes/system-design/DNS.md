@@ -10,7 +10,7 @@ Common usecase
 
 DNS is an application-layer protocol, typically using UDP or TCP on port 53.
 
-![Unknown.png](/uploads/1793090634547-285219329-Unknown.png)
+![Unknown.png](../../images/1793090634547-285219329-Unknown.png)
 
 DNS names are case-insensitive for matching purposes, even though the original case may be preserved in some representations.
 

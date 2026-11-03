@@ -16,8 +16,6 @@ layout:
 
 Topological sort is a technique used in graph theory to order the vertices of a [**directed acyclic graph** (**DAG**)](https://app.gitbook.com/o/iaM0TCjo55Di1aoNZCrS/s/MQ6PIO0HHybjoa5n1vsw/\~/changes/3/graph/directed-acyclic-graph). &#x20;
 
-<figure><img src="/notes-assets/image%20(2)%20(1).png" alt="" width="375" /><figcaption></figcaption></figure>
-
 * It ensures that for every directed edge from vertex A to vertex B, vertex A comes before vertex B in the ordering.
 * It orders the vertices on a line such that all directed edges go from left to right. &lt;mark style="background-color:yellow;"&gt;Such an ordering cannot exist if the graph is not a&lt;/mark&gt; &lt;mark style="background-color:yellow;"&gt;&lt;/mark&gt;_&lt;mark style="background-color:yellow;"&gt;**DAG**&lt;/mark&gt;_ &lt;mark style="background-color:yellow;"&gt;&lt;/mark&gt;&lt;mark style="background-color:yellow;"&gt;and contains one or more directed cycle(s), because there is no way we can keep going on the right on a line and still return to a vertex already visited (we are talking about&lt;/mark&gt; &lt;mark style="background-color:yellow;"&gt;&lt;/mark&gt;&lt;mark style="background-color:yellow;"&gt;**Back Edges**&lt;/mark&gt; &lt;mark style="background-color:yellow;"&gt;&lt;/mark&gt;&lt;mark style="background-color:yellow;"&gt;here).&lt;/mark&gt;
 
