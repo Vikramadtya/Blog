@@ -18,72 +18,50 @@ First analyse my submission & complexity , tell me where i can improve. If there
 
 Problem Link :
 
-https://leetcode.com/problems/number-of-provinces/description/
+https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
 
 Problem Statement:
 
-There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, and city b is connected directly with city c, then city a is connected indirectly with city c.
+You are given two integer arrays nums1 and nums2 sorted in non-decreasing order and an integer k.
 
-A province is a group of directly or indirectly connected cities and no other cities outside of the group.
+Define a pair (u, v) which consists of one element from the first array and one element from the second array.
 
-You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith city and the jth city are directly connected, and isConnected[i][j] = 0 otherwise.
+Return the k pairs (u1, v1), (u2, v2), ..., (uk, vk) with the smallest sums.
 
-Return the total number of provinces.
+ 
 
 Candidate Solution:
 
 ```java
 class Solution {
-    int[] parent;
-    int[] rank;
+    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
 
-    int find(int x) {
-        if( parent[x] != x) {
-            parent[x] = find(parent[x]);
-        }
-        return parent[x];
-    }
+        if (nums1 == null || nums2 == null || nums1.length == 0 || nums2.length == 0)
+            return List.of();
 
-    boolean union(int x, int y) {
-        int pa = find(x);
-        int pb = find(y);
+        List<List<Integer>> pairs = new ArrayList<>();
 
-        if (pa == pb)
-            return false;
+        PriorityQueue<List<Integer>> pq = new PriorityQueue<List<Integer>>(
+                (a, b) -> Integer.compare(b.get(0) + b.get(1), a.get(0) + a.get(1)));
 
-        if (rank[pa] > rank[pb]) {
-            parent[pb] = pa;
-            rank[pa]++;
-        } else {
-            parent[pa] = pb;
-            rank[pb]++;
-        }
+        for (int i = 0; i < nums1.length; ++i) {
+            for (int j = 0; j < nums2.length; ++j) {
 
-        return true;
-    }
-
-    public int findCircleNum(int[][] isConnected) {
-        int n = isConnected.length;
-        parent = new int[n];
-        rank = new int[n];
-
-
-        for(int i = 0; i < n ; ++i) parent[i] = i;
-
-
-        for(int i = 0; i < n; ++i) {
-            for(int j = 0; j < n; ++j) {
-                if(isConnected[i][j] == 1) union(i,j);
+                if (pq.size() < k) {
+                    pq.add(List.of(nums1[i], nums2[j]));
+                } else if( pq.peek().get(0) + pq.peek().get(1) > nums1[i] + nums2[j]) {
+                    pq.remove();
+                    pq.add(List.of(nums1[i], nums2[j]));
+                } else {
+                    break;
+                }
             }
         }
 
+        while (!pq.isEmpty())
+            pairs.add(pq.remove());
 
-        Set<Integer> p = new HashSet<>();
-        for(int i = 0; i < n; ++i) {
-            p.add(find(i));
-        }
-
-        return p.size();
+        return pairs;
     }
 }
 ```
@@ -91,7 +69,7 @@ class Solution {
 Claimed Complexity:
 
 Space Complexity : O(n)
-Time Complexity : O(n^2)
+Time Complexity : O(n^2*Log(n))
 
 ---
 
