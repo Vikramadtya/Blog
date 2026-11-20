@@ -146,14 +146,3 @@ ReadWriteLock lock =
 - Reduces the risk of indefinite starvation.
 - May reduce throughput due to additional scheduling constraints.
 
-
-# ReadWriteLock vs synchronized vs ReentrantLock
-| Feature | synchronized | ReentrantLock | ReentrantReadWriteLock |
-|---|---|---|---|
-| Exclusive write access | Yes | Yes | Yes |
-| Multiple concurrent readers | No, with the same monitor | No, with the same lock | Yes |
-| Explicit lock/unlock | No | Yes | Yes |
-| Try lock / timed acquisition | No | Yes | Yes |
-| Fairness option | No | Yes | Yes |
-| Reentrant | Yes | Yes | Yes |
-| Complexity | Low | Medium | Higher |

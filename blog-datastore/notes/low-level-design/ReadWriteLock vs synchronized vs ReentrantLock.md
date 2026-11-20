@@ -40,12 +40,21 @@ flowchart TD
 `ReentrantReadWriteLock` is useful when reads are frequent and writes are relatively infrequent.
 
 ## Synchronized — one thread at a time
-Key idea: Simple mutual exclusion. One thread at a time.
+Java's synchronized provides mutual exclusion. Only one thread at a time can execute a protected critical section using the same monitor. ( a critical section is the part of the program that accesses or modifies shared state )
 
 - Only one thread can hold the monitor at a time.
 - Readers cannot run concurrently when they synchronize on the same monitor.
 - Lock acquisition and release are automatic when entering and leaving the synchronized block/method.
+- Reentrant: a thread holding the monitor can enter another synchronized block using the same monitor.
+- Good for relatively simple, low-contention operations.
 
+```java
+synchronized (wallet) {
+    if (wallet.getBalance() >= amount) {
+        wallet.withdraw(amount);
+    }
+}
+```
 
 ## ReentrantLock — one thread at a time, with more control
 It still allows only one thread to hold the lock, but gives you additional control over acquiring and releasing it.
@@ -59,6 +68,19 @@ Additional capabilities
 - Explicit unlock() in a finally block.
 
 ## ReadWriteLock — multiple readers, one writer
-It has two locks:
-- Read lock: Multiple threads can hold it simultaneously.
-- Write lock: Only one thread can hold it, and no readers can hold the read lock at the same time.
+
+Optimised for read-heavy workloads, multiple readers can safely read the same consistent value at the same time, provided writers are excluded.
+
+`ReadWriteLock` has two locks:
+- `Read lock` : Multiple threads can hold it simultaneously.
+- `Write lock` : Only one thread can hold it, and no readers can hold the read lock at the same time.
+
+This can improve throughput for read-heavy workloads.
+- Multiple threads can read the balance concurrently.
+- A writer waits until existing readers finish.
+- Once a writer has the lock, new readers also wait.
+
+
+!!! warning "Writer starvation"
+    Imagine a continuous stream of balance-read requests.
+    A writer wants to update the balance, but new readers keep acquiring read locks before the writer gets a chance. The writer may wait for a very long time. This is called writer starvation.
